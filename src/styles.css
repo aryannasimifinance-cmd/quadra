@@ -143,10 +143,10 @@ img { display: block; }
 .brand { display: flex; align-items: center; justify-content: space-between; }
 .brand-tag { font-size: 12px; opacity: .7; }
 .welcome-copy { margin-top: auto; }
-.welcome-copy h1 { font-size: 44px; line-height: 1.12; font-weight: 300; letter-spacing: -.5px; }
+.welcome-copy h1 { font-size: 36px; line-height: 1.55; font-weight: 700; letter-spacing: -.3px; }
 .welcome-copy h1 span { display: block; }
 .welcome-copy h1 .hl { color: var(--q); font-weight: 700; }
-.welcome-copy p { margin-top: 14px; font-size: 15px; line-height: 1.8; }
+.welcome-copy p { margin-top: 12px; font-size: 14px; line-height: 1.8; font-weight: 300; letter-spacing: .2px; }
 .welcome-stats { display: flex; gap: 10px; margin-top: 20px; }
 .welcome-stats span { flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 10px; font-size: 11px; opacity: .9; backdrop-filter: blur(10px); }
 .welcome-stats b { display: block; font-size: 18px; color: var(--q); }

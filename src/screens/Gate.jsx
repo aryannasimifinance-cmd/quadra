@@ -8,7 +8,8 @@ import { Logo, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-const HERO = ['./img/hero.jpg', './img/action-wide.jpg', './img/reach.jpg', './img/four-women.jpg']
+// فقط عکس زمین، بدون آدم
+const HERO = ['./img/court-pano.jpg', './img/court-indoor.jpg', './img/tiles.jpg', './img/court-blue.jpg', './img/court-outdoor.jpg']
 
 export default function Gate() {
   const { loginPlayer, user } = useStore()
@@ -70,7 +71,7 @@ function HeroSlides({ dim, admin }) {
 }
 
 function Welcome({ onStart, onLogin, onAdmin }) {
-  const words = ['زمین بگیر.', 'هم‌سطح پیدا کن.', 'ببر.']
+  const words = ['به سادگی زمین رزرو کن،', 'بازی بچین', 'و لذت ببر.']
   return (
     <div className="welcome-in">
       <motion.div className="brand" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
@@ -85,7 +86,7 @@ function Welcome({ onStart, onLogin, onAdmin }) {
           ))}
         </h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.8 }}>
-          رزرو ۴ زمین پدل کوادرا، ساخت بازی و پیوستن به بازیکن‌های هم‌سطح، کلاس با مربی، تورنمنت و فروشگاه — همه در یک اپ.
+          مدرن‌ترین زمین پدل استان البرز
         </motion.p>
         <motion.div className="welcome-stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
           <span><b>۴</b>زمین پانورامیک</span><span><b>۷–۲۴</b>هر روز</span><span><b>۵۶+</b>بازیکن فعال</span>
