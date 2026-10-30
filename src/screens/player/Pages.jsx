@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { COACHES, COACH_PACKS, LEVELS, PACKAGES, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
+import { COACHES, COACH_PACKS, EVENT_KIND, LEVELS, PACKAGES, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { myPoints, useStore } from '../../store'
 import { activeMembership } from '../../select'
@@ -136,26 +136,32 @@ export function Ranking({ onBack }) {
   )
 }
 
-export function Events({ nav, onBack }) {
+export function Events({ nav, onBack, kind: initial = 'friday' }) {
   const { events: joined } = useStore()
+  const [kind, setKind] = useState(initial)
+  const list = events().filter((e) => e.kind === kind)
   return (
     <div className="page">
-      <TopBar onBack={onBack} title="تورنمنت‌ها" />
-      <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
-        {events().map((e) => (
-          <motion.button key={e.id} variants={rise} className="ev-card big" whileTap={{ scale: 0.98 }} onClick={() => nav.start({ intent: 'event', eventId: e.id })} disabled={joined.includes(e.id)}>
-            <Photo src={e.img} />
-            <div className="ev-shade" />
-            <div className="ev-txt">
-              <span className="pill-q">{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
-              <b>{e.title}</b>
-              <small>{e.format} · سطح {e.levels.join(' / ')} · جایزه: {e.prize}</small>
-              <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.cap - e.taken)} جای خالی</span></div>
-            </div>
-            <em>{joined.includes(e.id) ? '✓ ثبت‌نام' : short(e.fee)}</em>
-          </motion.button>
-        ))}
-      </motion.div>
+      <TopBar onBack={onBack} title="مسابقه‌ها" />
+      <div className="page-body">
+        <Chips id="ev-kind" value={kind} onChange={setKind} options={Object.entries(EVENT_KIND).map(([id, k]) => ({ id, name: k.name }))} />
+        <p className="muted ev-kind-sub">{EVENT_KIND[kind].sub}</p>
+        <motion.div key={kind} className="ev-list" variants={stagger} initial="hidden" animate="show">
+          {list.map((e) => (
+            <motion.button key={e.id} variants={rise} className="ev-card big" whileTap={{ scale: 0.98 }} onClick={() => nav.start({ intent: 'event', eventId: e.id })} disabled={joined.includes(e.id)}>
+              <Photo src={e.img} />
+              <div className="ev-shade" />
+              <div className="ev-txt">
+                <span className={`pill-q ${e.kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
+                <b>{e.title}</b>
+                <small>{e.format} · سطح {e.levels.join(' / ')} · جایزه: {e.prize}</small>
+                <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.cap - e.taken)} جای خالی</span></div>
+              </div>
+              <em>{joined.includes(e.id) ? '✓ ثبت‌نام' : short(e.fee)}</em>
+            </motion.button>
+          ))}
+        </motion.div>
+      </div>
     </div>
   )
 }

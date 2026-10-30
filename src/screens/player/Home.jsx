@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { COACHES, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
+import { COACHES, EVENT_KIND, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
 import { celebrate, chime } from '../../fx'
 import { myPoints, useStore } from '../../store'
 import { courtsNow, myBookings, openGames, quests, streak } from '../../select'
@@ -17,7 +17,8 @@ export default function Home({ nav }) {
   const courts = courtsNow(club)
   const qs = quests(s)
   const st = streak(s)
-  const ev = events()[0]
+  const evs = events()
+  const nextEv = ['friday', 'official'].map((k) => evs.find((e) => e.kind === k)).filter(Boolean)
   const first = user.name.split(' ')[0]
   const h = new Date().getHours()
   const hello = h < 12 ? 'صبح بخیر' : h < 17 ? 'روز بخیر' : 'عصر بخیر'
@@ -25,7 +26,7 @@ export default function Home({ nav }) {
   return (
     <div className="home">
       <section className="hero">
-        <Photo src="./img/hero.jpg" zoom />
+        <Photo src="./img/action.jpg" zoom pos="50% 20%" />
         <div className="hero-shade" />
         <div className="hero-top">
           <Logo tone="light" size={17} />
@@ -67,20 +68,21 @@ export default function Home({ nav }) {
       </section>
 
       <div className="home-body">
-        <SectionHead title="زمین‌ها، همین حالا" sub="وضعیت زنده‌ی ۴ زمین کوادرا" />
-        <motion.div className="court-row" variants={stagger} initial="hidden" animate="show">
-          {courts.map((c) => (
-            <motion.button key={c.id} variants={rise} className="court-card" whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'court', court: c.id })}>
-              <Photo src={c.img} />
-              <div className="court-card-shade" />
-              <span className={`live ${c.off ? 'off' : c.busy ? 'busy' : 'free'}`}><i />{c.off ? 'تعمیرات' : c.busy ? 'در حال بازی' : 'آزاد'}</span>
-              <div className="court-card-txt">
-                <small>{c.name} · {c.kind}</small>
-                <b>{c.nick}</b>
-                <span>{c.off ? 'فعلاً غیرفعال' : c.nextFree != null ? `اولین ساعت آزاد ${hourLabel(c.nextFree)}` : 'امروز پر است'}</span>
-              </div>
-            </motion.button>
-          ))}
+        <SectionHead title="زمین‌ها، همین حالا" sub="روی هر زمین بزن تا رزروش کنی" />
+        <motion.div className="court-grid" variants={stagger} initial="hidden" animate="show">
+          {courts.map((c) => {
+            const st = c.off ? 'off' : c.busy ? 'busy' : 'free'
+            return (
+              <motion.button key={c.id} variants={rise} className={`court-tile ${st}`} whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'court', court: c.id })}>
+                <CourtGlyph n={c.id} />
+                <div className="ct-txt">
+                  <b>زمین {fa(c.id)}</b>
+                  <span className="ct-st"><i />{c.off ? 'تعمیرات' : c.busy ? 'در حال بازی' : 'آزاد'}</span>
+                  <small>{c.off ? 'فعلاً غیرفعال' : c.nextFree != null ? `آزاد از ${hourLabel(c.nextFree)}` : 'امروز پر است'}</small>
+                </div>
+              </motion.button>
+            )
+          })}
         </motion.div>
 
         {mine.length > 0 && (
@@ -116,18 +118,19 @@ export default function Home({ nav }) {
           {qs.map((q) => <Quest key={q.id} q={q} />)}
         </div>
 
-        {ev && (
-          <motion.button className="event-banner" whileTap={{ scale: 0.98 }} onClick={() => nav.open('events')}>
+        {nextEv.length > 0 && <SectionHead title="مسابقه‌ها" action="همه" onAction={() => nav.open('events')} />}
+        {nextEv.map((ev) => (
+          <motion.button key={ev.id} className="event-banner" whileTap={{ scale: 0.98 }} onClick={() => nav.open('events', { kind: ev.kind })}>
             <Photo src={ev.img} />
             <div className="event-shade" />
             <div className="event-txt">
-              <span className="pill-q">تورنمنت · {dayLabel(ev.date)} {dayMonth(fromKey(ev.date))}</span>
+              <span className={`pill-q ${ev.kind === 'official' ? 'gold' : ''}`}>{EVENT_KIND[ev.kind].name} · {dayLabel(ev.date)} {dayMonth(fromKey(ev.date))}</span>
               <h3>{ev.title}</h3>
-              <p>{ev.format} · سطح {ev.levels.join(' / ')} · {fa(ev.cap - ev.taken)} جای خالی</p>
+              <p>{ev.format} · {fa(ev.cap - ev.taken)} جای خالی</p>
             </div>
             <span className="event-go"><Icon name="fwd" /></span>
           </motion.button>
-        )}
+        ))}
 
         <SectionHead title="مربی‌ها" action="کلاس‌ها و پکیج‌ها" onAction={() => nav.open('coaches')} />
         <div className="coach-row">
@@ -181,11 +184,24 @@ export function NextTicket({ b, onClick }) {
       <div className="ticket-main">
         <span className="pill-q">{left}</span>
         <h3>{dayLabel(b.date)} · {range(b.start, b.dur)}</h3>
-        <p>{c.name} · {c.nick} · {b.type === 'open' ? `بازی باز ${fa(b.players.length)}/۴` : b.type === 'coach' ? 'کلاس مربی' : 'رزرو خصوصی'}</p>
+        <p>{c.name} · {b.type === 'open' ? `بازی باز ${fa(b.players.length)}/۴` : b.type === 'coach' ? 'کلاس مربی' : 'رزرو خصوصی'}</p>
       </div>
       <div className="ticket-cut" />
       <div className="ticket-side"><b>{fa(c.id)}</b><small>زمین</small></div>
     </motion.button>
+  )
+}
+
+// نقشه‌ی ساده‌ی زمین پدل از بالا
+function CourtGlyph({ n }) {
+  return (
+    <svg className="ct-glyph" viewBox="0 0 40 64" aria-hidden="true">
+      <rect x="2" y="2" width="36" height="60" rx="4" />
+      <line x1="2" y1="32" x2="38" y2="32" className="net" />
+      <line x1="2" y1="12" x2="38" y2="12" /><line x1="2" y1="52" x2="38" y2="52" />
+      <line x1="20" y1="12" x2="20" y2="52" />
+      <text x="20" y="25" textAnchor="middle">{fa(n)}</text>
+    </svg>
   )
 }
 

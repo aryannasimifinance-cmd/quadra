@@ -38,7 +38,7 @@ export default function Admin() {
         <div className="adm-brand"><Logo tone="light" size={18} /><small>پنل مدیریت</small></div>
         <nav>
           {NAV.map((n) => (
-            <button key={n.id} className={sec === n.id ? 'on' : ''} onClick={() => { setSec(n.id); setMenu(false) }}>
+            <button key={n.id} className={sec === n.id ? 'on' : ''} onClick={() => { setSec(n.id); setMenu(false); window.scrollTo(0, 0) }}>
               {sec === n.id && <motion.span layoutId="adm-nav" className="adm-nav-bg" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
               <Icon name={n.icon} size={19} /><span>{n.name}</span>
             </button>
@@ -199,7 +199,7 @@ export function Timeline({ date, compact, onPick }) {
         const list = club.bookings.filter((b) => b.date === date && b.court === c.id && b.status !== 'cancelled')
         return (
           <div key={c.id} className={`tl-row ${club.off[c.id] ? 'off' : ''}`}>
-            <div className="tl-court"><b>{c.name}</b><small>{c.nick} · {fa(Math.round(occupancy(club, date, c.id) * 100))}٪</small></div>
+            <div className="tl-court"><b>{c.name}</b><small>{c.kind} · {fa(Math.round(occupancy(club, date, c.id) * 100))}٪</small></div>
             <div className="tl-track" onClick={(e) => e.target === e.currentTarget && pick(c.id, e)}>
               {isToday && nowX > 0 && nowX < 100 && <i className="tl-now" style={{ right: `${nowX}%` }} />}
               {list.map((b) => {
@@ -290,7 +290,7 @@ function BookingDetail({ id, onClose }) {
   }
   return (
     <div className="dr">
-      <div className="dr-photo" style={{ backgroundImage: `url(${c.img})` }}><div><span className={`type-pill ${TYPE_CLS[b.type]}`}>{TYPE_NAME[b.type]}</span><h2>{dayLabel(b.date)} · {range(b.start, b.dur)}</h2><small>{c.name} · {c.nick} · {dayMonth(fromKey(b.date))}</small></div></div>
+      <div className="dr-photo" style={{ backgroundImage: `url(${c.img})` }}><div><span className={`type-pill ${TYPE_CLS[b.type]}`}>{TYPE_NAME[b.type]}</span><h2>{dayLabel(b.date)} · {range(b.start, b.dur)}</h2><small>{c.name} · {dayMonth(fromKey(b.date))}</small></div></div>
       {b.type !== 'block' && (<>
         <div className="dr-rows">
           <div><span>رزروکننده</span><b>{who(b.by, user)}</b></div>

@@ -8,7 +8,7 @@ import { Logo, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-const HERO = ['./img/welcome.jpg']
+const HERO = ['./img/reach.jpg']
 
 export default function Gate() {
   const { loginPlayer, user } = useStore()
@@ -60,7 +60,7 @@ function HeroSlides({ dim, admin }) {
     <div className="auth-bg">
       <AnimatePresence>
         <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
-          <Photo src={HERO[i]} zoom pos="57% 50%" />
+          <Photo src={HERO[i]} zoom pos="50% 30%" />
         </motion.div>
       </AnimatePresence>
       <div className={`auth-bg-shade ${dim ? 'dim' : ''} ${admin ? 'admin' : ''}`} />
@@ -75,7 +75,7 @@ function Welcome({ onStart, onLogin, onAdmin }) {
     <div className="welcome-in">
       <motion.div className="brand" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <Logo tone="light" size={20} />
-        <span className="brand-tag">باشگاه پدل · ۴ زمین</span>
+        <span className="brand-tag">باشگاه پدل با ۴ زمین</span>
       </motion.div>
       <div className="welcome-copy">
         <h1>
@@ -87,9 +87,6 @@ function Welcome({ onStart, onLogin, onAdmin }) {
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.8 }}>
           مدرن‌ترین زمین پدل استان البرز
         </motion.p>
-        <motion.div className="welcome-stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-          <span><b>۴</b>زمین پانورامیک</span><span><b>۷–۲۴</b>هر روز</span><span><b>۵۶+</b>بازیکن فعال</span>
-        </motion.div>
       </div>
       <motion.div className="welcome-cta" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95 }}>
         <Button full variant="q" onClick={onStart}>شروع کنیم</Button>
@@ -194,7 +191,7 @@ function NameStep({ form, set, onNext }) {
   const ok = form.name.trim().length >= 2
   return (
     <div className="step-body">
-      <h2>چی صدات کنیم؟</h2>
+      <h2>چی صداتون کنیم؟</h2>
       <label className="field">
         <Icon name="user" />
         <input autoFocus placeholder="نام و نام خانوادگی" value={form.name} onChange={(e) => set({ name: e.target.value })}
@@ -205,22 +202,39 @@ function NameStep({ form, set, onNext }) {
   )
 }
 
+// آزمون تعیین سطح — هر پاسخ ۰ تا ۳ امتیاز؛ مجموع ۰ تا ۳۰
 const QUIZ = [
-  { q: 'چند وقته پدل بازی می‌کنی؟', a: ['تازه شروع کردم', 'کمتر از ۶ ماه', '۶ ماه تا ۲ سال', 'بیشتر از ۲ سال'] },
-  { q: 'از دیوار پشتی استفاده می‌کنی؟', a: ['نه هنوز', 'گاهی', 'معمولاً', 'همیشه، حتی حمله'] },
-  { q: 'تجربه‌ی مسابقه داری؟', a: ['نه', 'دوستانه', 'باشگاهی', 'رسمی'] },
+  { q: 'چند وقته به‌طور منظم پدل بازی می‌کنی؟', a: ['کمتر از ۳ ماه', '۳ ماه تا یک سال', 'یک تا سه سال', 'بیشتر از سه سال'] },
+  { q: 'هفته‌ای چند بار بازی می‌کنی؟', a: ['کمتر از یک بار', 'یک بار', 'دو تا سه بار', 'چهار بار یا بیشتر'] },
+  { q: 'سابقه‌ی تنیس یا اسکواش داری؟', a: ['نه', 'تفریحی', 'باشگاهی و منظم', 'رقابتی'] },
+  { q: 'سرویست چطوره؟', a: ['هنوز زیاد خطا می‌زنم', 'وارد می‌کنم ولی ساده', 'با جهت و عمق کنترل‌شده', 'با اسپین و برای شروع حمله'] },
+  { q: 'توپی که از دیوار پشتی برمی‌گرده رو چطور جواب می‌دی؟', a: ['معمولاً از دستم می‌ره', 'توپ‌های ساده رو برمی‌گردونم', 'بیشترشون رو کنترل‌شده می‌زنم', 'حتی دو دیوار و کرنر رو راحت می‌زنم'] },
+  { q: 'پشت تور و والی؟', a: ['کمتر جلو می‌رم', 'والی ساده می‌زنم', 'والی با جهت و عمق', 'بلاک، دراپ و والی تهاجمی'] },
+  { q: 'بندخا و ویبورا؟', a: ['نمی‌شناسم', 'می‌شناسم ولی نمی‌زنم', 'گاهی درست درمیاد', 'ابزار ثابت بازیمه'] },
+  { q: 'اسمش (ضربه‌ی بالای سر)؟', a: ['نمی‌زنم', 'تخت و بی‌جهت', 'با قدرت و جهت', 'توپ رو از زمین بیرون می‌فرستم (x3 / x4)'] },
+  { q: 'از لوب چطور استفاده می‌کنی؟', a: ['اتفاقی پیش میاد', 'برای فرار از فشار', 'عمدی برای گرفتن تور', 'دقیق روی ضعف حریف'] },
+  { q: 'تجربه‌ی مسابقه داری؟', a: ['نه', 'فقط دوستانه', 'تورنمنت باشگاهی', 'مسابقات رسمی / رنکینگ'] },
 ]
+const CUTS = [27, 23, 19, 16, 13, 10, 7, 4] // حداقل امتیاز A، B+، B، B-، C+، C، C-، D+
+const quizLevel = (ans) => {
+  const score = ans.reduce((s, k) => s + k, 0)
+  let i = CUTS.findIndex((c) => score >= c)
+  if (i === -1) i = 8
+  if (i === 0 && ans[9] < 3) i = 1 // سطح حرفه‌ای فقط با سابقه‌ی مسابقه‌ی رسمی
+  return LEVELS[i].id
+}
 
 function LevelStep({ value, onChange, onNext }) {
   const [quiz, setQuiz] = useState(null)
-  const [score, setScore] = useState(0)
+  const [ans, setAns] = useState([])
   const answer = (k) => {
     haptic(8)
-    const s = score + k
-    if (quiz < QUIZ.length - 1) { setScore(s); setQuiz(quiz + 1) } else {
-      onChange(LEVELS[Math.max(0, Math.min(8, 8 - s))].id); setQuiz(null); setScore(0); chime('success')
+    const next = [...ans.slice(0, quiz), k]
+    if (quiz < QUIZ.length - 1) { setAns(next); setQuiz(quiz + 1) } else {
+      onChange(quizLevel(next)); setQuiz(null); setAns([]); chime('success')
     }
   }
+  const prev = () => (quiz === 0 ? setQuiz(null) : setQuiz(quiz - 1))
   return (
     <div className="step-body">
       <h2>سطحت چیه؟</h2>
@@ -228,8 +242,8 @@ function LevelStep({ value, onChange, onNext }) {
       <AnimatePresence mode="wait">
         {quiz === null ? (
           <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button className="quiz-cta" onClick={() => { setQuiz(0); setScore(0) }}>
-              <Icon name="sparkle" /> مطمئن نیستم — با ۳ سؤال کمکم کن
+            <button className="quiz-cta" onClick={() => { setQuiz(0); setAns([]) }}>
+              <Icon name="sparkle" /> مطمئن نیستم — با ۱۰ سؤال دقیق پیداش کن
             </button>
             <div className="level-list">
               {LEVELS.map((l) => (
@@ -243,10 +257,14 @@ function LevelStep({ value, onChange, onNext }) {
           </motion.div>
         ) : (
           <motion.div key={'q' + quiz} className="quiz" initial={{ x: -40, opacity: 0, rotate: -2 }} animate={{ x: 0, opacity: 1, rotate: 0 }} exit={{ x: 40, opacity: 0, rotate: 2 }}>
-            <span className="quiz-n">{fa(quiz + 1)} / {fa(QUIZ.length)}</span>
+            <div className="quiz-top">
+              <span className="quiz-n">{fa(quiz + 1)} / {fa(QUIZ.length)}</span>
+              <button className="link" onClick={prev}>{quiz === 0 ? 'انصراف' : 'سؤال قبلی'}</button>
+            </div>
+            <div className="quiz-bar"><i style={{ width: `${((quiz + 1) / QUIZ.length) * 100}%` }} /></div>
             <h3>{QUIZ[quiz].q}</h3>
             {QUIZ[quiz].a.map((a, k) => (
-              <motion.button key={a} className="quiz-a" whileTap={{ scale: 0.97 }} onClick={() => answer(k)}
+              <motion.button key={a} className={`quiz-a ${ans[quiz] === k ? 'on' : ''}`} whileTap={{ scale: 0.97 }} onClick={() => answer(k)}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: k * 0.05 }}>{a}</motion.button>
             ))}
           </motion.div>

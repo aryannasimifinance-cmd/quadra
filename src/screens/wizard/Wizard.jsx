@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import {
-  BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, LEVELS, MEMBERS, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
+  BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, EVENT_KIND, LEVELS, MEMBERS, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
   events, fa, fromKey, hourLabel, isPeak, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, toman,
 } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
@@ -15,12 +15,12 @@ const FLOWS = {
   coach: ['intent', 'coach', 'when', 'slot', 'pay'],
   event: ['intent', 'event', 'pay'],
 }
-const TITLES = { intent: 'امروز چی می‌خوای؟', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'تورنمنت‌ها', pay: 'پرداخت' }
+const TITLES = { intent: 'امروز چی می‌خوای؟', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'مسابقه‌ها', pay: 'پرداخت' }
 const INTENTS = [
   { id: 'court', name: 'رزرو زمین', desc: 'با رفقات بازی کن؛ جای خالی رو با هم‌سطح پر می‌کنیم', img: './img/court-pano.jpg', xp: 50, icon: '🎾' },
   { id: 'match', name: 'پیدا کردن مچ', desc: 'یار نداری؟ به بازی‌های باز هم‌سطحت بپیوند', img: './img/action.jpg', xp: 40, icon: '⚡' },
   { id: 'coach', name: 'کلاس با مربی', desc: 'جلسه‌ی خصوصی یا گروهی، تک یا پکیج', img: './img/coach-a.jpg', xp: 40, icon: '🧢' },
-  { id: 'event', name: 'تورنمنت', desc: 'آمریکانو، مکسیکانو و جام ماهانه', img: './img/four-women.jpg', xp: 80, icon: '🏆' },
+  { id: 'event', name: 'مسابقه و تورنمنت', desc: 'مسابقات آدینه و تورنمنت‌های رسمی', img: './img/four-women.jpg', xp: 80, icon: '🏆' },
 ]
 
 export default function Wizard({ preset = {}, onClose, onDone }) {
@@ -163,7 +163,7 @@ function StepSlot({ w, set, onNext }) {
         <span />
         {COURTS.map((c) => (
           <div key={c.id} className={`sc-head ${w.court === c.id ? 'on' : ''} ${club.off[c.id] ? 'off' : ''}`}>
-            <Photo src={c.img} /><b>{fa(c.id)}</b><small>{c.nick}</small>
+            <Photo src={c.img} /><b>{fa(c.id)}</b><small>زمین</small>
           </div>
         ))}
       </div>
@@ -317,7 +317,7 @@ export function GameCard({ g, on, onClick }) {
       <div className="og-wide-body">
         <div className="og-top">
           <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک' : `${fa(g.gap)} سطح فاصله`}</span>
-          <small>{c.name} · {c.nick}</small>
+          <small>{c.name} · {c.kind}</small>
         </div>
         <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
         <div className="og-ppl">
@@ -370,25 +370,31 @@ function StepCoach({ w, set, onNext }) {
 
 function StepEvent({ w, set, onNext }) {
   const { events: joined } = useStore()
+  const all = events()
   return (
     <div className="event-pick">
-      <h2 className="wz-h">تورنمنت‌های پیش‌رو</h2>
-      {events().map((e) => {
-        const has = joined.includes(e.id)
-        return (
-          <motion.button key={e.id} className={`ev-card ${w.eventId === e.id ? 'on' : ''}`} disabled={has} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); set({ eventId: e.id }) }}>
-            <Photo src={e.img} />
-            <div className="ev-shade" />
-            <div className="ev-txt">
-              <span className="pill-q">{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
-              <b>{e.title}</b>
-              <small>{e.format} · سطح {e.levels.join(' / ')}</small>
-              <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.taken)}/{fa(e.cap)}</span></div>
-            </div>
-            <em>{has ? 'ثبت‌نام شدی' : short(e.fee)}</em>
-          </motion.button>
-        )
-      })}
+      {Object.entries(EVENT_KIND).map(([kind, k]) => (
+        <div key={kind} className="ev-group">
+          <h2 className="wz-h">{k.name}</h2>
+          <p className="muted ev-kind-sub">{k.sub}</p>
+          {all.filter((e) => e.kind === kind).map((e) => {
+            const has = joined.includes(e.id)
+            return (
+              <motion.button key={e.id} className={`ev-card ${w.eventId === e.id ? 'on' : ''}`} disabled={has} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); set({ eventId: e.id }) }}>
+                <Photo src={e.img} />
+                <div className="ev-shade" />
+                <div className="ev-txt">
+                  <span className={`pill-q ${kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
+                  <b>{e.title}</b>
+                  <small>{e.format} · سطح {e.levels.join(' / ')}</small>
+                  <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.taken)}/{fa(e.cap)}</span></div>
+                </div>
+                <em>{has ? 'ثبت‌نام شدی' : short(e.fee)}</em>
+              </motion.button>
+            )
+          })}
+        </div>
+      ))}
       <div className="cta-bar"><Button full variant="dark" disabled={!w.eventId} onClick={onNext}>ثبت‌نام</Button></div>
     </div>
   )

@@ -275,7 +275,7 @@ export function Settings() {
             {COURTS.map((c) => (
               <div key={c.id} className="court-set">
                 <div className="cs-photo" style={{ backgroundImage: `url(${c.img})` }} />
-                <div className="grow"><b>{c.name} · {c.nick}</b><small>{c.kind} · {c.indoor ? 'سرپوشیده' : 'روباز'}</small></div>
+                <div className="grow"><b>{c.name}</b><small>{c.kind} · {c.indoor ? 'سرپوشیده' : 'روباز'}</small></div>
                 <button className={`tgl-adm ${club.off[c.id] ? '' : 'on'}`} onClick={() => { adminCourt(c.id, !club.off[c.id]); chime('tap') }}><i /><span>{club.off[c.id] ? 'تعمیرات' : 'فعال'}</span></button>
               </div>
             ))}

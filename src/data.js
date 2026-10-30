@@ -7,10 +7,10 @@ export const CLUB = {
 }
 
 export const COURTS = [
-  { id: 1, name: 'زمین ۱', nick: 'سنترکورت', kind: 'پانورامیک', indoor: true, img: img('court-pano') },
-  { id: 2, name: 'زمین ۲', nick: 'گلس‌هاوس', kind: 'پانورامیک', indoor: true, img: img('court-indoor') },
-  { id: 3, name: 'زمین ۳', nick: 'بلو', kind: 'استاندارد', indoor: true, img: img('court-blue') },
-  { id: 4, name: 'زمین ۴', nick: 'اسکای', kind: 'روباز', indoor: false, img: img('court-outdoor') },
+  { id: 1, name: 'زمین ۱', kind: 'پانورامیک', indoor: true, img: img('court-pano') },
+  { id: 2, name: 'زمین ۲', kind: 'پانورامیک', indoor: true, img: img('court-indoor') },
+  { id: 3, name: 'زمین ۳', kind: 'استاندارد', indoor: true, img: img('court-blue') },
+  { id: 4, name: 'زمین ۴', kind: 'روباز', indoor: false, img: img('court-outdoor') },
 ]
 export const courtById = (id) => COURTS.find((c) => c.id === id)
 
@@ -189,19 +189,43 @@ export const MEMBERS = Array.from({ length: 56 }, (_, i) => {
 export const memberById = (id) => MEMBERS.find((m) => m.id === id)
 
 // ---------- رویدادها ----------
-const EV_NAMES = ['آمریکانوی پنجشنبه', 'مکسیکانوی جمعه', 'کینگ آف کورت', 'جام ماهانه‌ی کوادرا', 'شب میکس دبل']
+// دو نوع: «مسابقات آدینه» (دوستانه، هر جمعه) و «تورنمنت رسمی» (جدول گروهی + حذفی، امتیاز رنکینگ)
+export const EVENT_KIND = {
+  friday: { name: 'مسابقات آدینه', sub: 'هر جمعه صبح · دوستانه با یار جدید در هر بازی' },
+  official: { name: 'تورنمنت‌های رسمی', sub: 'گروهی + حذفی · داور · امتیاز رنکینگ کوادرا' },
+}
+const FRIDAY = [
+  { title: 'آمریکانوی آدینه', format: 'آمریکانو · هر بازی با یار جدید' },
+  { title: 'مکسیکانوی آدینه', format: 'مکسیکانو · جفت‌ها بر اساس امتیاز' },
+  { title: 'کینگ آف کورت آدینه', format: 'برنده روی زمین می‌مونه' },
+  { title: 'میکس دبل آدینه', format: 'تیم‌های مختلط · هر بازی با یار جدید' },
+]
+const OFFICIAL = [
+  { title: 'جام ماهانه‌ی کوادرا', format: 'گروهی + حذفی · ۱۶ تیم', prize: 'جایزه‌ی نقدی + جام', in: 9 },
+  { title: 'تور رنکینگ کوادرا — مرحله‌ی پاییز', format: 'گروهی + حذفی · ۱۶ تیم · امتیاز ۲ برابر', prize: 'جایزه‌ی نقدی + راکت', in: 23 },
+]
+const EV_IMG = [img('four-women'), img('action'), img('reach'), img('action-wide'), img('sitting')]
 export function events() {
-  return nextDays(21).filter((d) => isWeekend(d)).slice(0, 5).map((d, i) => {
+  const fridays = nextDays(28, 1).filter((d) => d.getDay() === 5).slice(0, 4).map((d, i) => {
     const r = hash('ev' + dayKey(d))
     const lv = Math.floor(r * 5)
-    const cap = i === 3 ? 32 : 16
+    const f = FRIDAY[i % FRIDAY.length]
     return {
-      id: 'ev-' + dayKey(d), title: EV_NAMES[i % EV_NAMES.length], date: dayKey(d), start: i === 3 ? 10 : 18, dur: 3,
-      levels: LEVELS.slice(lv, lv + 3).map((l) => l.id), cap, taken: Math.floor(cap * (0.4 + hash('tk' + i) * 0.5)),
-      fee: i === 3 ? 1500000 : 750000, prize: i === 3 ? 'جایزه‌ی نقدی + جام' : 'راکت Volt + توپ', format: i === 3 ? 'گروهی + حذفی' : 'هر بازی با یار جدید',
-      img: [img('four-women'), img('action'), img('reach'), img('action-wide'), img('sitting')][i % 5],
+      id: 'fr-' + dayKey(d), kind: 'friday', title: f.title, format: f.format, date: dayKey(d), start: 9, dur: 3,
+      levels: LEVELS.slice(lv, lv + 3).map((l) => l.id), cap: 16, taken: Math.floor(16 * (0.4 + hash('tk' + i) * 0.5)),
+      fee: 750000, prize: 'راکت Volt + توپ', img: EV_IMG[i % EV_IMG.length],
     }
   })
+  const official = OFFICIAL.map((o, i) => {
+    // نزدیک‌ترین پنجشنبه بعد از o.in روز
+    const d = nextDays(7, o.in).find((x) => x.getDay() === 4)
+    return {
+      id: 'of-' + dayKey(d), kind: 'official', title: o.title, format: o.format, date: dayKey(d), start: 10, dur: 8,
+      levels: LEVELS.slice(0, 5).map((l) => l.id), cap: 32, taken: Math.floor(32 * (0.35 + hash('of' + i) * 0.4)),
+      fee: 1500000, prize: o.prize, img: EV_IMG[(i + 3) % EV_IMG.length],
+    }
+  })
+  return [...fridays, ...official].sort((a, b) => fromKey(a.date) - fromKey(b.date))
 }
 
 // ---------- داده‌ی اولیه‌ی باشگاه (برای پنل مدیر) ----------

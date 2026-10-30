@@ -69,7 +69,7 @@ function MyGame({ b, i, past, onClick }) {
       <div className="mg-date"><b>{dayNum(new Date(startsAt(b)))}</b><small>{dayLabel(b.date)}</small></div>
       <div className="grow">
         <b>{range(b.start, b.dur)}</b>
-        <small>{c.name} · {c.nick} · {label}</small>
+        <small>{c.name} · {label}</small>
       </div>
       {b.type === 'open' && !past && b.players.length < 4 && <span className="pulse-dot" />}
       <div className="mg-ppl">{b.players.slice(0, 4).map((p, k) => <Avatar key={k} name={nameOf(p, user)} size={24} me={p === ME} />)}</div>
