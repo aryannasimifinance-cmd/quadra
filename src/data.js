@@ -309,6 +309,7 @@ export const BADGES = [
 ]
 
 export const CREDITS = [
+  'Vincenzo Morelli — padel rackets on court, welcome screen (Unsplash License)',
   'Unsplash — padel photos (Unsplash License)',
   'Nenad Stojković — padel courts aerial (CC BY 2.0, Wikimedia Commons)',
   'Samson Ssemakadde — padel court (CC0, Wikimedia Commons)',

@@ -8,8 +8,7 @@ import { Logo, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-// فقط عکس زمین، بدون آدم
-const HERO = ['./img/court-pano.jpg', './img/court-indoor.jpg', './img/tiles.jpg', './img/court-blue.jpg', './img/court-outdoor.jpg']
+const HERO = ['./img/welcome.jpg']
 
 export default function Gate() {
   const { loginPlayer, user } = useStore()
@@ -56,12 +55,12 @@ export default function Gate() {
 
 function HeroSlides({ dim, admin }) {
   const [i, setI] = useState(0)
-  useEffect(() => { const t = setInterval(() => setI((x) => (x + 1) % HERO.length), 4200); return () => clearInterval(t) }, [])
+  useEffect(() => { if (HERO.length < 2) return; const t = setInterval(() => setI((x) => (x + 1) % HERO.length), 4200); return () => clearInterval(t) }, [])
   return (
     <div className="auth-bg">
       <AnimatePresence>
         <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
-          <Photo src={HERO[i]} zoom />
+          <Photo src={HERO[i]} zoom pos="57% 50%" />
         </motion.div>
       </AnimatePresence>
       <div className={`auth-bg-shade ${dim ? 'dim' : ''} ${admin ? 'admin' : ''}`} />
