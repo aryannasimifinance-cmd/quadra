@@ -1,0 +1,242 @@
+import { motion } from 'framer-motion'
+import { COACHES, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
+import { celebrate, chime } from '../../fx'
+import { myPoints, useStore } from '../../store'
+import { courtsNow, myBookings, openGames, quests, streak } from '../../select'
+import { Avatar, Icon, LevelPill, Photo, Ring, SectionHead, Tilt, rise, stagger } from '../../components/ui'
+import { Logo } from '../../components/Logo'
+import { ProductImage } from '../../components/Merch'
+
+export default function Home({ nav }) {
+  const s = useStore()
+  const { user, xp, club, notifications, wallet } = s
+  const rank = rankOf(xp)
+  const unread = notifications.filter((n) => !n.read).length
+  const mine = myBookings(club).filter((b) => fromKey(b.date).getTime() + (b.start + b.dur) * 36e5 > Date.now())
+  const games = openGames(club, user.level).filter((g) => !g.mine).slice(0, 6)
+  const courts = courtsNow(club)
+  const qs = quests(s)
+  const st = streak(s)
+  const ev = events()[0]
+  const first = user.name.split(' ')[0]
+  const h = new Date().getHours()
+  const hello = h < 12 ? 'صبح بخیر' : h < 17 ? 'روز بخیر' : 'عصر بخیر'
+
+  return (
+    <div className="home">
+      <section className="hero">
+        <Photo src="./img/hero.jpg" zoom />
+        <div className="hero-shade" />
+        <div className="hero-top">
+          <Logo tone="light" size={17} />
+          <div className="hero-actions">
+            <button className="wallet-chip" onClick={() => nav.tab('me')}><Icon name="wallet" size={16} />{short(wallet)}</button>
+            <motion.button className="icon-btn glass" whileTap={{ scale: 0.85 }} onClick={() => nav.open('notifs')} aria-label="اعلان‌ها">
+              <Icon name="bell" size={20} />
+              {unread > 0 && <motion.i className="dot" initial={{ scale: 0 }} animate={{ scale: [0, 1.4, 1] }} />}
+            </motion.button>
+          </div>
+        </div>
+        <div className="hero-body">
+          <motion.p className="hello" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 0.75, y: 0 }}>{hello}، {first}</motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, type: 'spring', stiffness: 200, damping: 20 }}>
+            امروز روی کدوم <em>زمین</em> می‌درخشی؟
+          </motion.h1>
+          <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('ranking')}>
+            <Ring value={rank.progress} size={58} stroke={5}><LevelPill id={user.level} /></Ring>
+            <div className="grow">
+              <b>{rank.name} <span>· {fa(xp)} XP</span></b>
+              <small>{rank.next ? `${fa(rank.next.xp - xp)} XP تا ${rank.next.name}` : 'بالاترین رتبه!'}</small>
+              <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${rank.progress * 100}%` }} transition={{ delay: 0.4, duration: 1 }} /></div>
+            </div>
+            <div className="streak" title="هفته‌های پشت‌سرهم">
+              <motion.span animate={st ? { scale: [1, 1.2, 1] } : {}} transition={{ repeat: Infinity, duration: 1.6 }}>🔥</motion.span>
+              <b>{fa(st)}</b><small>هفته</small>
+            </div>
+          </motion.div>
+          <motion.div className="hero-cta" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <motion.button className="cta-main" whileTap={{ scale: 0.96 }} onClick={() => nav.start({})}>
+              <span><b>بازی بساز</b><small>زمین · مچ · مربی · تورنمنت</small></span>
+              <i><Icon name="plus" size={24} stroke={2.6} /></i>
+            </motion.button>
+            <motion.button className="cta-side" whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'match' })}>
+              <Icon name="radar" /><b>مچ سریع</b>
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="home-body">
+        <SectionHead title="زمین‌ها، همین حالا" sub="وضعیت زنده‌ی ۴ زمین کوادرا" />
+        <motion.div className="court-row" variants={stagger} initial="hidden" animate="show">
+          {courts.map((c) => (
+            <motion.button key={c.id} variants={rise} className="court-card" whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'court', court: c.id })}>
+              <Photo src={c.img} />
+              <div className="court-card-shade" />
+              <span className={`live ${c.off ? 'off' : c.busy ? 'busy' : 'free'}`}><i />{c.off ? 'تعمیرات' : c.busy ? 'در حال بازی' : 'آزاد'}</span>
+              <div className="court-card-txt">
+                <small>{c.name} · {c.kind}</small>
+                <b>{c.nick}</b>
+                <span>{c.off ? 'فعلاً غیرفعال' : c.nextFree != null ? `اولین ساعت آزاد ${hourLabel(c.nextFree)}` : 'امروز پر است'}</span>
+              </div>
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {mine.length > 0 && (
+          <>
+            <SectionHead title="بازی بعدی تو" action="همه" onAction={() => nav.tab('games')} />
+            <NextTicket b={mine[0]} onClick={() => nav.tab('games')} />
+          </>
+        )}
+
+        <SectionHead title="بازی‌های باز هم‌سطح تو" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
+        <div className="og-row">
+          {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودت یکی بساز!</div>}
+          {games.map((g, i) => (
+            <motion.button key={g.id} className="og-card" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+              whileTap={{ scale: 0.97 }} onClick={() => nav.start({ intent: 'match', gameId: g.id })}>
+              <div className="og-top">
+                <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطحت' : 'سطح دیگر'}</span>
+                <small>{courtById(g.court).name}</small>
+              </div>
+              <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+              <div className="og-levels">{g.levels.map((l) => <LevelPill key={l} id={l} />)}</div>
+              <div className="og-ppl">
+                {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={MEMBERS.find((m) => m.id === g.players[k])?.name || 'ش'} size={30} /> : <span key={k} className="og-empty" />)}
+                <em>{fa(4 - g.players.length)} جای خالی</em>
+              </div>
+              <div className="og-foot"><span>سهم هر نفر</span><b>{toman(g.price / 4)}</b></div>
+            </motion.button>
+          ))}
+        </div>
+
+        <SectionHead title="چالش‌های این هفته" sub="تموم کن، XP بگیر" />
+        <div className="quests">
+          {qs.map((q) => <Quest key={q.id} q={q} />)}
+        </div>
+
+        {ev && (
+          <motion.button className="event-banner" whileTap={{ scale: 0.98 }} onClick={() => nav.open('events')}>
+            <Photo src={ev.img} />
+            <div className="event-shade" />
+            <div className="event-txt">
+              <span className="pill-q">تورنمنت · {dayLabel(ev.date)} {dayMonth(fromKey(ev.date))}</span>
+              <h3>{ev.title}</h3>
+              <p>{ev.format} · سطح {ev.levels.join(' / ')} · {fa(ev.cap - ev.taken)} جای خالی</p>
+            </div>
+            <span className="event-go"><Icon name="fwd" /></span>
+          </motion.button>
+        )}
+
+        <SectionHead title="مربی‌ها" action="کلاس‌ها و پکیج‌ها" onAction={() => nav.open('coaches')} />
+        <div className="coach-row">
+          {COACHES.map((c) => (
+            <Tilt key={c.id} className="coach-card" onClick={() => nav.open('coaches', { focus: c.id })}>
+              <Photo src={c.img} />
+              <div className="coach-shade" />
+              <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>{c.title}</small></div>
+            </Tilt>
+          ))}
+        </div>
+
+        <motion.button className="pack-promo" whileTap={{ scale: 0.98 }} onClick={() => nav.open('packages')}>
+          <div>
+            <span className="pill-ink">پکیج‌ها و عضویت</span>
+            <h3>تا ۲۵٪ ارزان‌تر بازی کن</h3>
+            <p>{PACKAGES.map((p) => p.name).join(' · ')}</p>
+          </div>
+          <div className="pack-stack">
+            {PACKAGES.slice(0, 3).map((p, i) => <motion.span key={p.id} style={{ backgroundImage: `url(${p.img})` }} animate={{ rotate: (i - 1) * 8, y: i === 1 ? -6 : 0 }} whileHover={{ rotate: 0 }} />)}
+          </div>
+        </motion.button>
+
+        <SectionHead title="از فروشگاه" action="همه" onAction={() => nav.tab('shop')} />
+        <div className="shop-peek">
+          {PRODUCTS.filter((p) => p.tag).slice(0, 6).map((p) => (
+            <motion.button key={p.id} className="peek" whileTap={{ scale: 0.95 }} onClick={() => nav.tab('shop')}>
+              <ProductImage p={p} />
+              <small>{p.name}</small>
+              <b>{toman(p.price)}</b>
+            </motion.button>
+          ))}
+        </div>
+
+        <SectionHead title="رنکینگ کوادرا" action="جدول کامل" onAction={() => nav.open('ranking')} />
+        <MiniBoard points={myPoints(s)} name={user.name} onClick={() => nav.open('ranking')} />
+        <p className="foot-note">کوادرا · باشگاه پدل · ۷ صبح تا ۱۲ شب</p>
+      </div>
+    </div>
+  )
+}
+
+export function NextTicket({ b, onClick }) {
+  const c = courtById(b.court)
+  const mins = Math.round((fromKey(b.date).getTime() + b.start * 36e5 - Date.now()) / 6e4)
+  const left = mins < 60 ? `${fa(Math.max(0, mins))} دقیقه دیگه` : mins < 1440 ? `${fa(Math.floor(mins / 60))} ساعت دیگه` : `${fa(Math.floor(mins / 1440))} روز دیگه`
+  return (
+    <motion.button className="ticket" whileTap={{ scale: 0.98 }} onClick={onClick} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
+      <Photo src={c.img} />
+      <div className="ticket-shade" />
+      <div className="ticket-main">
+        <span className="pill-q">{left}</span>
+        <h3>{dayLabel(b.date)} · {range(b.start, b.dur)}</h3>
+        <p>{c.name} · {c.nick} · {b.type === 'open' ? `بازی باز ${fa(b.players.length)}/۴` : b.type === 'coach' ? 'کلاس مربی' : 'رزرو خصوصی'}</p>
+      </div>
+      <div className="ticket-cut" />
+      <div className="ticket-side"><b>{fa(c.id)}</b><small>زمین</small></div>
+    </motion.button>
+  )
+}
+
+function Quest({ q }) {
+  const { claimQuest, toast } = useStore()
+  const p = Math.min(1, q.have / q.goal)
+  const claim = () => {
+    const r = claimQuest(q.id, q.xp)
+    celebrate(); chime('level')
+    toast({ icon: '🎁', title: `+${fa(r.xp)} XP`, body: q.name })
+  }
+  return (
+    <div className={`quest ${q.claimed ? 'done' : ''}`}>
+      <span className="quest-ic">{q.icon}</span>
+      <div className="grow">
+        <b>{q.name}</b>
+        <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${p * 100}%` }} transition={{ duration: 0.9 }} /></div>
+      </div>
+      {q.ready ? (
+        <motion.button className="claim" onClick={claim} animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>بگیر +{fa(q.xp)}</motion.button>
+      ) : (
+        <span className="quest-xp">{q.claimed ? '✓' : `${fa(Math.min(q.have, q.goal))}/${fa(q.goal)}`}</span>
+      )}
+    </div>
+  )
+}
+
+export function leaderboard(points, name) {
+  return [...MEMBERS.map((m) => ({ id: m.id, name: m.name, level: m.level, points: m.points, games: m.games })), { id: 'me', name, me: true, points }]
+    .sort((a, b) => b.points - a.points)
+}
+
+function MiniBoard({ points, name, onClick }) {
+  const list = leaderboard(points, name)
+  const pos = list.findIndex((x) => x.me) + 1
+  return (
+    <motion.button className="mini-board" onClick={onClick} whileTap={{ scale: 0.98 }}>
+      {list.slice(0, 3).map((p, i) => (
+        <div key={p.id} className={`mb-row r${i + 1}`}>
+          <span className="mb-n">{['🥇', '🥈', '🥉'][i]}</span>
+          <Avatar name={p.name} size={32} />
+          <b>{p.name}</b>
+          <em>{fa(p.points)}</em>
+        </div>
+      ))}
+      <div className="mb-row me">
+        <span className="mb-n">#{fa(pos)}</span>
+        <Avatar name={name} size={32} me />
+        <b>تو</b>
+        <em>{fa(points)}</em>
+      </div>
+    </motion.button>
+  )
+}

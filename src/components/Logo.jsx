@@ -1,0 +1,92 @@
+import { motion } from 'framer-motion'
+import { useId } from 'react'
+
+// لوگوی کوادرا — بازترسیم برداری از فایل اصلی (قاب Q + عدد ۴ فیروزه‌ای)
+export const VB = '60 115 464 402'
+export const FRAME = 'M322 487H163A73 73 0 0 1 90 414V217.5A73 73 0 0 1 163 144.5H420.5A73 73 0 0 1 493.5 217.5V335'
+export const STEM = 'M470 388H517V510.5H470Z'
+export const FOUR = 'M358 251H421L284 388H470V432H177Z'
+export const CYAN = '#05E0DA'
+
+export function QuadraMark({ size = 40, tone = 'light', style }) {
+  const id = useId().replace(/:/g, '')
+  const ink = tone === 'light' ? '#F2F2F0' : '#141413'
+  return (
+    <svg width={size * 1.154} height={size} viewBox={VB} style={style} aria-hidden="true">
+      <defs>
+        <linearGradient id={'g' + id} gradientUnits="userSpaceOnUse" x1="177" x2="470">
+          <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor={ink} />
+        </linearGradient>
+      </defs>
+      <path d={FRAME} fill="none" stroke={ink} strokeWidth="47" />
+      <path d={STEM} fill={ink} />
+      <path d={FOUR} fill={`url(#g${id})`} />
+    </svg>
+  )
+}
+
+export function Logo({ size = 22, tone = 'dark', word = true }) {
+  return (
+    <span className={`logo ${tone}`} style={{ fontSize: size }}>
+      <QuadraMark size={size * 1.25} tone={tone} />
+      {word && <span className="logo-word">QUADRA</span>}
+    </span>
+  )
+}
+
+// موشن استینگ: کشیده شدن قاب مثل خط زمین، افتادن پایه، ورود ۴ با رد نور، بعد کلمه و چهار زمین
+export function Sting({ onSkip }) {
+  const word = 'QUADRA'.split('')
+  const ease = [0.65, 0, 0.35, 1]
+  return (
+    <motion.div className="sting" onClick={onSkip} exit={{ opacity: 0, scale: 1.06, filter: 'blur(10px)' }} transition={{ duration: 0.55 }}>
+      <motion.div className="sting-glow" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: [0, 1, 0.65], scale: [0.6, 1.1, 1] }} transition={{ duration: 2, times: [0, 0.55, 1], delay: 0.9 }} />
+      <motion.div className="sting-sweep" initial={{ x: '-120%' }} animate={{ x: '120%' }} transition={{ duration: 1.1, delay: 1.45, ease: 'easeInOut' }} />
+      <div className="sting-grain" />
+      <motion.div className="sting-mark" initial={{ scale: 0.92 }} animate={{ scale: [0.92, 1, 1.035, 1] }} transition={{ duration: 2.2, times: [0, 0.5, 0.62, 0.8] }}>
+        <svg viewBox={VB} width="200" height="173" style={{ overflow: 'visible' }}>
+          <defs>
+            <linearGradient id="st-g" gradientUnits="userSpaceOnUse" x1="177" x2="470">
+              <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor="#F2F2F0" />
+            </linearGradient>
+            <linearGradient id="st-sh"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".9" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+            <clipPath id="st-clip"><path d={FOUR} /></clipPath>
+            <filter id="st-blur"><feGaussianBlur stdDeviation="14" /></filter>
+          </defs>
+          {/* رد نور فیروزه‌ای پشت قاب */}
+          <motion.path d={FRAME} fill="none" stroke={CYAN} strokeWidth="47" filter="url(#st-blur)"
+            initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: [0, 0.9, 0] }} transition={{ duration: 1.1, delay: 0.15, ease }} />
+          <motion.path d={FRAME} fill="none" stroke="#F2F2F0" strokeWidth="47"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.05, delay: 0.15, ease }} />
+          <motion.path d={STEM} fill="#F2F2F0" style={{ transformOrigin: '493px 510px' }}
+            initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.95, type: 'spring', stiffness: 420, damping: 18 }} />
+          <motion.g initial={{ x: -140, y: 140, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} transition={{ delay: 1.05, duration: 0.5, ease: [0.2, 0.9, 0.2, 1] }}>
+            <path d={FOUR} fill="url(#st-g)" />
+            <g clipPath="url(#st-clip)">
+              <g transform="rotate(35 320 340)">
+                <motion.rect x="0" y="40" width="70" height="600" fill="url(#st-sh)"
+                  initial={{ x: -120 }} animate={{ x: 620 }} transition={{ delay: 1.6, duration: 0.8, ease: 'easeInOut' }} />
+              </g>
+            </g>
+          </motion.g>
+        </svg>
+        <motion.span className="sting-wave" initial={{ scale: 1, opacity: 0 }} animate={{ scale: [1, 2.3], opacity: [0.55, 0] }} transition={{ delay: 1.35, duration: 1.1, ease: 'easeOut' }} />
+      </motion.div>
+      <div className="sting-word" dir="ltr">
+        {word.map((l, i) => (
+          <motion.span key={i} initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 1.55 + i * 0.06, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}>{l}</motion.span>
+        ))}
+      </div>
+      <motion.p className="sting-sub" initial={{ opacity: 0, letterSpacing: '0.6em' }} animate={{ opacity: 0.7, letterSpacing: '0.32em' }} transition={{ delay: 2, duration: 0.8 }}>
+        PADEL CLUB
+      </motion.p>
+      <div className="sting-courts">
+        {[0, 1, 2, 3].map((i) => (
+          <motion.i key={i} initial={{ scaleX: 0, opacity: 0.2 }} animate={{ scaleX: 1, opacity: 1 }} transition={{ delay: 2.15 + i * 0.12, type: 'spring', stiffness: 300, damping: 20 }} />
+        ))}
+      </div>
+      <motion.small className="sting-skip" initial={{ opacity: 0 }} animate={{ opacity: 0.35 }} transition={{ delay: 1 }}>برای رد کردن بزنید</motion.small>
+    </motion.div>
+  )
+}
