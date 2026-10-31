@@ -8,7 +8,6 @@ import { LiveLogo, Loading, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-const HERO = ['./img/welcome-night.jpg']
 
 export default function Gate() {
   const { loginPlayer, hasAccount, toast } = useStore()
@@ -59,27 +58,23 @@ export default function Gate() {
 }
 
 // ذرات گرد و غبار در نور — موقعیت‌ها ثابت تا با هر رندر عوض نشوند
-const DUST = Array.from({ length: 16 }, (_, k) => ({
-  left: `${(k * 37) % 100}%`, bottom: `${(k * 23) % 60}%`, width: 2 + (k % 3), height: 2 + (k % 3),
-  animationDuration: `${9 + (k % 5) * 2}s`, animationDelay: `${-(k * 1.3)}s`, opacity: 0.25 + (k % 4) * 0.12,
-}))
-
+// پس‌زمینه‌ی ویدیویی: نمای هوایی زمین پدل (Pexels، Gianluca Guidi)
 function HeroSlides({ dim, admin }) {
-  const [i, setI] = useState(0)
-  useEffect(() => { if (HERO.length < 2) return; const t = setInterval(() => setI((x) => (x + 1) % HERO.length), 4200); return () => clearInterval(t) }, [])
+  const ref = useRef(null)
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    // اگر کاربر حرکت کم را ترجیح داده، فقط تصویر ثابت
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { v.pause(); return }
+    v.play?.().catch(() => {})
+  }, [])
   return (
     <div className="auth-bg">
-      <AnimatePresence>
-        <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
-          {/* حرکت آرام دوربین روی عکس */}
-          <img className="bg-drift" src={HERO[i]} alt="" draggable={false} />
-        </motion.div>
-      </AnimatePresence>
-      <div className="bg-beam" />
-      <motion.div className="bg-floor" animate={{ opacity: [0.35, 0.8, 0.35] }} transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }} />
-      <div className="bg-dust">{DUST.map((d, k) => <i key={k} style={d} />)}</div>
+      <img className="bg-poster" src="./img/welcome-video.jpg" alt="" draggable={false} />
+      <video ref={ref} className={`bg-video ${ready ? 'on' : ''}`} src="./img/welcome-video.mp4" poster="./img/welcome-video.jpg"
+        autoPlay muted loop playsInline preload="auto" onCanPlay={() => setReady(true)} aria-hidden="true" />
       <div className={`auth-bg-shade ${dim ? 'dim' : ''} ${admin ? 'admin' : ''}`} />
-      <div className="grain" />
     </div>
   )
 }

@@ -413,6 +413,7 @@ export const BADGES = [
 ]
 
 export const CREDITS = [
+  'Gianluca Guidi — aerial view of padel court, welcome video (Pexels License)',
   'Vincenzo Morelli — padel rackets on court (Unsplash License)',
   'Padel courts from above — welcome screen (photo supplied by the club)',
   'Unsplash — padel photos (Unsplash License)',
