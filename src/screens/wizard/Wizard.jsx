@@ -52,8 +52,8 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
       {i > 0 && <Crumbs w={w} step={step} />}
       <AnimatePresence mode="wait" custom={dir}>
         <motion.div key={step} className="wz-body" custom={dir}
-          variants={{ in: (d) => ({ x: d * -50, opacity: 0, filter: 'blur(6px)' }), on: { x: 0, opacity: 1, filter: 'blur(0px)' }, out: (d) => ({ x: d * 50, opacity: 0, filter: 'blur(6px)' }) }}
-          initial="in" animate="on" exit="out" transition={{ type: 'spring', stiffness: 320, damping: 34 }}>
+          variants={{ in: (d) => ({ x: d * -36, opacity: 0 }), on: { x: 0, opacity: 1 }, out: (d) => ({ x: d * 36, opacity: 0 }) }}
+          initial="in" animate="on" exit="out" transition={{ duration: 0.18, ease: [0.2, 0.7, 0.2, 1] }}>
           {step === 'intent' && <StepIntent onPick={(intent) => { set({ intent, start: null, gameId: null, dur: intent === 'coach' ? 1 : 1.5 }); setDir(1); setI(1); scrollTop() }} />}
           {step === 'when' && <StepWhen w={w} set={set} onNext={next} />}
           {step === 'slot' && <StepSlot w={w} set={set} onNext={next} />}

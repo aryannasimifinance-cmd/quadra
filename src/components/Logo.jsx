@@ -39,7 +39,7 @@ export function Sting({ onSkip }) {
   const word = 'QUADRA'.split('')
   const ease = [0.65, 0, 0.35, 1]
   return (
-    <motion.div className="sting" onClick={onSkip} exit={{ opacity: 0, scale: 1.06, filter: 'blur(10px)' }} transition={{ duration: 0.55 }}>
+    <motion.div className="sting" onClick={onSkip} exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 0.4 }}>
       <motion.div className="sting-glow" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: [0, 1, 0.65], scale: [0.6, 1.1, 1] }} transition={{ duration: 2, times: [0, 0.55, 1], delay: 0.9 }} />
       <motion.div className="sting-sweep" initial={{ x: '-120%' }} animate={{ x: '120%' }} transition={{ duration: 1.1, delay: 1.45, ease: 'easeInOut' }} />
       <div className="sting-grain" />
@@ -51,11 +51,7 @@ export function Sting({ onSkip }) {
             </linearGradient>
             <linearGradient id="st-sh"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".9" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
             <clipPath id="st-clip"><path d={FOUR} /></clipPath>
-            <filter id="st-blur"><feGaussianBlur stdDeviation="14" /></filter>
           </defs>
-          {/* رد نور فیروزه‌ای پشت قاب */}
-          <motion.path d={FRAME} fill="none" stroke={CYAN} strokeWidth="47" filter="url(#st-blur)"
-            initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: [0, 0.9, 0] }} transition={{ duration: 1.1, delay: 0.15, ease }} />
           <motion.path d={FRAME} fill="none" stroke="#F2F2F0" strokeWidth="47"
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.05, delay: 0.15, ease }} />
           <motion.path d={STEM} fill="#F2F2F0" style={{ transformOrigin: '493px 510px' }}
@@ -74,7 +70,7 @@ export function Sting({ onSkip }) {
       </motion.div>
       <div className="sting-word" dir="ltr">
         {word.map((l, i) => (
-          <motion.span key={i} initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          <motion.span key={i} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.55 + i * 0.06, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}>{l}</motion.span>
         ))}
       </div>
@@ -96,9 +92,9 @@ export function LiveLogo({ size = 26 }) {
   const ease = [0.65, 0, 0.35, 1]
   return (
     <span className="live-logo" style={{ fontSize: size * 0.8 }}>
-      <motion.svg viewBox={VB} width={size * 1.154} height={size} style={{ overflow: 'visible' }}
-        animate={{ filter: ['drop-shadow(0 0 0px rgba(5,224,218,0))', 'drop-shadow(0 0 7px rgba(5,224,218,.75))', 'drop-shadow(0 0 0px rgba(5,224,218,0))'] }}
-        transition={{ duration: 2.6, repeat: Infinity, delay: 1.4, ease: 'easeInOut' }}>
+      <span className="ll-mark">
+      <motion.i className="ll-glow" initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0] }} transition={{ duration: 2.6, repeat: Infinity, delay: 1.4, ease: 'easeInOut' }} />
+      <svg viewBox={VB} width={size * 1.154} height={size} style={{ overflow: 'visible', position: 'relative' }}>
         <defs>
           <linearGradient id="ll-g" gradientUnits="userSpaceOnUse" x1="177" x2="470">
             <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor="#F2F2F0" />
@@ -115,10 +111,11 @@ export function LiveLogo({ size = 26 }) {
               transition={{ duration: 0.9, delay: 1.8, repeat: Infinity, repeatDelay: 3.6, ease: 'easeInOut' }} />
           </g>
         </g>
-      </motion.svg>
+      </svg>
+      </span>
       <span className="live-word" dir="ltr">
         {'QUADRA'.split('').map((l, i) => (
-          <motion.span key={i} initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ delay: 1.1 + i * 0.06, duration: 0.4 }}>{l}</motion.span>
+          <motion.span key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1 + i * 0.06, duration: 0.4 }}>{l}</motion.span>
         ))}
       </span>
     </span>

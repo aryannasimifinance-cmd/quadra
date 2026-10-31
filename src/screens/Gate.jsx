@@ -67,9 +67,7 @@ function HeroSlides({ dim, admin }) {
       <AnimatePresence>
         <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
           {/* حرکت آرام دوربین روی عکس */}
-          <motion.img className="bg-drift" src={HERO[i]} alt="" draggable={false}
-            initial={{ opacity: 0, scale: 1.08 }} animate={{ opacity: 1, scale: [1.08, 1.2, 1.1], x: ['0%', '-3%', '2%'], y: ['0%', '-2%', '1%'] }}
-            transition={{ opacity: { duration: 1.2 }, default: { duration: 26, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' } }} />
+          <img className="bg-drift" src={HERO[i]} alt="" draggable={false} />
         </motion.div>
       </AnimatePresence>
       <div className="bg-beam" />

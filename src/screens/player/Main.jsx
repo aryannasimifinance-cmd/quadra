@@ -45,15 +45,15 @@ export default function Main() {
       <div className="app-scroll" ref={scrollRef}>
         <AnimatePresence mode="wait">
           {wizard ? (
-            <motion.div key={'wz' + wzKey} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
+            <motion.div key={'wz' + wzKey} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
               <Wizard preset={wizard} onStep={setWzStep} onClose={() => setWizard(null)} onDone={(t) => { setWizard(null); setTab(t) }} />
             </motion.div>
           ) : Page ? (
-            <motion.div key={'p' + page.name} initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ type: 'spring', stiffness: 320, damping: 32 }}>
+            <motion.div key={'p' + page.name} initial={{ x: -24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
               <Page {...page.props} nav={nav} onBack={() => setPage(null)} />
             </motion.div>
           ) : (
-            <motion.div key={tab} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}>
+            <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }}>
               {tab === 'home' && <Home nav={nav} />}
               {tab === 'games' && <Games nav={nav} />}
               {tab === 'shop' && <Shop nav={nav} />}
@@ -63,15 +63,15 @@ export default function Main() {
         </AnimatePresence>
       </div>
       <AnimatePresence>
-        {(!wizard || wzStep === 'intent') && (
+        {(
           <motion.nav className="nav" initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             {TABS.map((t) => t.id === 'new' ? (
               <motion.button key={t.id} className={`fab ${wizard ? 'on' : ''}`} whileTap={{ scale: 0.85, rotate: 90 }} whileHover={{ scale: 1.06 }} onClick={() => nav.start({})} aria-label="بازی جدید">
                 <Icon name="plus" size={28} stroke={2.6} />
               </motion.button>
             ) : (
-              <button key={t.id} className={`nav-i ${tab === t.id && !page && !wizard ? 'on' : ''}`} onClick={() => nav.tab(t.id)}>
-                {tab === t.id && !page && !wizard && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
+              <button key={t.id} className={`nav-i ${tab === t.id && !wizard ? 'on' : ''}`} onClick={() => nav.tab(t.id)}>
+                {tab === t.id && !wizard && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
                 <span className="nav-ic">
                   <Icon name={t.icon} size={22} />
                   {t.id === 'shop' && cartN > 0 && <motion.i key={cartN} className="nav-badge" initial={{ scale: 0 }} animate={{ scale: 1 }}>{fa(cartN)}</motion.i>}
