@@ -3,13 +3,14 @@ import { useMemo, useState } from 'react'
 import { MEMBERS, hash, coachById, courtById, dayKey, dayLabel, dayNum, fa, nextDays, range, toman } from '../../data'
 import { chime, haptic } from '../../fx'
 import { ME, useStore } from '../../store'
-import { isUpcoming, myBookings, openGames, startsAt } from '../../select'
+import { isUpcoming, myBookings, myInvites, openGames, startsAt } from '../../select'
 import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet } from '../../components/ui'
 import { GameCard } from '../wizard/Wizard'
 
 export default function Games({ nav }) {
-  const { club, user } = useStore()
+  const { club, user, declineInvite, toast } = useStore()
   const [seg, setSeg] = useState('mine')
+  const invites = myInvites(club)
   const [day, setDay] = useState('all')
   const mine = myBookings(club)
   const up = mine.filter(isUpcoming), past = mine.filter((b) => !isUpcoming(b)).reverse()
@@ -22,7 +23,7 @@ export default function Games({ nav }) {
       <header className="page-head">
         <h1>بازی‌ها</h1>
         <div className="seg">
-          {[['mine', `بازی‌های من${up.length ? ' · ' + fa(up.length) : ''}`], ['open', 'بازی‌های باز']].map(([id, n]) => (
+          {[['mine', `بازی‌های من${up.length ? ' · ' + fa(up.length) : ''}`], ['inv', `دعوت‌ها${invites.length ? ' · ' + fa(invites.length) : ''}`], ['open', 'بازی‌های باز']].map(([id, n]) => (
             <button key={id} className={seg === id ? 'on' : ''} onClick={() => { haptic(6); setSeg(id) }}>
               {seg === id && <motion.span layoutId="seg-g" className="seg-bg" />}<span>{n}</span>
             </button>
@@ -41,6 +42,22 @@ export default function Games({ nav }) {
             {up.map((b, i) => <MyGame key={b.id} b={b} i={i} onClick={() => setSel(b.id)} />)}
             {past.length > 0 && <p className="label">گذشته</p>}
             {past.slice(0, 8).map((b, i) => <MyGame key={b.id} b={b} i={i} past />)}
+          </motion.div>
+        ) : seg === 'inv' ? (
+          <motion.div key="i" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="page-body">
+            <p className="muted">بازی‌های خصوصی که دوستانتان شما را به آن دعوت کرده‌اند. فقط دعوت‌شده‌ها این بازی‌ها را می‌بینند.</p>
+            {invites.length === 0 && <div className="empty-card">فعلاً دعوتی ندارید.</div>}
+            {invites.map((g) => (
+              <div key={g.id} className="invite-card">
+                <div className="ic-top"><Avatar name={nameOf(g.by, user)} size={36} /><div className="grow"><b>{nameOf(g.by, user)}</b><small>شما را به بازی خصوصی دعوت کرده</small></div><span className="pill-ink">خصوصی</span></div>
+                <div className="ic-mid"><b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b><small>{courtById(g.court).name} · {fa(4 - g.players.length)} جای خالی · سهم شما {toman(g.price / 4)}</small></div>
+                <div className="ic-ppl">{g.players.map((p) => <Avatar key={p} name={nameOf(p, user)} size={28} />)}</div>
+                <div className="ic-cta">
+                  <Button small variant="q" onClick={() => nav.start({ intent: 'match', gameId: g.id })}>قبول و پرداخت سهم</Button>
+                  <Button small variant="ghost" onClick={() => { declineInvite(g.id); toast({ icon: '👋', title: 'دعوت رد شد' }) }}>نمی‌آیم</Button>
+                </div>
+              </div>
+            ))}
           </motion.div>
         ) : (
           <motion.div key="o" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="page-body">

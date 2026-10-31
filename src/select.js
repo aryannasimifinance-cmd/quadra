@@ -10,9 +10,14 @@ export const sortByTime = (a, b) => startsAt(a) - startsAt(b)
 export function openGames(club, level, { date } = {}) {
   const ul = levelIndex(level)
   return club.bookings
-    .filter((b) => b.type === 'open' && b.status === 'ok' && b.players.length < 4 && isUpcoming(b) && (!date || b.date === date))
+    .filter((b) => b.type === 'open' && b.status === 'ok' && b.players.length < 4 && isUpcoming(b) && (!date || b.date === date) && b.visibility !== 'private')
     .map((b) => ({ ...b, gap: Math.min(...b.levels.map((l) => Math.abs(levelIndex(l) - ul))), mine: b.players.includes(ME) }))
     .sort((a, b) => a.gap - b.gap || sortByTime(a, b))
+}
+
+// بازی‌هایی که کاربر به آن‌ها دعوت شده و هنوز جواب نداده
+export function myInvites(club) {
+  return club.bookings.filter((b) => b.status === 'ok' && (b.invited || []).includes(ME) && !b.players.includes(ME) && b.players.length < 4 && isUpcoming(b)).sort(sortByTime)
 }
 
 export function myBookings(club) {

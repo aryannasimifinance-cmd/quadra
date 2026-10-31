@@ -1,40 +1,71 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { BADGES, COACHES, COACH_PACKS, EVENT_KIND, LEVELS, PACKAGES, RANKS, XP_GUIDE, rankOf, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
+import { BADGES, COACHES, COACH_PACKS, coachesRanked, pastEvents, ratingOf, EVENT_KIND, LEVELS, PACKAGES, RANKS, XP_GUIDE, rankOf, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
-import { myPoints, useStore } from '../../store'
+import { ME, myPoints, useStore } from '../../store'
 import { activeMembership, quests } from '../../select'
-import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
+import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet, Stars, TopBar, rise, stagger } from '../../components/ui'
 import { leaderboard } from './Home'
 import { Loading } from '../../components/Logo'
 
+// برگه‌ی امتیاز ناشناس
+export function RateSheet({ target, title, onClose }) {
+  const { addReview, toast } = useStore()
+  const [stars, setStars] = useState(0)
+  const [text, setText] = useState('')
+  const send = () => {
+    const r = addReview(target, stars, text)
+    chime('success'); toast({ icon: '🙏', title: 'نظر شما ناشناس ثبت شد', body: `+${fa(r.xp)} XP` }); onClose()
+  }
+  return (
+    <Sheet open={!!target} onClose={onClose} title={title}>
+      <div className="rate">
+        <p className="muted">نام شما به هیچ‌کس، حتی مدیر باشگاه، نشان داده نمی‌شود.</p>
+        <Stars value={stars} onChange={setStars} size={34} />
+        <textarea placeholder="نظرتان را بنویسید (اختیاری)" value={text} onChange={(e) => setText(e.target.value)} maxLength={300} />
+        <Button full variant="q" disabled={!stars} onClick={send}>ثبت ناشناس</Button>
+      </div>
+    </Sheet>
+  )
+}
+
 export function Coaches({ nav, onBack, focus }) {
+  const { club, rated = [] } = useStore()
+  const [rate, setRate] = useState(null)
+  const list = coachesRanked(club)
+  const studied = (id) => club.bookings.some((b) => b.coach === id && b.by === ME && b.status === 'ok')
   useEffect(() => { if (focus) document.getElementById('c-' + focus)?.scrollIntoView({ behavior: 'smooth' }) }, [focus])
   return (
     <div className="page">
       <TopBar onBack={onBack} title="مربی‌ها و کلاس‌ها" />
       <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
-        <p className="lead">جلسه‌ی ۶۰ دقیقه‌ای خصوصی یا گروهی. پکیج‌های ۵ و ۱۰ جلسه‌ای تا ۱۵٪ ارزان‌ترند و همه‌ی جلسه‌ها همان لحظه در تقویم رزرو می‌شوند.</p>
-        {COACHES.map((c) => (
-          <motion.article key={c.id} id={'c-' + c.id} variants={rise} className="coach-big">
-            <Photo src={c.img} />
-            <div className="cb-shade" />
-            <div className="cb-txt">
-              <div className="row-between"><LevelPill id={c.level} /><span className="cb-rate">★ {fa(c.rating)}</span></div>
-              <h3>{c.name}</h3>
-              <small>{c.title} · {fa(c.exp)} سال سابقه</small>
-              <p>{c.bio}</p>
-              <ul className="record light">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
-              <div className="cb-packs">
-                {COACH_PACKS.map((p) => <div key={p.id}><small>{p.name}</small><b>{short(coachPackPrice(c, p))}</b></div>)}
+        <p className="lead">مربی‌ها به ترتیب امتیاز شاگردها. امتیاز و نظرها ناشناس ثبت می‌شوند.</p>
+        {list.map((c, i) => {
+          const done = rated.includes('coach:' + c.id)
+          return (
+            <motion.article key={c.id} id={'c-' + c.id} variants={rise} className="coach-big">
+              <Photo src={c.img} />
+              <div className="cb-shade" />
+              <div className="cb-txt">
+                <div className="row-between"><span className="cb-rank">#{fa(i + 1)} مربی باشگاه</span><LevelPill id={c.level} /></div>
+                <h3>{c.name}</h3>
+                <small>{c.title} · {fa(c.exp)} سال سابقه</small>
+                <div className="cb-score"><Stars value={c.avg} /><b>{fa(c.avg)}</b><small>از {fa(c.count)} نظر ناشناس</small></div>
+                <ul className="record light">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
+                {[...new Set(c.list.filter((r) => r.text).map((r) => r.text))].slice(0, 2).map((t) => <p key={t} className="cb-quote">«{t}» <small>— ناشناس</small></p>)}
+                <div className="cb-packs">
+                  {COACH_PACKS.map((p) => <div key={p.id}><small>{p.name}</small><b>{short(coachPackPrice(c, p))}</b></div>)}
+                </div>
+                <Button full variant="q" onClick={() => nav.start({ intent: 'coach', coachId: c.id })}>رزرو جلسه یا خرید پکیج</Button>
+                <button className="cb-rate-btn" disabled={done || !studied(c.id)} onClick={() => setRate(c)}>
+                  {done ? '✓ نظر شما ثبت شده' : studied(c.id) ? '★ امتیاز و نظر ناشناس' : 'بعد از اولین جلسه می‌توانید امتیاز بدهید'}
+                </button>
               </div>
-              <Button full variant="q" onClick={() => nav.start({ intent: 'coach', coachId: c.id })}>
-                رزرو جلسه یا خرید پکیج
-              </Button>
-            </div>
-          </motion.article>
-        ))}
+            </motion.article>
+          )
+        })}
       </motion.div>
+      <RateSheet target={rate && 'coach:' + rate.id} title={rate && `امتیاز به ${rate.name}`} onClose={() => setRate(null)} />
     </div>
   )
 }
@@ -137,7 +168,9 @@ export function Ranking({ onBack }) {
 }
 
 export function Events({ nav, onBack, kind: initial = 'friday' }) {
-  const { events: joined } = useStore()
+  const { events: joined, club, rated = [] } = useStore()
+  const [rate, setRate] = useState(null)
+  const past = pastEvents().filter((e) => e.kind === initial || true)
   const [kind, setKind] = useState(initial)
   const list = events().filter((e) => e.kind === kind)
   return (
@@ -161,7 +194,19 @@ export function Events({ nav, onBack, kind: initial = 'friday' }) {
             </motion.button>
           ))}
         </motion.div>
+        <p className="label">برگزارشده‌ها · امتیاز ناشناس</p>
+        {past.map((e) => {
+          const r = ratingOf(club, 'event:' + e.id), done = rated.includes('event:' + e.id)
+          return (
+            <div key={e.id} className="past-ev">
+              <div className="grow"><b>{e.title}</b><small>{dayMonth(fromKey(e.date))} · {e.format}</small>
+                <div className="cb-score dark"><Stars value={r.avg} size={13} /><b>{fa(r.avg)}</b><small>{fa(r.count)} نظر</small></div></div>
+              <Button small variant={done ? 'ghost' : 'dark'} disabled={done} onClick={() => setRate(e)}>{done ? '✓ ثبت شد' : 'امتیاز بدهید'}</Button>
+            </div>
+          )
+        })}
       </div>
+      <RateSheet target={rate && 'event:' + rate.id} title={rate && `امتیاز به ${rate.title}`} onClose={() => setRate(null)} />
     </div>
   )
 }

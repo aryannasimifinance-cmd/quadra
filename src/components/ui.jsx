@@ -273,6 +273,16 @@ export function CtaBar({ children }) {
   return createPortal(<div className="cta-bar">{children}</div>, root)
 }
 
+export function Stars({ value = 0, onChange, size = 16 }) {
+  return (
+    <span className={`stars ${onChange ? 'edit' : ''}`} style={{ fontSize: size }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button key={n} type="button" disabled={!onChange} className={n <= Math.round(value) ? 'on' : ''} onClick={() => { haptic(8); onChange?.(n) }} aria-label={`${n} ستاره`}>★</button>
+      ))}
+    </span>
+  )
+}
+
 export const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },

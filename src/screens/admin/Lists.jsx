@@ -167,7 +167,7 @@ export function ShopAdmin() {
 
 export function Coaches() {
   const { club, user } = useStore()
-  const stats = coachStats(club)
+  const stats = coachStats(club).sort((a, b) => b.rating - a.rating)
   const sales = club.sales.slice(0, 30)
   const pk = PACKAGES.map((p) => ({ name: p.name, value: club.sales.filter((s) => s.item === p.id).reduce((a, s) => a + s.price, 0), color: '#E07B39' }))
   return (
@@ -178,13 +178,14 @@ export function Coaches() {
             <div className="ca-photo" style={{ backgroundImage: `url(${c.img})` }} />
             <div className="ca-body">
               <div className="row-between"><b>{c.name}</b><LevelPill id={c.level} /></div>
-              <small>{c.title} · ★ {fa(c.rating)} · {toman(c.price)}/جلسه</small>
+              <small>{c.title} · ★ {fa(c.rating)} از {fa(c.reviews)} نظر ناشناس · {toman(c.price)}/جلسه</small>
               <div className="ca-stats">
                 <div><b>{fa(c.sessions)}</b><small>جلسه‌ی برگزارشده</small></div>
                 <div><b>{fa(c.upcoming)}</b><small>جلسه‌ی آینده</small></div>
                 <div><b>{fa(c.packs)}</b><small>پکیج فروخته</small></div>
                 <div><b>{short(c.revenue)}</b><small>درآمد</small></div>
               </div>
+              {c.comments.map((r) => <p key={r.id} className="ca-quote">{'★'.repeat(r.stars)} «{r.text}»</p>)}
             </div>
           </div>
         ))}

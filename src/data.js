@@ -226,6 +226,27 @@ const OFFICIAL = [
 ]
 // فقط عکس زمین، بدون آدم
 const EV_IMG = [img('court-blue'), img('tiles'), img('court-outdoor'), img('ball-court'), img('welcome-courts'), img('welcome-night')]
+// مسابقه‌های برگزارشده — برای نظر و امتیاز
+export function pastEvents() {
+  const out = []
+  for (let d = -1; d >= -30 && out.length < 3; d--) {
+    const k = addDays(todayKey(), d)
+    if (fromKey(k).getDay() === 5) out.push({ id: 'fr-' + k, kind: 'friday', title: 'آدینه‌ی کوادرا', format: 'هر بازی با یار جدید', date: k, img: EV_IMG[out.length % EV_IMG.length] })
+  }
+  const off = addDays(todayKey(), -12)
+  out.push({ id: 'of-' + off, kind: 'official', title: 'جام ماهانه‌ی کوادرا', format: 'گروهی + حذفی', date: off, img: EV_IMG[4] })
+  return out
+}
+
+// امتیاز ناشناس: میانگین و تعداد نظرها برای یک هدف (coach:k1 یا event:...)
+export function ratingOf(club, target) {
+  const list = (club.reviews || []).filter((r) => r.target === target)
+  const avg = list.length ? list.reduce((s, r) => s + r.stars, 0) / list.length : 0
+  return { avg: Math.round(avg * 10) / 10, count: list.length, list: [...list].sort((a, b) => b.at - a.at) }
+}
+// مربی‌ها به ترتیب امتیاز نظرها
+export const coachesRanked = (club) => COACHES.map((c) => ({ ...c, ...ratingOf(club, 'coach:' + c.id) })).sort((a, b) => b.avg - a.avg || b.count - a.count)
+
 export function events() {
   const fridays = nextDays(28, 1).filter((d) => d.getDay() === 5).slice(0, 4).map((d, i) => {
     const r = hash('ev' + dayKey(d))
@@ -277,7 +298,7 @@ export function seedClub() {
         const price = type === 'coach' ? coach.price * dur : priceFor(k, h, dur, pricing)
         const past = d < 0 || (d === 0 && h + dur <= now.getHours())
         const players = type === 'open'
-          ? Array.from({ length: past ? 4 : 1 + Math.floor(hash(`p${k}${c.id}${h}`) * 3) }, (_, j) => j === 0 ? m.id : MEMBERS[Math.floor(hash(`q${k}${c.id}${h}${j}`) * MEMBERS.length)].id)
+          ? Array.from({ length: past ? 4 : 1 + Math.floor(hash(`p${k}${c.id}${h}`) * 3) }, (_, j) => j === 0 ? m.id : MEMBERS[(MEMBERS.indexOf(m) + 1 + j * 7 + Math.floor(hash(`q${k}${c.id}${h}`) * 5)) % MEMBERS.length].id)
           : [m.id]
         const pr = hash(`pay${k}${c.id}${h}`)
         const paid = type === 'open' ? Math.round(price / 4) * players.length : (past ? (pr < 0.95 ? price : 0) : pr < 0.6 ? price : pr < 0.75 ? Math.round(price / 2) : 0)
@@ -328,8 +349,30 @@ export function seedClub() {
     const price = p.kind === 'series' ? Math.round(p.sessions * 2 * pricing.offpeak * (1 - p.off) / 10000) * 10000 : p.price
     return { id: 'S-' + (500 + i), kind: 'package', item: p.id, name: p.name, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price, method: r('pm') < 0.7 ? 'online' : 'card', at: Date.now() - ago * 864e5 }
   })
+  // بازی‌های عمومی/خصوصی و چند دعوت نمونه برای کاربر اپ ('me')
+  bookings.forEach((b) => { if (b.type === 'open') { b.visibility = 'public'; b.invited = [] } })
+  bookings.filter((b) => b.type === 'open' && b.players.length < 4 && fromKey(b.date) > fromKey(todayKey())).slice(0, 3).forEach((b, k) => {
+    b.visibility = 'private'; b.invited = ['me', MEMBERS[(k * 7 + 3) % MEMBERS.length].id]
+  })
+  // نظرهای ناشناس نمونه — امتیاز مربی‌ها و مسابقه‌ها از میانگین همین‌ها حساب می‌شود
+  const NOTES = ['خیلی صبور و دقیق', 'تمرین‌ها هدفمند بود', 'سطحم واقعاً بهتر شد', 'وقت‌شناس و منظم', 'توضیح‌ها ساده و کاربردی', 'جلسه‌ها پرانرژی بود', '', '', '']
+  const reviews = []
+  COACHES.forEach((c, ci) => {
+    const n = 14 + Math.floor(hash('rv' + c.id) * 24)
+    for (let k = 0; k < n; k++) {
+      const r = hash(`rv${c.id}${k}`)
+      const stars = r < 0.62 + ci * 0.04 ? 5 : r < 0.9 ? 4 : r < 0.97 ? 3 : 2
+      reviews.push({ id: `r-${c.id}-${k}`, target: 'coach:' + c.id, stars, text: NOTES[Math.floor(hash(`rt${c.id}${k}`) * NOTES.length)], at: Date.now() - Math.floor(r * 60) * 864e5 })
+    }
+  })
+  pastEvents().forEach((e, ei) => {
+    for (let k = 0; k < 6 + ei * 3; k++) {
+      const r = hash(`re${e.id}${k}`)
+      reviews.push({ id: `r-${e.id}-${k}`, target: 'event:' + e.id, stars: r < 0.55 ? 5 : r < 0.88 ? 4 : 3, text: ['برگزاری منظم بود', 'جو خیلی خوبی داشت', 'داوری می‌تونست بهتر باشه', ''][k % 4], at: fromKey(e.date).getTime() + 864e5 })
+    }
+  })
   const stock = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.stock]))
-  return { v: 7, pricing, off: {}, bookings, orders, sales, stock, expenses: [] }
+  return { v: 9, pricing, off: {}, bookings, orders, sales, stock, expenses: [], reviews }
 }
 
 // ---------- گیمیفیکیشن ----------

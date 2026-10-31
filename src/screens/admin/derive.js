@@ -1,4 +1,4 @@
-import { COACHES, COURTS, MEMBERS, addDays, dayMonth, coachById, courtById, fromKey, memberById, productById, range, todayKey } from '../../data'
+import { COACHES, COURTS, MEMBERS, ratingOf, addDays, dayMonth, coachById, courtById, fromKey, memberById, productById, range, todayKey } from '../../data'
 import { ME, payState } from '../../store'
 
 export const SERIES = [
@@ -93,7 +93,8 @@ export function coachStats(club) {
     const bk = club.bookings.filter((b) => b.coach === c.id && b.status !== 'cancelled')
     const past = bk.filter((b) => fromKey(b.date) < fromKey(todayKey()))
     const sales = club.sales.filter((s) => s.kind === 'coach' && s.item === c.id)
-    return { ...c, sessions: past.length, upcoming: bk.length - past.length, revenue: past.filter(notPack).reduce((s, b) => s + b.paid, 0) + sales.reduce((s, x) => s + x.price, 0), packs: sales.length }
+    const rt = ratingOf(club, 'coach:' + c.id)
+    return { ...c, rating: rt.avg, reviews: rt.count, comments: rt.list.filter((r, i, a) => r.text && a.findIndex((x) => x.text === r.text) === i).slice(0, 3), sessions: past.length, upcoming: bk.length - past.length, revenue: past.filter(notPack).reduce((s, b) => s + b.paid, 0) + sales.reduce((s, x) => s + x.price, 0), packs: sales.length }
   })
 }
 

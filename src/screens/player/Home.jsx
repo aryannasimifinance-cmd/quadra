@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { COACHES, EVENT_KIND, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
+import { COACHES, EVENT_KIND, coachesRanked, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
 import { celebrate, chime } from '../../fx'
 import { myPoints, useStore } from '../../store'
 import { myBookings, openGames, quests, streak, upcomingSlots } from '../../select'
@@ -135,11 +135,11 @@ export default function Home({ nav }) {
         <section className="h-sec">
           <SectionHead title="مربی‌ها" action="کلاس‌ها و پکیج‌ها" onAction={() => nav.open('coaches')} />
           <div className="coach-row">
-            {COACHES.map((c) => (
+            {coachesRanked(club).map((c) => (
               <Tilt key={c.id} className="coach-card" onClick={() => nav.open('coaches', { focus: c.id })}>
                 <Photo src={c.img} />
                 <div className="coach-shade" />
-                <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>{c.title}</small></div>
+                <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>★ {fa(c.avg)} · {c.title}</small></div>
               </Tilt>
             ))}
           </div>

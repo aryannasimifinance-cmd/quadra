@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import {
   BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, EVENT_KIND, LEVELS, MEMBERS, SERIES, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
-  SIDES, events, fa, fromKey, hourLabel, isPeak, isWeekend, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, sideById, toman, weekday,
+  SIDES, coachesRanked, events, fa, fromKey, hourLabel, isPeak, isWeekend, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, sideById, toman, weekday,
 } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { ME, freeStarts, isFree, memberOff, useStore } from '../../store'
@@ -34,7 +34,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
   const [w, setW] = useState(() => ({
     intent: preset.intent || null, date: preset.date || dayKey(new Date()), daypart: 'any', dur: preset.dur || 1, series: preset.series || 'single', court: preset.court || null, start: preset.start ?? null,
     players: [{ id: ME, name: user.name, level: user.level, me: true }, null, null, null],
-    missing: preset.series && preset.series !== 'single' ? 0 : 1, open: !(preset.series && preset.series !== 'single'), wantSide: 'any', levels: nearLevels(user.level, 1), gameId: preset.gameId || null, coachId: preset.coachId || null, pack: 'one', eventId: preset.eventId || null,
+    missing: preset.series && preset.series !== 'single' ? 0 : 1, open: !(preset.series && preset.series !== 'single'), wantSide: 'any', visibility: 'public', invited: [], levels: nearLevels(user.level, 1), gameId: preset.gameId || null, coachId: preset.coachId || null, pack: 'one', eventId: preset.eventId || null,
   }))
   const set = (p) => setW((x) => ({ ...x, ...p }))
   const flow = FLOWS[w.intent || 'court']
@@ -351,7 +351,29 @@ function StepPeople({ w, set, onNext }) {
           )
         })}
       </div>
-      {w.missing > 0 && (
+      <p className="label">چه کسی این بازی را ببیند؟</p>
+      <div className="vis-pick">
+        {[['public', 'عمومی', 'همه‌ی اعضا در «بازی‌های باز» می‌بینند'], ['private', 'خصوصی', 'فقط یارها و دعوت‌شده‌ها می‌بینند']].map(([id, n, d]) => (
+          <button key={id} className={`vis-opt ${w.visibility === id ? 'on' : ''}`} onClick={() => { haptic(6); set({ visibility: id }) }}>
+            <Icon name={id === 'public' ? 'users' : 'lock'} size={18} /><div><b>{n}</b><small>{d}</small></div>
+          </button>
+        ))}
+      </div>
+      {w.missing > 0 && w.visibility === 'private' && (
+        <div className="mm on">
+          <div className="mm-head"><div className="mm-ic"><Icon name="lock" /></div>
+            <div className="grow"><b>{fa(w.missing)} جای خالی با دعوت پر می‌شود</b><small>این بازی در لیست عمومی نمی‌آید؛ اعضایی را که می‌خواهید دعوت کنید</small></div></div>
+          <div className="mm-body">
+            <div className="inv-chips">
+              {w.invited.map((id) => (
+                <span key={id}>{MEMBERS.find((m) => m.id === id)?.name}<button onClick={() => set({ invited: w.invited.filter((x) => x !== id) })} aria-label="حذف">×</button></span>
+              ))}
+              <button className="inv-add" onClick={() => setEdit('invite')}><Icon name="plus" size={14} /> دعوت عضو</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {w.missing > 0 && w.visibility === 'public' && (
         <div className="mm on">
           <div className="mm-head"><div className="mm-ic"><Icon name="radar" /></div>
             <div className="grow"><b>برای {fa(w.missing)} جای خالی دنبال یار می‌گردیم</b><small>به اعضای هم‌سطح اعلان می‌دهیم</small></div></div>
@@ -373,14 +395,16 @@ function StepPeople({ w, set, onNext }) {
           {ready ? (w.missing ? 'ثبت بازی و پرداخت سهم' : 'تیم کامله! پرداخت') : `${fa(need - added)} یار دیگر اضافه کنید`}
         </Button>
       </CtaBar>
-      <Sheet open={edit !== null} onClose={() => setEdit(null)} title="افزودن یار" tall>
-        {edit !== null && <AddPlayer exclude={w.players.filter(Boolean).map((p) => p.id)} onAdd={(p) => { put(edit, p); setEdit(null) }} />}
+      <Sheet open={edit !== null} onClose={() => setEdit(null)} title={edit === 'invite' ? 'دعوت به بازی خصوصی' : 'افزودن یار'} tall>
+        {edit === 'invite'
+          ? <AddPlayer noPhone exclude={[...w.players.filter(Boolean).map((p) => p.id), ...w.invited]} onAdd={(p) => { set({ invited: [...w.invited, p.id] }); setEdit(null) }} />
+          : edit !== null && <AddPlayer exclude={w.players.filter(Boolean).map((p) => p.id)} onAdd={(p) => { put(edit, p); setEdit(null) }} />}
       </Sheet>
     </div>
   )
 }
 
-function AddPlayer({ onAdd, exclude }) {
+function AddPlayer({ onAdd, exclude, noPhone }) {
   const { toast } = useStore()
   const [q, setQ] = useState('')
   const [side, setSide] = useState('all')
@@ -410,13 +434,13 @@ function AddPlayer({ onAdd, exclude }) {
           </button>
         ))}
       </div>
-      <div className="invite">
+      {!noPhone && <div className="invite">
         <p className="label">عضو نیست؟ لینک دعوت بفرستید</p>
         <div className="invite-row">
           <label className="field"><Icon name="phone" /><input inputMode="numeric" dir="ltr" placeholder="0912 345 6789" value={phone} onChange={(e) => setPhone(e.target.value)} /></label>
           <Button variant="dark" disabled={!okPhone} onClick={invite}>ارسال</Button>
         </div>
-      </div>
+      </div>}
     </div>
   )
 }
@@ -469,12 +493,12 @@ function StepCoach({ w, set, onNext }) {
     <div className="coach-pick">
       <h2 className="wz-h">با کی تمرین کنیم؟</h2>
       <div className="coach-list">
-        {COACHES.map((c) => (
+        {coachesRanked(useStore().club).map((c) => (
           <motion.button key={c.id} className={`coach-li ${w.coachId === c.id ? 'on' : ''}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); set({ coachId: c.id }) }}>
             <Photo src={c.img} />
             <div className="grow">
               <b>{c.name} <LevelPill id={c.level} /></b>
-              <small>{c.title} · {fa(c.exp)} سال سابقه · ★ {fa(c.rating)}</small>
+              <small>{c.title} · {fa(c.exp)} سال سابقه · ★ {fa(c.avg)} ({fa(c.count)} نظر)</small>
               <ul className="record">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
             </div>
             <em>{short(c.price)}<small>هر جلسه</small></em>
@@ -605,7 +629,7 @@ function StepPay({ w, set, onDone }) {
           { kind: 'package', item: series.id, name: `${series.name} زمین`, total }, useMethod)
       } else {
         const full = priceFor(w.date, w.start, w.dur, club.pricing) * (1 - off)
-        r = s.book({ court: w.court, date: w.date, start: w.start, dur: w.dur, type: isOpen ? 'open' : 'private', players: filled.map((p) => p.id), levels: isOpen ? w.levels : null, wantSide: isOpen ? w.wantSide : null, price: full }, useMethod, total)
+        r = s.book({ court: w.court, date: w.date, start: w.start, dur: w.dur, type: isOpen ? 'open' : 'private', players: filled.map((p) => p.id), levels: isOpen ? w.levels : null, wantSide: isOpen ? w.wantSide : null, visibility: w.visibility, invited: w.visibility === 'private' ? w.invited : [], price: full }, useMethod, total)
       }
       if (r?.error) {
         setBusy(false); chime('alarm')
@@ -613,7 +637,7 @@ function StepPay({ w, set, onDone }) {
         return
       }
       chime('success'); celebrate(); haptic([20, 40, 20, 40, 80])
-      onDone({ ...r, kind, title, sub, total, method: useMethod, open: isOpen })
+      onDone({ ...r, kind, title, sub, total, method: useMethod, open: isOpen && w.visibility !== 'private' })
     }, useMethod === 'online' ? 1400 : 600)
   }
 

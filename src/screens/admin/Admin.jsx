@@ -298,6 +298,7 @@ function BookingDetail({ id, onClose }) {
           <div><span>منبع</span><b>{b.source === 'app' ? 'اپ' : 'پذیرش'}</b></div>
           <div><span>کد</span><b dir="ltr">{refCode(b.id)}</b></div>
           {b.levels && <div><span>سطح‌ها</span><b>{b.levels.join(' · ')}</b></div>}
+          {b.type === 'open' && <div><span>نمایش</span><b>{b.visibility === 'private' ? `خصوصی · ${fa((b.invited || []).length)} دعوت` : 'عمومی'}</b></div>}
         </div>
         <h4>بازیکن‌ها {b.type === 'open' && `(${fa(b.players.length)}/۴)`}</h4>
         <div className="dr-ppl">

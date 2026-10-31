@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { COURTS, PACKAGES, levelById, productById, seedClub, todayKey } from './data'
 
 const KEY = 'quadra-v1'
-const SEED_V = 7
-const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
+const SEED_V = 9
+const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, rated: [], membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
 
 function load() {
   try {
@@ -111,10 +111,24 @@ export function StoreProvider({ children }) {
         commit((s) => {
           const b = s.club.bookings.find((x) => x.id === id)
           const players = [...b.players, ME]
-          const bookings = s.club.bookings.map((x) => (x.id === id ? { ...x, players, paid: x.paid + share } : x))
+          const bookings = s.club.bookings.map((x) => (x.id === id ? { ...x, players, paid: x.paid + share, invited: (x.invited || []).filter((p) => p !== ME) } : x))
           const r = reward(pay(s, share, method), 40, ['first', 'social', players.length === 4 && 'squad', myCourts(bookings).size >= 4 && 'quad'])
           out = { ...r.result, id }
           return { ...r.next, club: { ...s.club, bookings } }
+        })
+        return out
+      },
+      declineInvite(id) {
+        commit((s) => ({ ...s, club: { ...s.club, bookings: s.club.bookings.map((b) => (b.id === id ? { ...b, invited: (b.invited || []).filter((p) => p !== ME) } : b)) } }))
+      },
+      // نظر ناشناس: فقط ستاره و متن ذخیره می‌شود، نه هویت کاربر؛ «rated» فقط روی دستگاه خود کاربر است تا دوبار نظر ندهد
+      addReview(target, stars, text) {
+        let out
+        commit((s) => {
+          const review = { id: 'r' + Date.now(), target, stars, text: text.trim(), at: Date.now() }
+          const r = reward({ ...s, rated: [...(s.rated || []), target] }, 10, [])
+          out = r.result
+          return { ...r.next, club: { ...s.club, reviews: [review, ...(s.club.reviews || [])] } }
         })
         return out
       },
