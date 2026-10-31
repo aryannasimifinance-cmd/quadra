@@ -2,12 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import {
   BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, EVENT_KIND, LEVELS, MEMBERS, SERIES, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
-  events, fa, fromKey, hourLabel, isPeak, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, toman, weekday,
+  SIDES, events, fa, fromKey, hourLabel, isPeak, isWeekend, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, sideById, toman, weekday,
 } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { ME, freeStarts, isFree, memberOff, useStore } from '../../store'
 import { openGames, planSeries } from '../../select'
-import { Avatar, Button, Chips, CountUp, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
+import { Avatar, Button, Chips, CountUp, CtaBar, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
 import { Loading } from '../../components/Logo'
 
 const FLOWS = {
@@ -34,7 +34,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
   const [w, setW] = useState(() => ({
     intent: preset.intent || null, date: preset.date || dayKey(new Date()), daypart: 'any', dur: preset.dur || 1, series: preset.series || 'single', court: preset.court || null, start: preset.start ?? null,
     players: [{ id: ME, name: user.name, level: user.level, me: true }, null, null, null],
-    open: !preset.series || preset.series === 'single', levels: nearLevels(user.level, 1), gameId: preset.gameId || null, coachId: preset.coachId || null, pack: 'one', eventId: preset.eventId || null,
+    missing: preset.series && preset.series !== 'single' ? 0 : 1, open: !(preset.series && preset.series !== 'single'), wantSide: 'any', levels: nearLevels(user.level, 1), gameId: preset.gameId || null, coachId: preset.coachId || null, pack: 'one', eventId: preset.eventId || null,
   }))
   const set = (p) => setW((x) => ({ ...x, ...p }))
   const flow = FLOWS[w.intent || 'court']
@@ -64,7 +64,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
           {step === 'when' && <StepWhen w={w} set={set} onNext={next} />}
           {step === 'slot' && <StepSlot w={w} set={set} onNext={next} />}
           {step === 'people' && <StepPeople w={w} set={set} onNext={next} />}
-          {step === 'games' && <StepGames w={w} set={set} onNext={next} onCreate={() => { set({ intent: 'court', open: true }); goStep('slot', 'court') }} />}
+          {step === 'games' && <StepGames w={w} set={set} onNext={next} onCreate={() => { set({ intent: 'court', open: true, missing: 1 }); goStep('slot', 'court') }} />}
           {step === 'coach' && <StepCoach w={w} set={set} onNext={next} />}
           {step === 'event' && <StepEvent w={w} set={set} onNext={next} />}
           {step === 'pay' && <StepPay w={w} set={set} onDone={setDone} />}
@@ -109,7 +109,10 @@ function StepIntent({ onPick }) {
 }
 
 function DayPicker({ value, onChange }) {
-  const days = useMemo(() => nextDays(14), [])
+  const days = useMemo(() => {
+    const d = nextDays(14)
+    return d.some((x) => dayKey(x) === value) ? d : [fromKey(value), ...d]
+  }, [value])
   return (
     <div className="days">
       {days.map((d) => {
@@ -126,177 +129,294 @@ function DayPicker({ value, onChange }) {
   )
 }
 
+// مراحل رزرو زمین — توضیح ساده‌ی فرایند
+function Process() {
+  const steps = [['روز و ساعت', 'یک یا چند ساعت پشت هم'], ['زمین', 'از بین ۴ زمین'], ['یارها', 'از اعضا یا با لینک دعوت'], ['پرداخت', 'کل مبلغ یا سهم خودتان']]
+  return (
+    <div className="process">
+      {steps.map(([t, d], i) => (
+        <div key={t} className={`pr-step ${i === 0 ? 'on' : ''}`}><span>{fa(i + 1)}</span><b>{t}</b><small>{d}</small></div>
+      ))}
+    </div>
+  )
+}
+
+// تقویم ماه (شمسی) برای دیدن هفته‌ی بعد و ماه‌های پیش رو
+const pMonth = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { month: 'long', year: 'numeric' })
+const pDay = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' })
+function MonthCal({ value, onPick }) {
+  const { club } = useStore()
+  // یک بار ساعت‌های پر را جمع می‌کنیم تا تقویم سبک بماند
+  const full = useMemo(() => {
+    const busy = new Map()
+    club.bookings.forEach((b) => {
+      if (b.status === 'cancelled') return
+      for (let h = Math.floor(b.start); h < b.start + b.dur; h++) busy.set(`${b.date}|${b.court}|${h}`, 1)
+    })
+    return (k) => !COURTS.some((c) => !club.off[c.id] && Array.from({ length: 17 }, (_, i) => 7 + i).some((h) => !busy.has(`${k}|${c.id}|${h}`)))
+  }, [club])
+  const groups = []
+  nextDays(62).forEach((d) => {
+    const m = pMonth.format(d)
+    if (!groups.length || groups[groups.length - 1].m !== m) groups.push({ m, days: [] })
+    groups[groups.length - 1].days.push(d)
+  })
+  return (
+    <div className="mcal">
+      {groups.map((g) => (
+        <div key={g.m}>
+          <p className="mcal-m">{g.m}</p>
+          <div className="mcal-grid">
+            {['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'].map((x) => <small key={x}>{x}</small>)}
+            {Array.from({ length: (g.days[0].getDay() + 1) % 7 }, (_, i) => <span key={'b' + i} />)}
+            {g.days.map((d) => {
+              const k = dayKey(d), isFull = full(k)
+              return (
+                <button key={k} disabled={isFull} className={`${value === k ? 'on' : ''} ${isFull ? 'full' : ''} ${isWeekend(d) ? 'we' : ''}`} onClick={() => { haptic(6); onPick(k) }}>
+                  {pDay.format(d)}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+      <p className="mcal-note">روزهای کم‌رنگ پر هستند · پنجشنبه و جمعه رنگی</p>
+    </div>
+  )
+}
+
 function StepWhen({ w, set, onNext }) {
   const { club, user } = useStore()
+  const [cal, setCal] = useState(false)
   const dp = DAYPARTS.find((d) => d.id === w.daypart)
   const count = useMemo(() => {
     if (w.intent === 'match') return openGames(club, user.level, { date: w.date }).filter((g) => !g.mine && g.start >= dp.from && g.start < dp.to).length
-    return COURTS.reduce((n, c) => n + freeStarts(club, w.date, c.id, w.dur, dp.from, dp.to).length, 0)
-  }, [w.date, w.daypart, w.dur, w.intent, club])
+    return COURTS.reduce((n, c) => n + freeStarts(club, w.date, c.id, 1, dp.from, dp.to).length, 0)
+  }, [w.date, w.daypart, w.intent, club])
   return (
     <div className="when">
-      <section><p className="label">روز</p><DayPicker value={w.date} onChange={(date) => set({ date, start: null })} /></section>
+      {w.intent === 'court' && <Process />}
+      <section>
+        <div className="label-row">
+          <p className="label">روز</p>
+          <button className="cal-btn" onClick={() => { haptic(6); setCal(true) }}><Icon name="cal" size={16} /> تقویم هفته‌ی بعد و ماه</button>
+        </div>
+        <DayPicker value={w.date} onChange={(date) => set({ date, start: null })} />
+      </section>
       <section><p className="label">چه ساعتی؟</p>
         <Chips id="dp" options={DAYPARTS.map((d) => ({ id: d.id, name: d.name }))} value={w.daypart} onChange={(daypart) => set({ daypart, start: null })} />
       </section>
-      {w.intent === 'court' && (
-        <section><p className="label">مدت بازی</p>
-          <Chips id="dur" options={DURATIONS.map((d) => ({ id: d.h, name: d.name, sub: d.tag }))} value={w.dur} onChange={(dur) => set({ dur, start: null })} />
-        </section>
-      )}
-      <p className="hint">{w.intent === 'match' ? '⚡ بازی‌هایی که نزدیک به سطح شما هستند اول نمایش داده می‌شوند.' : w.intent === 'coach' ? '🧢 جلسه‌ی مربی ۶۰ دقیقه است؛ زمین توسط باشگاه تخصیص داده می‌شود.' : '🎾 پدل همیشه دونفره است — ۴ بازیکن. ساعت‌های عصر و آخر هفته پیک هستند.'}</p>
-      <div className="cta-bar">
+      {w.intent !== 'court' && <p className="hint">{w.intent === 'match' ? '⚡ بازی‌هایی که نزدیک به سطح شما هستند اول نمایش داده می‌شوند.' : '🧢 جلسه‌ی مربی ۶۰ دقیقه است.'}</p>}
+      <CtaBar>
         <Button full variant="dark" disabled={!count && w.intent !== 'match'} onClick={onNext}>
           {w.intent === 'match'
             ? (count ? <>نمایش <CountUp key={count} to={count} duration={0.5} /> بازی باز</> : 'بازی بازی نیست — خودم می‌سازم')
             : count ? <><CountUp key={count} to={count} duration={0.5} /> ساعت آزاد روی ۴ زمین</> : 'در این بازه ساعت آزاد نیست'}
         </Button>
-      </div>
+      </CtaBar>
+      <Sheet open={cal} onClose={() => setCal(false)} title="انتخاب روز">
+        <MonthCal value={w.date} onPick={(date) => { set({ date, start: null }); setCal(false) }} />
+      </Sheet>
     </div>
   )
 }
 
-// ماتریس زمان × ۴ زمین
+// ماتریس ساعت × ۴ زمین — چند ساعت پشت هم روی یک زمین قابل انتخاب است
 function StepSlot({ w, set, onNext }) {
-  const { club } = useStore()
+  const { club, toast } = useStore()
   const dp = DAYPARTS.find((d) => d.id === w.daypart)
-  const dur = w.intent === 'coach' ? 1 : w.dur
-  const now = new Date(), today = w.date === dayKey(now)
-  const times = []
-  for (let h = dp.from; h + dur <= 24 && h < dp.to; h += 1) if (!today || h > now.getHours() + now.getMinutes() / 60) times.push(h)
-  // در کلاس مربی، ساعتی که مربی کلاس دیگری دارد روی هیچ زمینی آزاد نیست
-  const coachBusy = (h) => w.intent === 'coach' && club.bookings.some((b) => b.coach === w.coachId && b.date === w.date && b.status !== 'cancelled' && h < b.start + b.dur && b.start < h + dur)
-  const free = (c, h) => isFree(club, w.date, c, h, dur) && !coachBusy(h)
-  const rows = times.filter((h) => COURTS.some((c) => free(c.id, h)))
-  const price = (h) => priceFor(w.date, h, dur, club.pricing)
+  const isCoach = w.intent === 'coach'
+  const now = new Date(), today = w.date === dayKey(now), nowH = now.getHours() + now.getMinutes() / 60
+  const coachBusy = (h) => isCoach && club.bookings.some((b) => b.coach === w.coachId && b.date === w.date && b.status !== 'cancelled' && h < b.start + b.dur && b.start < h + 1)
+  const free = (c, h) => isFree(club, w.date, c, h, 1) && !coachBusy(h)
+  const inSel = (c, h) => w.start != null && w.court === c && h >= w.start && h < w.start + w.dur
+  const hours = []
+  for (let h = dp.from; h < Math.min(dp.to, 24); h++) if (!today || h > nowH) hours.push(h)
+  const rows = hours.filter((h) => COURTS.some((c) => free(c.id, h) || inSel(c.id, h)))
+  const showPeak = club.pricing.peak !== club.pricing.offpeak
+
+  const tap = (c, h) => {
+    haptic(8)
+    if (isCoach || w.start == null || w.court !== c) return set({ court: c, start: h, dur: 1 })
+    const s0 = w.start, e0 = w.start + w.dur
+    if (h >= s0 && h < e0) { // روی انتخاب زدن = برداشتن همان ساعت
+      if (w.dur === 1) return set({ start: null })
+      if (h === s0) return set({ start: s0 + 1, dur: w.dur - 1 })
+      if (h === e0 - 1) return set({ dur: w.dur - 1 })
+      return set({ dur: h - s0 })
+    }
+    if (h === e0 || h === s0 - 1) {
+      if (w.dur >= 3) { toast({ icon: '⏱', title: 'حداکثر ۳ ساعت پشت هم' }); return }
+      return h === e0 ? set({ dur: w.dur + 1 }) : set({ start: h, dur: w.dur + 1 })
+    }
+    set({ court: c, start: h, dur: 1 })
+  }
+  const total = w.start != null ? (isCoach ? coachById(w.coachId).price : priceFor(w.date, w.start, w.dur, club.pricing)) : 0
+
   return (
     <div className="slot">
+      <p className="slot-help">{isCoach ? 'یک ساعت آزاد را انتخاب کنید.' : 'روی یک ساعت بزنید. برای بیشتر، ساعت قبل یا بعدش را هم بزنید (تا ۳ ساعت). با زدن دوباره، آن ساعت برداشته می‌شود.'}</p>
       <div className="slot-courts">
         <span />
         {COURTS.map((c) => (
-          <div key={c.id} className={`sc-head ${w.court === c.id ? 'on' : ''} ${club.off[c.id] ? 'off' : ''}`}>
-            <Photo src={c.img} /><b>{fa(c.id)}</b><small>زمین</small>
+          <div key={c.id} className={`sc-head ${w.court === c.id && w.start != null ? 'on' : ''} ${club.off[c.id] ? 'off' : ''}`}>
+            <img src={c.img} alt="" loading="lazy" /><b>{fa(c.id)}</b><small>زمین</small>
           </div>
         ))}
       </div>
       <div className="slot-grid">
         {rows.length === 0 && <div className="empty-card">در این بازه ساعت آزاد نیست؛ روز یا ساعت دیگری انتخاب کنید.</div>}
-        {rows.map((h, ri) => (
-          <motion.div key={h} className="slot-row" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(ri, 12) * 0.02 }}>
-            <span className={`slot-t ${isPeak(w.date, h, club.pricing) ? 'peak' : ''}`}>{hourLabel(h)}</span>
+        {rows.map((h) => (
+          <div key={h} className="slot-row">
+            <span className={`slot-t ${showPeak && isPeak(w.date, h, club.pricing) ? 'peak' : ''}`}>{hourLabel(h)}</span>
             {COURTS.map((c) => {
-              const ok = free(c.id, h)
-              const on = w.court === c.id && w.start === h
+              const sel = inSel(c.id, h)
+              const ok = sel || free(c.id, h)
+              const cls = sel ? `sel ${inSel(c.id, h - 1) ? 'jt' : ''} ${inSel(c.id, h + 1) ? 'jb' : ''}` : ok ? 'free' : 'busy'
               return (
-                <motion.button key={c.id} className={`cell ${ok ? 'free' : 'busy'} ${on ? 'on' : ''}`} disabled={!ok} whileTap={ok ? { scale: 0.88 } : {}}
-                  onClick={() => { haptic(8); set({ court: c.id, start: h }) }}>
-                  {on && <motion.span layoutId="cell-on" className="cell-bg" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
-                  <span>{ok ? short(w.intent === 'coach' ? coachById(w.coachId).price : price(h) / 4) : ''}</span>
-                </motion.button>
+                <button key={c.id} className={`cell ${cls}`} disabled={!ok} onClick={() => tap(c.id, h)}>
+                  {sel ? <Icon name="check" size={16} stroke={3} /> : ok ? <span>{short(isCoach ? coachById(w.coachId).price : priceFor(w.date, h, 1, club.pricing) / 4)}</span> : null}
+                </button>
               )
             })}
-          </motion.div>
+          </div>
         ))}
       </div>
-      <p className="slot-legend"><i className="lg free" /> آزاد · قیمت {w.intent === 'coach' ? 'جلسه' : 'هر نفر'} <i className="lg busy" /> رزرو شده <i className="lg peak" /> ساعت پیک</p>
-      <div className="cta-bar">
+      <p className="slot-legend"><i className="lg free" /> آزاد · {isCoach ? 'قیمت جلسه' : 'قیمت هر نفر برای ۱ ساعت'} <i className="lg sel" /> انتخاب شما <i className="lg busy" /> رزرو شده{showPeak && <> <i className="lg peak" /> پیک</>}</p>
+      <AnimatePresence>
+        {w.start != null && (
+          <motion.div className="sel-sum" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <div className="grow"><b>{courtById(w.court).name} · {range(w.start, w.dur)}</b><small>{fa(w.dur)} ساعت{!isCoach && ` · هر نفر ${toman(total / 4)}`}</small></div>
+            <em>{toman(total)}</em>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <CtaBar>
         <Button full variant="dark" disabled={w.start == null} onClick={onNext}>
-          {w.start == null ? 'یک خانه‌ی آزاد انتخاب کنید' : <>{courtById(w.court).name} · {range(w.start, dur)} · ادامه</>}
+          {w.start == null ? 'یک ساعت آزاد انتخاب کنید' : <>ادامه · {fa(w.dur)} ساعت روی {courtById(w.court).name}</>}
         </Button>
-      </div>
+      </CtaBar>
     </div>
   )
 }
 
-const FRIENDS = MEMBERS.slice(0, 10)
+// یارها: تیم کامل، یک یار کم یا دو یار کم
+const TEAM = [{ id: 0, name: 'تیم کامله', sub: '۴ نفریم' }, { id: 1, name: '۱ یار کم', sub: '۳ نفریم' }, { id: 2, name: '۲ یار کم', sub: '۲ نفریم' }]
 function StepPeople({ w, set, onNext }) {
   const [edit, setEdit] = useState(null)
-  const empty = w.players.filter((p) => !p).length
+  const need = 3 - w.missing // تعداد یارهایی که خودشان اضافه می‌کنند
+  const added = w.players.slice(1, need + 1).filter(Boolean).length
+  const ready = added === need
   const put = (k, p) => { const n = [...w.players]; n[k] = p; set({ players: n }); haptic(12) }
+  const setMissing = (m) => {
+    const n = w.players.map((p, k) => (k === 0 || k <= 3 - m ? p : null))
+    set({ missing: m, open: m > 0, players: n }); haptic(8)
+  }
   const toggleLevel = (id) => {
     const has = w.levels.includes(id)
     if (has && w.levels.length === 1) return
     set({ levels: has ? w.levels.filter((x) => x !== id) : [...w.levels, id].sort((a, b) => levelIndex(a) - levelIndex(b)) })
   }
-  const reach = MEMBERS.filter((m) => w.levels.includes(m.level)).length * 7 + 12
+  const reach = MEMBERS.filter((m) => w.levels.includes(m.level) && (w.wantSide === 'any' || m.side === w.wantSide || m.side === 'both')).length * 6 + 8
   return (
     <div className="people">
-      <h2 className="wz-h">کی‌ها بازی می‌کنن؟ <small>روی جای خالی بزنید و دوستتون رو اضافه کنید</small></h2>
-      <div className="court-viz">
-        <div className="cv-net" /><div className="cv-line a" /><div className="cv-line b" /><div className="cv-mid" />
-        {w.players.map((p, k) => (
-          <div key={k} className={`cv-spot s${k}`}>
-            <AnimatePresence mode="popLayout">
-              {p ? (
-                <motion.div key={p.name} className="spot-p" initial={{ y: -30, opacity: 0, scale: 0.4 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ scale: 0, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 16 }} onClick={() => !p.me && put(k, null)}>
-                  <Avatar name={p.name} size={50} me={p.me} />
-                  <span>{p.me ? 'شما' : p.name.split(' ')[0]}</span>
-                  <LevelPill id={p.level} />
-                </motion.div>
-              ) : (
-                <motion.div key="e" className="spot-p" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                  <motion.div animate={w.open ? { boxShadow: ['0 0 0 0 rgba(5,224,218,.7)', '0 0 0 14px rgba(5,224,218,0)'] } : {}} transition={{ repeat: Infinity, duration: 1.6 }} style={{ borderRadius: '50%' }}>
-                    <Avatar empty size={50} onClick={() => setEdit(k)} />
-                  </motion.div>
-                  <span>{w.open ? 'در جستجو…' : 'خالی'}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+      <h2 className="wz-h">چند نفرید؟</h2>
+      <div className="team-pick">
+        {TEAM.map((t) => (
+          <button key={t.id} className={`team-opt ${w.missing === t.id ? 'on' : ''}`} onClick={() => setMissing(t.id)}>
+            <span className="team-dots">{[0, 1, 2, 3].map((k) => <i key={k} className={k < 4 - t.id ? 'f' : ''} />)}</span>
+            <b>{t.name}</b><small>{t.sub}</small>
+          </button>
         ))}
       </div>
-      <AnimatePresence>
-        {empty > 0 && (
-          <motion.div className={`mm ${w.open ? 'on' : ''}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }}>
-            <div className="mm-head" onClick={() => { haptic(10); set({ open: !w.open }) }}>
-              <div className="mm-ic"><Icon name="radar" /></div>
-              <div className="grow"><b>{fa(empty)} یار کم دارید؟</b><small>بازی رو باز می‌کنیم و به هم‌سطح‌ها اعلان می‌دیم</small></div>
-              <div className={`switch ${w.open ? 'on' : ''}`}><motion.i layout transition={{ type: 'spring', stiffness: 600, damping: 30 }} /></div>
-            </div>
-            <AnimatePresence>
-              {w.open && (
-                <motion.div className="mm-body" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                  <p className="label">چه سطح‌هایی بیان؟</p>
-                  <div className="lv-pick">
-                    {LEVELS.map((l) => (
-                      <motion.button key={l.id} whileTap={{ scale: 0.85 }} className={w.levels.includes(l.id) ? 'on' : ''} style={{ '--c': l.color }} onClick={() => { haptic(6); toggleLevel(l.id) }}>{l.id}</motion.button>
-                    ))}
-                  </div>
-                  <div className="reach"><span className="reach-n"><CountUp key={reach} to={reach} duration={0.6} /></span><span>بازیکن کوادرا اعلان می‌گیرن</span></div>
-                </motion.div>
+      <div className="court-viz">
+        <div className="cv-net" /><div className="cv-line a" /><div className="cv-line b" /><div className="cv-mid" />
+        {[0, 1, 2, 3].map((k) => {
+          const p = w.players[k]
+          const searching = k > need
+          return (
+            <div key={k} className={`cv-spot s${k}`}>
+              {p ? (
+                <div className="spot-p" onClick={() => k > 0 && put(k, null)}>
+                  <Avatar name={p.name} size={50} me={p.me} />
+                  <span>{p.me ? 'شما' : p.name.split(' ')[0]}</span>
+                  {p.level ? <LevelPill id={p.level} /> : <em className="inv">دعوت‌شده</em>}
+                </div>
+              ) : searching ? (
+                <div className="spot-p"><div className="spot-search"><Icon name="radar" size={22} /></div><span>در جستجو…</span></div>
+              ) : (
+                <div className="spot-p"><Avatar empty size={50} onClick={() => setEdit(k)} /><span>افزودن یار</span></div>
               )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <div className="cta-bar">
-        <Button full variant="dark" onClick={onNext}>{empty === 0 ? 'تیم کامله! پرداخت' : w.open ? 'باز کردن و پرداخت سهم' : 'ادامه با جای خالی'}</Button>
+            </div>
+          )
+        })}
       </div>
-      <Sheet open={edit !== null} onClose={() => setEdit(null)} title="اضافه کردن بازیکن">
-        <AddPlayer exclude={w.players.filter(Boolean).map((p) => p.name)} onAdd={(p) => { put(edit, p); setEdit(null) }} />
+      {w.missing > 0 && (
+        <div className="mm on">
+          <div className="mm-head"><div className="mm-ic"><Icon name="radar" /></div>
+            <div className="grow"><b>برای {fa(w.missing)} جای خالی دنبال یار می‌گردیم</b><small>به اعضای هم‌سطح اعلان می‌دهیم</small></div></div>
+          <div className="mm-body">
+            <p className="label">چه سطح‌هایی؟</p>
+            <div className="lv-pick">
+              {LEVELS.map((l) => (
+                <button key={l.id} className={w.levels.includes(l.id) ? 'on' : ''} style={{ '--c': l.color }} onClick={() => { haptic(6); toggleLevel(l.id) }}>{l.id}</button>
+              ))}
+            </div>
+            <p className="label">کدام سمت زمین؟</p>
+            <Chips id="ws" small value={w.wantSide} onChange={(wantSide) => set({ wantSide })} options={[{ id: 'any', name: 'فرقی نمی‌کند' }, ...SIDES.slice(0, 2).map((x) => ({ id: x.id, name: x.name }))]} />
+            <div className="reach"><span className="reach-n">{fa(reach)}</span><span>عضو کوادرا اعلان می‌گیرند</span></div>
+          </div>
+        </div>
+      )}
+      <CtaBar>
+        <Button full variant="dark" disabled={!ready} onClick={onNext}>
+          {ready ? (w.missing ? 'ثبت بازی و پرداخت سهم' : 'تیم کامله! پرداخت') : `${fa(need - added)} یار دیگر اضافه کنید`}
+        </Button>
+      </CtaBar>
+      <Sheet open={edit !== null} onClose={() => setEdit(null)} title="افزودن یار" tall>
+        {edit !== null && <AddPlayer exclude={w.players.filter(Boolean).map((p) => p.id)} onAdd={(p) => { put(edit, p); setEdit(null) }} />}
       </Sheet>
     </div>
   )
 }
 
 function AddPlayer({ onAdd, exclude }) {
-  const [name, setName] = useState('')
-  const [level, setLevel] = useState('C')
+  const { toast } = useStore()
+  const [q, setQ] = useState('')
+  const [side, setSide] = useState('all')
+  const [phone, setPhone] = useState('')
+  const list = MEMBERS.filter((m) => !exclude.includes(m.id) && (!q || m.name.includes(q.trim())) && (side === 'all' || m.side === side || m.side === 'both')).slice(0, 40)
+  const digits = phone.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\D/g, '')
+  const okPhone = /^09\d{9}$/.test(digits)
+  const faD = (x) => x.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
+  const invite = () => {
+    const link = `${location.origin}${location.pathname}?invite=${digits.slice(-4)}`
+    const text = `به بازی پدل در کوادرا دعوت شدید: ${link}`
+    if (navigator.share) navigator.share({ title: 'QUADRA', text }).catch(() => {})
+    toast({ icon: '✉️', title: 'لینک دعوت فرستاده شد', body: `${faD(digits)} · بعد از ثبت‌نام به بازی اضافه می‌شود` })
+    onAdd({ id: 'f:مهمان ' + faD(digits.slice(-4)), name: 'مهمان ' + faD(digits.slice(-4)), level: null })
+  }
   return (
     <div className="add-p">
-      <p className="label">از دوستانتون در کوادرا</p>
-      <div className="friend-list">
-        {FRIENDS.filter((f) => !exclude.includes(f.name)).map((f) => (
-          <motion.button key={f.id} className="friend" whileTap={{ scale: 0.92 }} onClick={() => onAdd({ id: f.id, name: f.name, level: f.level })}>
-            <Avatar name={f.name} size={44} /><small>{f.name.split(' ')[0]}</small><LevelPill id={f.level} />
-          </motion.button>
+      <label className="search"><Icon name="search" size={18} /><input autoFocus placeholder="جستجوی اعضا" value={q} onChange={(e) => setQ(e.target.value)} /></label>
+      <Chips id="sd" small value={side} onChange={setSide} options={[{ id: 'all', name: 'همه' }, { id: 'right', name: 'سمت راست' }, { id: 'left', name: 'سمت چپ' }]} />
+      <div className="member-list">
+        {list.length === 0 && <p className="muted">عضوی با این مشخصات پیدا نشد.</p>}
+        {list.map((m) => (
+          <button key={m.id} className="member-row" onClick={() => onAdd({ id: m.id, name: m.name, level: m.level })}>
+            <Avatar name={m.name} size={36} />
+            <div className="grow"><b>{m.name}</b><small>{sideById(m.side).name}</small></div>
+            <LevelPill id={m.level} />
+          </button>
         ))}
       </div>
-      <p className="label">یا اسم مهمان</p>
-      <label className="field"><Icon name="user" /><input placeholder="نام" value={name} onChange={(e) => setName(e.target.value)} /></label>
-      <Chips id="g-lvl" small scroll options={LEVELS.map((l) => ({ id: l.id, name: l.id }))} value={level} onChange={setLevel} />
-      <Button full variant="dark" disabled={name.trim().length < 2} onClick={() => onAdd({ id: 'f:' + name.trim(), name: name.trim(), level })}>اضافه شود</Button>
+      <div className="invite">
+        <p className="label">عضو نیست؟ لینک دعوت بفرستید</p>
+        <div className="invite-row">
+          <label className="field"><Icon name="phone" /><input inputMode="numeric" dir="ltr" placeholder="0912 345 6789" value={phone} onChange={(e) => setPhone(e.target.value)} /></label>
+          <Button variant="dark" disabled={!okPhone} onClick={invite}>ارسال</Button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -314,9 +434,9 @@ function StepGames({ w, set, onNext, onCreate }) {
           <Icon name="plus" size={26} /><div><b>خودم یه بازی باز می‌سازم</b><small>زمین رو انتخاب کنید، بقیه رو ما پیدا می‌کنیم</small></div>
         </motion.button>
       </motion.div>
-      <div className="cta-bar">
+      <CtaBar>
         <Button full variant="dark" disabled={!w.gameId} onClick={onNext}>{w.gameId ? 'پیوستن و پرداخت سهم' : 'یک بازی انتخاب کنید'}</Button>
-      </div>
+      </CtaBar>
     </div>
   )
 }
@@ -374,7 +494,7 @@ function StepCoach({ w, set, onNext }) {
         </motion.section>
       )}
       {coach && COACH_PACKS.find((p) => p.id === w.pack)?.sessions > 1 && <p className="hint">📅 جلسه‌ها هر هفته همان روز و ساعتی است که در مرحله‌ی بعد انتخاب می‌کنید؛ همه همان لحظه در تقویم ثبت می‌شوند.</p>}
-      <div className="cta-bar"><Button full variant="dark" disabled={!coach} onClick={onNext}>انتخاب روز و ساعت</Button></div>
+      <CtaBar><Button full variant="dark" disabled={!coach} onClick={onNext}>انتخاب روز و ساعت</Button></CtaBar>
     </div>
   )
 }
@@ -406,7 +526,7 @@ function StepEvent({ w, set, onNext }) {
           })}
         </div>
       ))}
-      <div className="cta-bar"><Button full variant="dark" disabled={!w.eventId} onClick={onNext}>ثبت‌نام</Button></div>
+      <CtaBar><Button full variant="dark" disabled={!w.eventId} onClick={onNext}>ثبت‌نام</Button></CtaBar>
     </div>
   )
 }
@@ -485,7 +605,7 @@ function StepPay({ w, set, onDone }) {
           { kind: 'package', item: series.id, name: `${series.name} زمین`, total }, useMethod)
       } else {
         const full = priceFor(w.date, w.start, w.dur, club.pricing) * (1 - off)
-        r = s.book({ court: w.court, date: w.date, start: w.start, dur: w.dur, type: isOpen ? 'open' : 'private', players: filled.map((p) => p.id), levels: isOpen ? w.levels : null, price: full }, useMethod, total)
+        r = s.book({ court: w.court, date: w.date, start: w.start, dur: w.dur, type: isOpen ? 'open' : 'private', players: filled.map((p) => p.id), levels: isOpen ? w.levels : null, wantSide: isOpen ? w.wantSide : null, price: full }, useMethod, total)
       }
       if (r?.error) {
         setBusy(false); chime('alarm')
@@ -510,7 +630,7 @@ function StepPay({ w, set, onDone }) {
               </motion.button>
             ))}
           </div>
-          {isOpen && <p className="hint">پکیج برای رزرو خصوصی است؛ برای خرید پکیج، در مرحله‌ی قبل «یار کم دارید؟» را خاموش کنید.</p>}
+          {isOpen && <p className="hint">پکیج برای تیم کامل است؛ برای خرید پکیج، در مرحله‌ی قبل «تیم کامله» را انتخاب کنید.</p>}
         </section>
       )}
       <div className="pay-ticket">
@@ -544,11 +664,11 @@ function StepPay({ w, set, onDone }) {
       </div>
       <Loading show={busy} text={useMethod === 'online' ? 'اتصال به درگاه پرداخت…' : count > 1 ? `ثبت ${fa(count)} جلسه در تقویم…` : 'در حال ثبت رزرو…'} />
       <p className="hint">لغو رایگان هر جلسه تا ۶ ساعت قبل از شروع — مبلغ همان جلسه به کیف پول برمی‌گرده.</p>
-      <div className="cta-bar">
+      <CtaBar>
         <Button full variant="q" disabled={busy || blocked} onClick={confirm}>
           {busy ? (useMethod === 'online' ? 'اتصال به درگاه…' : 'در حال ثبت…') : `پرداخت ${toman(total)}`}
         </Button>
-      </div>
+      </CtaBar>
     </div>
   )
 }

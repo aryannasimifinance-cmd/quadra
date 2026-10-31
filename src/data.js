@@ -20,7 +20,7 @@ export const DURATIONS = [
   { h: 3, name: '۳ ساعت' },
 ]
 
-export const DEFAULT_PRICING = { offpeak: 1200000, peak: 1600000, peakFrom: 17 } // هر ساعت، کل زمین
+export const DEFAULT_PRICING = { offpeak: 1200000, peak: 1200000, peakFrom: 17 } // هر ساعت، کل زمین
 
 export const LEVELS = [
   { id: 'A', title: 'حرفه‌ای', desc: 'سابقه مسابقه‌ی رسمی، کنترل کامل همه‌ی ضربه‌ها', color: '#141413', base: 2200 },
@@ -183,13 +183,22 @@ export function priceFor(date, start, dur, pricing) {
 // ---------- اعضا ----------
 const FIRST = ['آرین', 'نیما', 'سارا', 'مهسا', 'کیان', 'پارسا', 'الناز', 'رها', 'سینا', 'امید', 'تینا', 'بهار', 'ماهان', 'یاسمن', 'دانیال', 'نگار', 'آرمان', 'شیوا', 'پویا', 'هستی', 'رامین', 'لیلا', 'سپهر', 'مریم', 'کامیار', 'ترانه', 'بردیا', 'آیدا']
 const LAST = ['کریمی', 'محمدی', 'رضایی', 'نوری', 'صالحی', 'جعفری', 'فرهادی', 'شریفی', 'طاهری', 'بهرامی', 'احمدی', 'موسوی', 'کاظمی', 'یزدانی']
+// اعضای فعلی باشگاه (بقیه نمونه‌اند)
+const CLUB_NAMES = ['خشایار نظری', 'آریان نسیمی‌فر', 'یاشار امین‌ترابی', 'امیرحسین حیدری', 'عرفان دیو', 'فراز گلچین', 'اشکان دهقان', 'نعیم تهرانی', 'خالد بوکوفسکی', 'اصغر سگ‌باز', 'اون یارو که همیشه داد می‌زنه']
+export const SIDES = [
+  { id: 'right', name: 'سمت راست', short: 'راست', desc: 'بیشتر از سمت راست زمین بازی می‌کنید' },
+  { id: 'left', name: 'سمت چپ', short: 'چپ', desc: 'بیشتر از سمت چپ زمین بازی می‌کنید' },
+  { id: 'both', name: 'هر دو سمت', short: 'هر دو', desc: 'هر جا تیم لازم داشت بازی می‌کنید' },
+]
+export const sideById = (id) => SIDES.find((x) => x.id === id)
 export const MEMBERS = Array.from({ length: 56 }, (_, i) => {
   const r = (k) => hash('m' + i + k)
   const level = LEVELS[Math.min(8, Math.floor(r('lv') * r('lv2') * 9 + r('l3') * 3))].id
   const games = 3 + Math.floor(r('g') * 160)
   return {
     id: 'm' + i,
-    name: FIRST[Math.floor(r('f') * FIRST.length)] + ' ' + LAST[Math.floor(r('l') * LAST.length)],
+    name: CLUB_NAMES[i] || FIRST[Math.floor(r('f') * FIRST.length)] + ' ' + LAST[Math.floor(r('l') * LAST.length)],
+    side: ['right', 'left', 'both'][Math.floor(r('sd') * 3)],
     phone: '0912' + String(1000000 + Math.floor(r('p') * 8999999)),
     level, games, wins: Math.floor(games * (0.3 + r('w') * 0.45)),
     points: levelById(level).base + Math.floor(r('pt') * 240),
@@ -320,7 +329,7 @@ export function seedClub() {
     return { id: 'S-' + (500 + i), kind: 'package', item: p.id, name: p.name, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price, method: r('pm') < 0.7 ? 'online' : 'card', at: Date.now() - ago * 864e5 }
   })
   const stock = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.stock]))
-  return { v: 6, pricing, off: {}, bookings, orders, sales, stock, expenses: [] }
+  return { v: 7, pricing, off: {}, bookings, orders, sales, stock, expenses: [] }
 }
 
 // ---------- گیمیفیکیشن ----------

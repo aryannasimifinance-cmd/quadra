@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { BADGES, COACHES, CREDITS, RANKS, XP_GUIDE, fa, levelById, productById, rankOf, toman } from '../../data'
+import { BADGES, COACHES, CREDITS, RANKS, XP_GUIDE, fa, levelById, productById, rankOf, sideById, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { ME, myPoints, useStore } from '../../store'
 import { activeMembership, myBookings, isUpcoming } from '../../select'
@@ -30,7 +30,7 @@ export default function Me({ nav }) {
           <Ring value={rank.progress} size={84} stroke={5} track="rgba(255,255,255,.15)"><Avatar name={user.name} size={64} me /></Ring>
           <div className="grow">
             <h2>{user.name}</h2>
-            <p><LevelPill id={user.level} /> {levelById(user.level).title} · <span style={{ color: rank.c === '#141413' ? '#fff' : rank.c }}>{rank.name}</span></p>
+            <p><LevelPill id={user.level} /> {levelById(user.level).title}{user.side ? ` · ${sideById(user.side).name}` : ''} · <span style={{ color: rank.c === '#141413' ? '#fff' : rank.c }}>{rank.name}</span></p>
           </div>
         </div>
         <div className="me-xp">

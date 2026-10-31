@@ -266,6 +266,13 @@ export function Stepper({ value, onChange, min = 0, max = 99 }) {
   )
 }
 
+// نوار دکمه‌ی پایین ویزارد؛ با پورتال بیرون از محتوای انیمیشن‌دار رندر می‌شود تا موقع اسکرول جابه‌جا نشود
+export function CtaBar({ children }) {
+  const root = document.getElementById('portal')
+  if (!root) return null
+  return createPortal(<div className="cta-bar">{children}</div>, root)
+}
+
 export const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { LEVELS, fa } from '../data'
+import { LEVELS, SIDES, fa } from '../data'
 import { celebrate, chime, haptic } from '../fx'
 import { useStore } from '../store'
 import { Button, Icon, LevelPill, Photo, TopBar } from '../components/ui'
@@ -15,9 +15,9 @@ export default function Gate() {
   const [step, setStep] = useState('welcome') // welcome → phone → otp → name → level → done | admin
   const [mode, setMode] = useState('signup')
   const [dir, setDir] = useState(1)
-  const [form, setForm] = useState({ phone: '', name: '', level: null })
+  const [form, setForm] = useState({ phone: '', name: '', level: null, side: null })
   const set = (p) => setForm((f) => ({ ...f, ...p }))
-  const order = ['welcome', 'phone', 'otp', 'name', 'level', 'done']
+  const order = ['welcome', 'phone', 'otp', 'name', 'level', 'side', 'done']
   const go = (s) => { setDir(order.indexOf(s) >= order.indexOf(step) ? 1 : -1); setStep(s) }
   const back = () => go(step === 'admin' ? 'welcome' : order[order.indexOf(step) - 1])
   const afterOtp = () => {
@@ -26,7 +26,7 @@ export default function Gate() {
     go('name')
   }
   const finish = () => { celebrate(); chime('level'); haptic([20, 40, 20]); go('done') }
-  const progress = { phone: 0, otp: 1, name: 2, level: 3 }[step]
+  const progress = { phone: 0, otp: 1, name: 2, level: 3, side: 4 }[step]
 
   return (
     <div className="auth">
@@ -39,11 +39,12 @@ export default function Gate() {
           {step === 'admin' && <AdminLogin onBack={back} />}
           {!['welcome', 'done', 'admin'].includes(step) && (
             <div className="auth-card">
-              <TopBar onBack={back} total={4} step={progress} title={mode === 'login' && step === 'phone' ? 'ورود' : 'عضویت در کوادرا'} transparent />
+              <TopBar onBack={back} total={5} step={progress} title={mode === 'login' && step === 'phone' ? 'ورود' : 'عضویت در کوادرا'} transparent />
               {step === 'phone' && <PhoneStep value={form.phone} onChange={(phone) => set({ phone })} onNext={() => go('otp')} mode={mode} />}
               {step === 'otp' && <OtpStep phone={form.phone} onNext={afterOtp} />}
               {step === 'name' && <NameStep form={form} set={set} onNext={() => go('level')} />}
-              {step === 'level' && <LevelStep value={form.level} onChange={(level) => set({ level })} onNext={finish} />}
+              {step === 'level' && <LevelStep value={form.level} onChange={(level) => set({ level })} onNext={() => go('side')} />}
+              {step === 'side' && <SideStep value={form.side} onChange={(side) => set({ side })} onNext={finish} />}
             </div>
           )}
           {step === 'done' && <Done form={form} onEnter={() => loginPlayer({ ...form, joined: Date.now() })} />}
@@ -285,7 +286,28 @@ function LevelStep({ value, onChange, onNext }) {
           </motion.div>
         )}
       </AnimatePresence>
-      {quiz === null && <Button full variant="q" disabled={!value} onClick={onNext}>تموم شد!</Button>}
+      {quiz === null && <Button full variant="q" disabled={!value} onClick={onNext}>ادامه</Button>}
+    </div>
+  )
+}
+
+function SideStep({ value, onChange, onNext }) {
+  return (
+    <div className="step-body">
+      <h2>کدام سمت زمین بازی می‌کنید؟</h2>
+      <p className="muted">برای پیدا کردن یار مناسب — بعداً هم قابل تغییر است.</p>
+      <div className="side-pick">
+        {SIDES.map((x) => (
+          <button key={x.id} className={`side-opt ${value === x.id ? 'on' : ''}`} onClick={() => { haptic(6); onChange(x.id) }}>
+            <svg viewBox="0 0 40 56" className={`side-ic ${x.id}`} aria-hidden="true">
+              <rect x="2" y="2" width="36" height="52" rx="4" /><line x1="2" y1="28" x2="38" y2="28" /><line x1="20" y1="28" x2="20" y2="54" />
+              <rect className="hl-r" x="20" y="28" width="18" height="26" /><rect className="hl-l" x="2" y="28" width="18" height="26" />
+            </svg>
+            <div className="grow"><b>{x.name}</b><small>{x.desc}</small></div>
+          </button>
+        ))}
+      </div>
+      <Button full variant="q" disabled={!value} onClick={onNext}>تموم شد!</Button>
     </div>
   )
 }

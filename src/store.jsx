@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { COURTS, PACKAGES, levelById, productById, seedClub, todayKey } from './data'
 
 const KEY = 'quadra-v1'
-const SEED_V = 6
+const SEED_V = 7
 const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
 
 function load() {
