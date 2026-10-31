@@ -154,7 +154,7 @@ img { display: block; }
 .brand { display: flex; align-items: center; justify-content: space-between; }
 .brand-tag { font-size: 12px; opacity: .7; }
 .welcome-copy { margin-top: auto; }
-.welcome-copy h1 { font-size: 36px; line-height: 1.45; font-weight: 700; letter-spacing: -.3px; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
+.welcome-copy h1 { font-size: 44px; line-height: 1.35; font-weight: 700; letter-spacing: -.3px; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
 .welcome-copy h1 span { display: block; }
 .welcome-copy h1 .hl { color: var(--q); font-weight: 700; }
 .slogan { display: inline-flex; align-items: center; gap: 10px; color: var(--q); font-size: 14px; font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
