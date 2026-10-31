@@ -104,11 +104,11 @@ function useMatchmaking(setTab) {
         : MEMBERS.filter((m) => b.levels.includes(m.level) && !b.players.includes(m.id))
       if (!pool.length) return
       const m = pool[Math.floor(Math.random() * pool.length)]
-      const body = `${m.name} (سطح ${m.level} · ${fa(m.games)} بازی) ${b.visibility === 'private' ? 'دعوت شما را قبول کرد و می‌خواد به' : 'می‌خواد به'} بازی ${dayLabel(b.date)} ساعت ${hourLabel(b.start)} در ${courtById(b.court).name} بپیونده.`
+      const body = `${m.name} (سطح ${m.level}، ${fa(m.games)} بازی) ${b.visibility === 'private' ? 'دعوت شما را قبول کرد و می‌خواد به' : 'می‌خواد به'} بازی ${dayLabel(b.date)} ساعت ${hourLabel(b.start)} در ${courtById(b.court).name} بپیونده.`
       chime('alarm'); haptic([60, 40, 60])
-      systemNotify('کوادرا · درخواست پیوستن', body)
+      systemNotify('کوادرا، درخواست پیوستن', body)
       notify({ icon: '🙋', title: 'درخواست پیوستن', body })
-      toast({ icon: '🙋', title: `${m.name.split(' ')[0]} می‌خواد بازی کنه`, body: `سطح ${m.level} · ${courtById(b.court).name}`, duration: 6500,
+      toast({ icon: '🙋', title: `${m.name.split(' ')[0]} می‌خواد بازی کنه`, body: `سطح ${m.level}، ${courtById(b.court).name}`, duration: 6500,
         action: { label: 'قبول', run: () => { fillSpot(b.id, m.id); chime('success'); toast({ icon: '🧩', title: 'یار جدید اضافه شد', body: `${fa(4 - b.players.length - 1)} جای خالی مونده` }) } } })
     }, 10000)
     return () => clearInterval(t)
@@ -121,7 +121,7 @@ function useMatchmaking(setTab) {
       const g = openGames(club, user.level).find((b) => !b.mine && b.gap <= 1)
       if (!g) return
       chime('alarm'); haptic([40, 30, 40])
-      toast({ icon: '📣', title: 'بازی هم‌سطح شما پیدا شد', body: `${dayLabel(g.date)} ${hourLabel(g.start)} · ${fa(4 - g.players.length)} جای خالی`, duration: 6000, action: { label: 'ببینید', run: () => setTab('games') } })
+      toast({ icon: '📣', title: 'بازی هم‌سطح شما پیدا شد', body: `${dayLabel(g.date)} ${hourLabel(g.start)}، ${fa(4 - g.players.length)} جای خالی`, duration: 6000, action: { label: 'ببینید', run: () => setTab('games') } })
     }, 15000)
     return () => clearTimeout(t)
   }, [])

@@ -126,7 +126,7 @@ function AdminLogin({ onBack }) {
         <label className="field dark"><Icon name="lock" /><input dir="ltr" type="password" placeholder="رمز عبور" value={p} onChange={(e) => setP(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} /></label>
         <Button full variant="q" onClick={submit} disabled={!u || !p || busy}>{busy ? 'در حال ورود…' : 'ورود به پنل'}</Button>
         <Loading show={busy} text="ورود به پنل مدیریت…" />
-        <p className="demo-hint">نسخه‌ی نمایشی — نام کاربری <code>admin</code> · رمز <code>quadra</code></p>
+        <p className="demo-hint">نسخه‌ی نمایشی — نام کاربری <code>admin</code>، رمز <code>quadra</code></p>
       </motion.div>
     </div>
   )
@@ -264,7 +264,7 @@ function LevelStep({ value, onChange, onNext }) {
             </div>
           </motion.div>
         ) : (
-          <motion.div key={'q' + quiz} className="quiz" initial={{ x: -40, opacity: 0, rotate: -2 }} animate={{ x: 0, opacity: 1, rotate: 0 }} exit={{ x: 40, opacity: 0, rotate: 2 }}>
+          <motion.div key={'q' + quiz} className="quiz" initial={{ x: -40, opacity: 0, rotate: -2 }} animate={{ x: 0, opacity: 1, rotate: 0 }} exit={{ x: 40, opacity: 0, rotate: 2, pointerEvents: 'none' }}>
             <div className="quiz-top">
               <span className="quiz-n">{fa(quiz + 1)} / {fa(QUIZ.length)}</span>
               <button className="link" onClick={prev}>{quiz === 0 ? 'انصراف' : 'سؤال قبلی'}</button>
@@ -311,8 +311,8 @@ function Done({ form, onEnter }) {
         <LevelPill id={form.level} big />
       </motion.div>
       <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{form.name}، آماده‌اید!</motion.h2>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.45 }}>سطح شروع: {form.level} · رتبه‌ی باشگاه: تازه‌وارد</motion.p>
-      <motion.div className="xp-pop" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}>+۲۰ XP · ۵۰۰ هزار تومان اعتبار هدیه</motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.45 }}>سطح شروع: {form.level}، رتبه‌ی باشگاه: تازه‌وارد</motion.p>
+      <motion.div className="xp-pop" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}>+۲۰ XP، ۵۰۰ هزار تومان اعتبار هدیه</motion.div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} style={{ width: '100%' }}>
         <Button full variant="q" onClick={onEnter}>بریم!</Button>
       </motion.div>

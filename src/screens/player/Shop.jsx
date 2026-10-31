@@ -97,7 +97,7 @@ export default function Shop() {
               </motion.button>
               {club.stock[p.id] <= 3 && <span className="p-low">{club.stock[p.id] ? `فقط ${fa(club.stock[p.id])} عدد` : 'ناموجود'}</span>}
               <div className="p-info">
-                <small>{p.brand} · ★ {fa(p.rating)}</small>
+                <small>{p.brand}، ★ {fa(p.rating)}</small>
                 <b>{p.name}</b>
                 <div className="p-price">{p.was && <s>{fa(p.was / 1000)}</s>}<span>{toman(p.price)}</span></div>
               </div>
@@ -171,21 +171,21 @@ function Product({ p, onClose }) {
           </motion.div>
         </AnimatePresence>
       </div>
-      <small className="pd-brand">{p.brand} · ★ {fa(p.rating)} ({fa(p.reviews)} نظر)</small>
+      <small className="pd-brand">{p.brand}، ★ {fa(p.rating)} ({fa(p.reviews)} نظر)</small>
       <h2>{p.name}</h2>
       <div className="pd-price">{p.was && <s>{toman(p.was)}</s>}<b>{toman(p.price)}</b></div>
       <p className="muted">{p.desc}</p>
-      {p.colors && (<><p className="label">رنگ · {color.n}</p>
+      {p.colors && (<><p className="label">رنگ، {color.n}</p>
         <div className="swatches">{p.colors.map((c) => (
           <motion.button key={c.c} whileTap={{ scale: 0.85 }} className={color.c === c.c ? 'on' : ''} style={{ '--c': c.c }} onClick={() => { haptic(6); setColor(c) }} aria-label={c.n} />
         ))}</div></>)}
       {p.sizes && (<><p className="label">سایز</p><Chips id="sz" small value={size} onChange={setSize} options={p.sizes.map((s) => ({ id: s, name: s }))} /></>)}
       <div className="specs">{p.specs.map(([k, v]) => <div key={k}><span>{k}</span><b>{v}</b></div>)}{p.level && <div><span>سطح</span><b>{p.level}</b></div>}</div>
-      <p className="pickup"><Icon name="box" size={16} /> تحویل از پذیرش باشگاه · همان روز</p>
+      <p className="pickup"><Icon name="box" size={16} /> تحویل از پذیرش باشگاه، همان روز</p>
       <div className="pd-cta">
         <Stepper value={qty} onChange={setQty} min={1} max={Math.max(1, stock)} />
         <Button full variant="q" disabled={!stock || added} onClick={add}>
-          {!stock ? 'ناموجود' : added ? '✓ اضافه شد' : `افزودن · ${toman(p.price * qty)}`}
+          {!stock ? 'ناموجود' : added ? '✓ اضافه شد' : `افزودن، ${toman(p.price * qty)}`}
         </Button>
       </div>
     </div>
@@ -205,7 +205,7 @@ function Cart({ onClose }) {
     setTimeout(() => {
       const r = checkout(method)
       celebrate(); chime('level')
-      toast({ icon: '📦', title: `سفارش ${r.order.id} ثبت شد`, body: `+${fa(r.xp)} XP · آماده‌ی تحویل در پذیرش`, duration: 4500 })
+      toast({ icon: '📦', title: `سفارش ${r.order.id} ثبت شد`, body: `+${fa(r.xp)} XP، آماده‌ی تحویل در پذیرش`, duration: 4500 })
       setBusy(false); onClose()
     }, method === 'online' ? 1300 : 600)
   }
@@ -217,7 +217,7 @@ function Cart({ onClose }) {
         return (
           <motion.div key={i} layout className="cart-item" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
             <ProductImage p={p} color={x.colorHex} />
-            <div className="grow"><b>{p.name}</b><small>{[x.size && `سایز ${x.size}`, x.color].filter(Boolean).join(' · ')}</small><span>{toman(p.price * x.qty)}</span></div>
+            <div className="grow"><b>{p.name}</b><small>{[x.size && `سایز ${x.size}`, x.color].filter(Boolean).join('، ')}</small><span>{toman(p.price * x.qty)}</span></div>
             <Stepper value={x.qty} onChange={(n) => setQty(i, n)} />
           </motion.div>
         )

@@ -5,7 +5,7 @@ export function haptic(pattern = 8) {
 }
 
 // موج لمس روی کارت‌ها و باکس‌ها — یک شنونده‌ی سراسری، بدون تغییر در تک‌تک کامپوننت‌ها
-const BOX = 'button, .coach-card, .intent-card, .event-banner, .ticket, .quest, .og-card, .pkg, .coach-big, .ev-card, .peek'
+const BOX = 'button, .p-card, .coach-card, .intent-card, .event-banner, .ticket, .quest, .og-card, .pkg, .coach-big, .ev-card, .peek'
 export function installTapFx() {
   document.addEventListener('pointerdown', (e) => {
     const el = e.target.closest?.(BOX)

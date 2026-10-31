@@ -28,8 +28,8 @@ export function payments(club, user) {
     const st = payState(b)
     out.push({
       id: b.id, ref: b, at: fromKey(b.date).getTime() + b.start * 36e5, kind: b.type === 'coach' ? 'coach' : 'court',
-      title: b.type === 'coach' ? `کلاس ${coachById(b.coach)?.name}` : `${courtById(b.court).name} · ${b.type === 'open' ? 'بازی باز' : 'خصوصی'}`,
-      sub: `${dayMonth(fromKey(b.date))} · ${range(b.start, b.dur)}`, who: who(b.by, user), amount: b.price, paid: st === 'refunded' ? 0 : b.paid,
+      title: b.type === 'coach' ? `کلاس ${coachById(b.coach)?.name}` : `${courtById(b.court).name}، ${b.type === 'open' ? 'بازی باز' : 'خصوصی'}`,
+      sub: `${dayMonth(fromKey(b.date))}، ${range(b.start, b.dur)}`, who: who(b.by, user), amount: b.price, paid: st === 'refunded' ? 0 : b.paid,
       due: st === 'paid' || st === 'void' || st === 'refunded' ? 0 : b.price - b.paid, method: b.method, status: st,
     })
   })

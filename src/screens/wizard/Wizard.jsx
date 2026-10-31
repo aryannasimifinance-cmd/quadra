@@ -25,8 +25,8 @@ const INTENTS = [
   { id: 'court', name: 'رزرو زمین', desc: 'تک جلسه یا پکیج ۵ و ۱۰ جلسه؛ جای خالی رو با هم‌سطح پر می‌کنیم', img: './img/court-pano.jpg', xp: 50, icon: '🎾' },
   { id: 'match', name: 'ساخت مچ', desc: 'یار ندارید؟ به بازی باز هم‌سطحتون بپیوندید', img: './img/court-indoor.jpg', xp: 40, icon: '⚡' },
   { id: 'coach', name: 'پدل با مربی', desc: 'تک جلسه یا پکیج ۵ و ۱۰ جلسه', img: './img/welcome.jpg', xp: 40, icon: '🧢' },
-  { id: 'friday', name: 'مسابقات آدینه', desc: 'هر جمعه صبح · دوستانه', img: './img/welcome-courts.jpg', xp: 60, icon: '☀️' },
-  { id: 'official', name: 'تورنمنت‌های رسمی', desc: 'گروهی + حذفی · امتیاز رنکینگ', img: './img/welcome-night.jpg', xp: 80, icon: '🏆' },
+  { id: 'friday', name: 'مسابقات آدینه', desc: 'هر جمعه صبح، دوستانه', img: './img/welcome-courts.jpg', xp: 60, icon: '☀️' },
+  { id: 'official', name: 'تورنمنت‌های رسمی', desc: 'گروهی + حذفی، امتیاز رنکینگ', img: './img/welcome-night.jpg', xp: 80, icon: '🏆' },
 ]
 
 export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
@@ -77,7 +77,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
 function Crumbs({ w, step }) {
   const bits = [INTENTS.find((x) => x.id === w.intent)?.name]
   if (!EVENT_INTENTS.includes(w.intent) && !['when', 'coach'].includes(step)) bits.push(`${dayLabel(w.date)} ${dayNum(fromKey(w.date))}`)
-  if (w.start != null && ['people', 'pay'].includes(step)) bits.push(`${courtById(w.court).name} · ${hourLabel(w.start)}`)
+  if (w.start != null && ['people', 'pay'].includes(step)) bits.push(`${courtById(w.court).name}، ${hourLabel(w.start)}`)
   if (w.coachId && step !== 'coach') bits.push(coachById(w.coachId).name)
   return (
     <div className="crumbs">
@@ -182,7 +182,7 @@ function MonthCal({ value, onPick }) {
           </div>
         </div>
       ))}
-      <p className="mcal-note">روزهای کم‌رنگ پر هستند · پنجشنبه و جمعه رنگی</p>
+      <p className="mcal-note">روزهای کم‌رنگ پر هستند، پنجشنبه و جمعه رنگی</p>
     </div>
   )
 }
@@ -284,18 +284,18 @@ function StepSlot({ w, set, onNext }) {
           </div>
         ))}
       </div>
-      <p className="slot-legend"><i className="lg free" /> آزاد · {isCoach ? 'قیمت جلسه (تومان)' : 'قیمت هر ساعت زمین (تومان)'} <i className="lg sel" /> انتخاب شما <i className="lg busy" /> رزرو شده{showPeak && <> <i className="lg peak" /> پیک</>}</p>
+      <p className="slot-legend"><i className="lg free" /> آزاد، {isCoach ? 'قیمت جلسه (تومان)' : 'قیمت هر ساعت زمین (تومان)'} <i className="lg sel" /> انتخاب شما <i className="lg busy" /> رزرو شده{showPeak && <> <i className="lg peak" /> پیک</>}</p>
       <AnimatePresence>
         {w.start != null && (
           <motion.div className="sel-sum" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            <div className="grow"><b>{courtById(w.court).name} · {range(w.start, w.dur)}</b><small>{fa(w.dur)} ساعت{!isCoach && ` · هر نفر ${toman(total / 4)}`}</small></div>
+            <div className="grow"><b>{courtById(w.court).name}، {range(w.start, w.dur)}</b><small>{fa(w.dur)} ساعت{!isCoach && `، هر نفر ${toman(total / 4)}`}</small></div>
             <em>{toman(total)}</em>
           </motion.div>
         )}
       </AnimatePresence>
       <CtaBar>
         <Button full variant="dark" disabled={w.start == null} onClick={onNext}>
-          {w.start == null ? 'یک ساعت آزاد انتخاب کنید' : <>ادامه · {fa(w.dur)} ساعت روی {courtById(w.court).name}</>}
+          {w.start == null ? 'یک ساعت آزاد انتخاب کنید' : <>ادامه، {fa(w.dur)} ساعت روی {courtById(w.court).name}</>}
         </Button>
       </CtaBar>
     </div>
@@ -425,7 +425,7 @@ function AddPlayer({ onAdd, exclude, noPhone }) {
       const link = `${location.origin}${location.pathname}?invite=${digits.slice(-4)}`
       const text = `${name} عزیز، به کوادرا بپیوندید و با هم پدل بازی کنیم: ${link}`
       if (navigator.share) navigator.share({ title: 'QUADRA', text }).catch(() => {})
-      toast({ icon: '✉️', title: 'لینک عضویت فرستاده شد', body: `${name} · ${faD(digits)}` })
+      toast({ icon: '✉️', title: 'لینک عضویت فرستاده شد', body: `${name}، ${faD(digits)}` })
     }
     onAdd({ id: 'f:' + name, name, level: null, guest: true })
   }
@@ -502,9 +502,9 @@ export function GameCard({ g, on, onClick }) {
       <div className="og-wide-body">
         <div className="og-top">
           <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک' : `${fa(g.gap)} سطح فاصله`}</span>
-          <small>{c.name} · {c.kind}</small>
+          <small>{c.name}، {c.kind}</small>
         </div>
-        <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+        <b>{dayLabel(g.date)}، {range(g.start, g.dur)}</b>
         <div className="og-names">
           <span>سازنده: <b>{playerName(g.by)}</b></span>
           {others.length > 0 && <span>بازیکن‌ها: {others.map((p) => playerName(p).split(' ')[0]).join('، ')}</span>}
@@ -531,7 +531,7 @@ function StepCoach({ w, set, onNext }) {
             <Photo src={c.img} />
             <div className="grow">
               <b>{c.name} <LevelPill id={c.level} /></b>
-              <small>{c.title} · {fa(c.exp)} سال سابقه · ★ {fa(c.avg)} ({fa(c.count)} نظر)</small>
+              <small>{c.title}، {fa(c.exp)} سال سابقه، ★ {fa(c.avg)} ({fa(c.count)} نظر)</small>
               <ul className="record">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
             </div>
             <em>{short(c.price)}<small>هر جلسه</small></em>
@@ -572,9 +572,9 @@ function StepEvent({ w, set, onNext }) {
                 <Photo src={e.img} />
                 <div className="ev-shade" />
                 <div className="ev-txt">
-                  <span className={`pill-q ${kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
+                  <span className={`pill-q ${kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))}، {hourLabel(e.start)}</span>
                   <b>{e.title}</b>
-                  <small>{e.format} · سطح {e.levels.join(' / ')}</small>
+                  <small>{e.format}، سطح {e.levels.join(' / ')}</small>
                   <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.taken)}/{fa(e.cap)}</span></div>
                 </div>
                 <em>{has ? 'ثبت‌نام شدید' : short(e.fee)}</em>
@@ -610,29 +610,29 @@ function StepPay({ w, set, onDone }) {
   let title, sub, lines = [], total, kind
   if (w.intent === 'match' && game) {
     kind = 'join'
-    title = 'پیوستن به بازی باز'; sub = `${dayLabel(game.date)} · ${range(game.start, game.dur)} · ${courtById(game.court).name}`
+    title = 'پیوستن به بازی باز'; sub = `${dayLabel(game.date)}، ${range(game.start, game.dur)}، ${courtById(game.court).name}`
     lines = [['کل زمین', toman(game.price)], ['سهم شما (۱ از ۴)', toman(game.price / 4)]]
     total = game.price / 4
     if (off) { lines.push(['تخفیف عضویت', '−' + toman(total * off)]); total *= 1 - off }
   } else if (w.intent === 'coach') {
     kind = count > 1 ? 'coach-series' : 'coach'
-    title = `${pack.name} · ${coach.name}`; sub = `${count > 1 ? 'از ' : ''}${dayLabel(w.date)} · ${range(w.start, 1)}`
+    title = `${pack.name}، ${coach.name}`; sub = `${count > 1 ? 'از ' : ''}${dayLabel(w.date)}، ${range(w.start, 1)}`
     total = coachPackPrice(coach, pack)
     lines = [[`${fa(count)} جلسه × ${toman(coach.price)}`, toman(coach.price * count * (pack.mult || 1))], pack.off > 0 && ['تخفیف پکیج', '−' + toman(coach.price * count * pack.off)]].filter(Boolean)
   } else if (EVENT_INTENTS.includes(w.intent)) {
     kind = 'event'
-    title = ev.title; sub = `${dayLabel(ev.date)} · ${hourLabel(ev.start)} · ${ev.format}`
+    title = ev.title; sub = `${dayLabel(ev.date)}، ${hourLabel(ev.start)}، ${ev.format}`
     total = ev.fee; lines = [['ورودی', toman(ev.fee)], ['جایزه', ev.prize]]
   } else if (count > 1) {
     kind = 'court-series'
     const base = sessPrices.reduce((a, x) => a + x, 0)
-    title = `${series.name} زمین`; sub = `هر هفته · ${weekday(fromKey(w.date))} · ${range(w.start, w.dur)}`
+    title = `${series.name} زمین`; sub = `هر هفته، ${weekday(fromKey(w.date))}، ${range(w.start, w.dur)}`
     total = Math.round(base * (1 - series.off) / 1000) * 1000
     lines = [[`${fa(plan.sessions.length)} جلسه × ${DURATIONS.find((d) => d.h === w.dur).name}`, toman(base)], ['تخفیف پکیج', '−' + toman(base - total)]]
   } else {
     kind = 'court'
     const base = priceFor(w.date, w.start, w.dur, club.pricing)
-    title = isOpen ? 'بازی باز' : 'رزرو زمین'; sub = `${dayLabel(w.date)} · ${range(w.start, w.dur)} · ${courtById(w.court).name}`
+    title = isOpen ? 'بازی باز' : 'رزرو زمین'; sub = `${dayLabel(w.date)}، ${range(w.start, w.dur)}، ${courtById(w.court).name}`
     const full = base * (1 - off)
     lines = [['زمین ' + DURATIONS.find((d) => d.h === w.dur).name, toman(base)], off > 0 && ['تخفیف عضویت', '−' + toman(base * off)], isOpen && ['سهم شما (بقیه سهم خودشون رو می‌دن)', toman(full / 4)]].filter(Boolean)
     total = isOpen ? full / 4 : full
@@ -656,7 +656,7 @@ function StepPay({ w, set, onDone }) {
       else if (kind === 'coach') r = s.book({ court: w.court, date: w.date, start: w.start, dur: 1, type: 'coach', coach: coach.id, players: [ME], price: total, levels: null }, useMethod, total)
       else if (kind === 'coach-series') {
         r = s.bookSeries(plan.sessions.map((x) => ({ court: x.court, date: x.date, start: x.start, dur: 1, type: 'coach', coach: coach.id, players: [ME], price: Math.round(total / count) })),
-          { kind: 'coach', item: coach.id, pack: pack.id, name: `${pack.name} · ${coach.name}`, total }, useMethod)
+          { kind: 'coach', item: coach.id, pack: pack.id, name: `${pack.name}، ${coach.name}`, total }, useMethod)
       } else if (kind === 'court-series') {
         r = s.bookSeries(plan.sessions.map((x, k) => ({ court: x.court, date: x.date, start: x.start, dur: x.dur, type: 'private', players: filled.map((p) => p.id), price: Math.round(sessPrices[k] * (1 - series.off)) })),
           { kind: 'package', item: series.id, name: `${series.name} زمین`, total }, useMethod)
@@ -702,7 +702,7 @@ function StepPay({ w, set, onDone }) {
           {plan.sessions.map((x, k) => (
             <motion.div key={x.date} className={`plan-row ${x.moved ? 'moved' : ''}`} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(k, 10) * 0.03 }}>
               <span className="plan-n">{fa(k + 1)}</span>
-              <div className="grow"><b>{weekday(fromKey(x.date))} {dayMonth(fromKey(x.date))}</b><small>{courtById(x.court).name}{x.moved ? ' · ساعت یا زمین جابه‌جا شد' : ''}</small></div>
+              <div className="grow"><b>{weekday(fromKey(x.date))} {dayMonth(fromKey(x.date))}</b><small>{courtById(x.court).name}{x.moved ? '، ساعت یا زمین جابه‌جا شد' : ''}</small></div>
               <span className="plan-t">{range(x.start, x.dur)}</span>
             </motion.div>
           ))}
@@ -740,10 +740,10 @@ function Success({ r, w, onHome, onGames }) {
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.35, duration: 0.45 }} /></svg>
       </motion.div>
       <motion.h2 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{r.kind === 'event' ? 'ثبت‌نام شد!' : r.kind === 'join' ? 'به بازی پیوستید!' : r.count > 1 ? 'پکیج رزرو شد!' : 'رزرو شد!'}</motion.h2>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.75 }} transition={{ delay: 0.4 }}>{r.title} · {r.sub}</motion.p>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.75 }} transition={{ delay: 0.4 }}>{r.title}، {r.sub}</motion.p>
       {r.count > 1 && <motion.p className="pill-q" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>{fa(r.count)} جلسه در تقویم شما ثبت شد</motion.p>}
       <motion.div className="xp-big" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.55, type: 'spring', stiffness: 300, damping: 14 }}>
-        +<CountUp to={r.xp || 0} duration={1} /> <small>XP{r.mult > 1 ? ' · ۲ برابر عضویت' : ''}</small>
+        +<CountUp to={r.xp || 0} duration={1} /> <small>XP{r.mult > 1 ? '، ۲ برابر عضویت' : ''}</small>
       </motion.div>
       {r.open && (
         <motion.div className="radar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>

@@ -46,7 +46,7 @@ export function Bookings({ ctx }) {
         <Search value={q} onChange={setQ} ph="نام مشتری" />
         <button className="adm-btn ghost sm" onClick={exp}><Icon name="download" size={16} />CSV</button>
       </div>
-      <p className="count">{fa(list.length)} رزرو · {toman(list.reduce((s, b) => s + b.price, 0))}</p>
+      <p className="count">{fa(list.length)} رزرو، {toman(list.reduce((s, b) => s + b.price, 0))}</p>
       <div className="tbl-wrap"><table className="tbl">
         <thead><tr><th>تاریخ</th><th>ساعت</th><th>زمین</th><th>نوع</th><th>رزروکننده</th><th>بازیکن</th><th>مبلغ</th><th>وضعیت</th><th>منبع</th></tr></thead>
         <tbody>{rows.map((b) => (
@@ -131,7 +131,7 @@ export function ShopAdmin() {
                 <motion.div key={o.id} layout className="kb-card">
                   <div className="row-between"><b dir="ltr">{o.id}</b><small>{fmt.format(o.at)}</small></div>
                   <small>{who(o.by, user)}</small>
-                  <ul>{o.items.map((x, i) => <li key={i}>{fa(x.qty)}× {productById(x.pid).name}{x.size ? ` · ${x.size}` : ''}</li>)}</ul>
+                  <ul>{o.items.map((x, i) => <li key={i}>{fa(x.qty)}× {productById(x.pid).name}{x.size ? `، ${x.size}` : ''}</li>)}</ul>
                   <div className="row-between"><b>{toman(o.total)}</b>
                     {k !== 'delivered' && <button className="adm-btn primary sm" onClick={() => { adminOrder(o.id, k === 'new' ? 'ready' : 'delivered'); chime('tap') }}>{k === 'new' ? 'آماده شد' : 'تحویل داده شد'}</button>}
                   </div>
@@ -178,7 +178,7 @@ export function Coaches() {
             <div className="ca-photo" style={{ backgroundImage: `url(${c.img})` }} />
             <div className="ca-body">
               <div className="row-between"><b>{c.name}</b><LevelPill id={c.level} /></div>
-              <small>{c.title} · ★ {fa(c.rating)} از {fa(c.reviews)} نظر ناشناس · {toman(c.price)}/جلسه</small>
+              <small>{c.title}، ★ {fa(c.rating)} از {fa(c.reviews)} نظر ناشناس، {toman(c.price)}/جلسه</small>
               <div className="ca-stats">
                 <div><b>{fa(c.sessions)}</b><small>جلسه‌ی برگزارشده</small></div>
                 <div><b>{fa(c.upcoming)}</b><small>جلسه‌ی آینده</small></div>
@@ -239,7 +239,7 @@ export function Members() {
         </table></div>
       </Card>
       {m && (
-        <Card title={m.name} sub={`${levelById(m.level).title} · ${m.games ? fa(m.games) + ' بازی' : ''} ${m.wins ? '· ' + fa(m.wins) + ' برد' : ''}`} right={<button className="adm-btn ghost sm" onClick={() => setSel(null)}>بستن</button>}>
+        <Card title={m.name} sub={`${levelById(m.level).title}، ${m.games ? fa(m.games) + ' بازی' : ''} ${m.wins ? '، ' + fa(m.wins) + ' برد' : ''}`} right={<button className="adm-btn ghost sm" onClick={() => setSel(null)}>بستن</button>}>
           <div className="tbl-wrap"><table className="tbl"><thead><tr><th>تاریخ</th><th>ساعت</th><th>زمین</th><th>نوع</th><th>مبلغ</th><th>وضعیت</th></tr></thead>
             <tbody>{club.bookings.filter((b) => b.by === m.id || b.players?.includes(m.id)).sort((a, b) => fromKey(b.date) - fromKey(a.date)).slice(0, 12).map((b) => (
               <tr key={b.id}><td>{dayLabel(b.date)} {dayMonth(fromKey(b.date))}</td><td className="num">{range(b.start, b.dur)}</td><td>{courtById(b.court).name}</td><td>{TYPE_NAME[b.type]}</td><td className="num">{toman(b.price)}</td><td><Status s={payState(b)} /></td></tr>
@@ -276,7 +276,7 @@ export function Settings() {
             {COURTS.map((c) => (
               <div key={c.id} className="court-set">
                 <div className="cs-photo" style={{ backgroundImage: `url(${c.img})` }} />
-                <div className="grow"><b>{c.name}</b><small>{c.kind} · {c.indoor ? 'سرپوشیده' : 'روباز'}</small></div>
+                <div className="grow"><b>{c.name}</b><small>{c.kind}، {c.indoor ? 'سرپوشیده' : 'روباز'}</small></div>
                 <button className={`tgl-adm ${club.off[c.id] ? '' : 'on'}`} onClick={() => { adminCourt(c.id, !club.off[c.id]); chime('tap') }}><i /><span>{club.off[c.id] ? 'تعمیرات' : 'فعال'}</span></button>
               </div>
             ))}

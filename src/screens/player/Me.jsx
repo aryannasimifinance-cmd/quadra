@@ -30,12 +30,12 @@ export default function Me({ nav }) {
           <Ring value={rank.progress} size={84} stroke={5} track="rgba(255,255,255,.15)"><Avatar name={user.name} size={64} me /></Ring>
           <div className="grow">
             <h2>{user.name}</h2>
-            <p><LevelPill id={user.level} /> {levelById(user.level).title}{user.side ? ` · ${sideById(user.side).name}` : ''} · <span style={{ color: rank.c === '#141413' ? '#fff' : rank.c }}>{rank.name}</span></p>
+            <p><LevelPill id={user.level} /> {levelById(user.level).title}{user.side ? `، ${sideById(user.side).name}` : ''}، <span style={{ color: rank.c === '#141413' ? '#fff' : rank.c }}>{rank.name}</span></p>
           </div>
         </div>
         <div className="me-xp">
           <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${rank.progress * 100}%` }} transition={{ duration: 1 }} /></div>
-          <small>{fa(xp)} XP {rank.next && `· ${fa(rank.next.xp - xp)} تا ${rank.next.name}`}</small>
+          <small>{fa(xp)} XP {rank.next && `، ${fa(rank.next.xp - xp)} تا ${rank.next.name}`}</small>
         </div>
         <div className="me-stats">
           <button onClick={() => nav.tab('games')}><b><CountUp to={games} /></b><small>بازی</small></button>
@@ -69,7 +69,7 @@ export default function Me({ nav }) {
           </div>
           <div className="grow">
             <b>مسیر باشگاه</b>
-            <small>{rank.name} · {fa(badges.length)} از {fa(BADGES.length)} نشان · چالش‌های هفته</small>
+            <small>{rank.name}، {fa(badges.length)} از {fa(BADGES.length)} نشان، چالش‌های هفته</small>
           </div>
           <Icon name="fwd" size={18} />
         </motion.button>
@@ -98,7 +98,7 @@ export default function Me({ nav }) {
           <div className="badge-detail">
             <motion.span initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 12 }}>{badges.includes(badge.id) ? badge.icon : '🔒'}</motion.span>
             <h3>{badge.name}</h3><p className="muted">{badge.desc}</p>
-            <p className="pill-ink">{badges.includes(badge.id) ? 'باز شده · +۱۵ XP' : 'هنوز قفله'}</p>
+            <p className="pill-ink">{badges.includes(badge.id) ? 'باز شده، +۱۵ XP' : 'هنوز قفله'}</p>
           </div>
         )}
       </Sheet>

@@ -118,7 +118,7 @@ function Overview({ ctx }) {
         <Kpi icon="cal" label="رزروهای امروز" value={fa(todays.length)} spark={Array.from({ length: 14 }, (_, i) => club.bookings.filter((b) => b.date === addDays(today, i - 13) && b.status === 'ok').length)} />
         <Kpi icon="court" label="اشغال امروز" value={`${fa(Math.round(occ * 100))}٪`} spark={occ7} />
         <Kpi icon="clock" label="معوق (سررسید گذشته)" value={mil(dueSum)} tone={dueSum ? 'warn' : ''} />
-        <Kpi icon="bag" label="فروشگاه · ۷ روز" value={mil(shop7)} />
+        <Kpi icon="bag" label="فروشگاه، ۷ روز" value={mil(shop7)} />
         <Kpi icon="users" label="اعضای فعال" value={`${fa(active)} / ${fa(MEMBERS.length)}`} />
       </div>
 
@@ -132,24 +132,24 @@ function Overview({ ctx }) {
         </Card>
         <Card title="ترکیب درآمد" sub="۳۰ روز"><HBars rows={mix} /></Card>
 
-        <Card className="span2" title="امروز روی زمین‌ها" sub={`${fa(todays.length)} رزرو · برای جزئیات روی هر بلوک بزنید`} right={<button className="adm-btn ghost sm" onClick={() => ctx.go('calendar')}>تقویم کامل</button>}>
+        <Card className="span2" title="امروز روی زمین‌ها" sub={`${fa(todays.length)} رزرو، برای جزئیات روی هر بلوک بزنید`} right={<button className="adm-btn ghost sm" onClick={() => ctx.go('calendar')}>تقویم کامل</button>}>
           <Timeline date={today} compact onPick={ctx.open} />
         </Card>
         <Card title="روش‌های پرداخت" sub="۳۰ روز"><HBars rows={methods} /></Card>
 
-        <Card className="span2" title="نقشه‌ی اشغال" sub="میانگین ۴ هفته‌ی اخیر · روز × ساعت"><Heatmap grid={grid} /></Card>
+        <Card className="span2" title="نقشه‌ی اشغال" sub="میانگین ۴ هفته‌ی اخیر، روز × ساعت"><Heatmap grid={grid} /></Card>
         <Card title="نیاز به اقدام">
           <div className="alerts">
             {openNeed.map((b) => (
               <button key={b.id} className="alert" onClick={() => ctx.open({ kind: 'booking', id: b.id })}>
                 <span className="al-ic q"><Icon name="radar" size={16} /></span>
-                <div className="grow"><b>بازی باز {fa(b.players.length)}/۴</b><small>{dayLabel(b.date)} {range(b.start, b.dur)} · {courtById(b.court).name}</small></div>
+                <div className="grow"><b>بازی باز {fa(b.players.length)}/۴</b><small>{dayLabel(b.date)} {range(b.start, b.dur)}، {courtById(b.court).name}</small></div>
               </button>
             ))}
             {due.filter((p) => p.ref && p.at > Date.now() && p.at < Date.now() + 2 * 864e5).slice(0, 4).map((p) => (
               <button key={p.id} className="alert" onClick={() => ctx.open({ kind: 'booking', id: p.id })}>
                 <span className="al-ic w"><Icon name="cash" size={16} /></span>
-                <div className="grow"><b>{toman(p.due)} پرداخت‌نشده</b><small>{p.who} · {p.sub}</small></div>
+                <div className="grow"><b>{toman(p.due)} پرداخت‌نشده</b><small>{p.who}، {p.sub}</small></div>
               </button>
             ))}
             {low.map((p) => (
@@ -199,16 +199,16 @@ export function Timeline({ date, compact, onPick }) {
         const list = club.bookings.filter((b) => b.date === date && b.court === c.id && b.status !== 'cancelled')
         return (
           <div key={c.id} className={`tl-row ${club.off[c.id] ? 'off' : ''}`}>
-            <div className="tl-court"><b>{c.name}</b><small>{c.kind} · {fa(Math.round(occupancy(club, date, c.id) * 100))}٪</small></div>
+            <div className="tl-court"><b>{c.name}</b><small>{c.kind}، {fa(Math.round(occupancy(club, date, c.id) * 100))}٪</small></div>
             <div className="tl-track" onClick={(e) => e.target === e.currentTarget && pick(c.id, e)}>
               {isToday && nowX > 0 && nowX < 100 && <i className="tl-now" style={{ right: `${nowX}%` }} />}
               {list.map((b) => {
                 const st = payState(b)
                 return (
                   <motion.button key={b.id} className={`tl-b ${TYPE_CLS[b.type]}`} style={{ right: `${((b.start - H0) / (H1 - H0)) * 100}%`, width: `calc(${(b.dur / (H1 - H0)) * 100}% - 3px)` }}
-                    whileHover={{ y: -2 }} onClick={() => onPick({ kind: 'booking', id: b.id })} title={`${TYPE_NAME[b.type]} · ${range(b.start, b.dur)}`}>
+                    whileHover={{ y: -2 }} onClick={() => onPick({ kind: 'booking', id: b.id })} title={`${TYPE_NAME[b.type]}، ${range(b.start, b.dur)}`}>
                     <b>{b.type === 'block' ? b.note || 'تعمیرات' : b.type === 'coach' ? coachById(b.coach)?.name : who(b.by, user).replace(' (اپ)', '')}</b>
-                    {!compact && <small>{range(b.start, b.dur)}{b.type === 'open' ? ` · ${fa(b.players.length)}/۴` : ''}</small>}
+                    {!compact && <small>{range(b.start, b.dur)}{b.type === 'open' ? `، ${fa(b.players.length)}/۴` : ''}</small>}
                     {b.type !== 'block' && <i className={`pd ${STATUS[st].cls}`} />}
                   </motion.button>
                 )
@@ -246,7 +246,7 @@ function Calendar({ ctx }) {
         <button className="adm-btn ghost sm" onClick={() => setDate(addDays(date, 1))} aria-label="روز بعد"><Icon name="fwd" size={16} /></button>
       </div>
       <div className="cal-sum">
-        <div><small>تاریخ</small><b>{dayLabel(date)} · {dayMonth(fromKey(date))}</b></div>
+        <div><small>تاریخ</small><b>{dayLabel(date)}، {dayMonth(fromKey(date))}</b></div>
         <div><small>رزروها</small><b>{fa(list.length)}</b></div>
         <div><small>اشغال</small><b>{fa(Math.round(occupancy(club, date) * 100))}٪</b></div>
         <div><small>مبلغ رزروها</small><b>{toman(dayRev)}</b></div>
@@ -290,15 +290,15 @@ function BookingDetail({ id, onClose }) {
   }
   return (
     <div className="dr">
-      <div className="dr-photo" style={{ backgroundImage: `url(${c.img})` }}><div><span className={`type-pill ${TYPE_CLS[b.type]}`}>{TYPE_NAME[b.type]}</span><h2>{dayLabel(b.date)} · {range(b.start, b.dur)}</h2><small>{c.name} · {dayMonth(fromKey(b.date))}</small></div></div>
+      <div className="dr-photo" style={{ backgroundImage: `url(${c.img})` }}><div><span className={`type-pill ${TYPE_CLS[b.type]}`}>{TYPE_NAME[b.type]}</span><h2>{dayLabel(b.date)}، {range(b.start, b.dur)}</h2><small>{c.name}، {dayMonth(fromKey(b.date))}</small></div></div>
       {b.type !== 'block' && (<>
         <div className="dr-rows">
           <div><span>رزروکننده</span><b>{who(b.by, user)}</b></div>
           {b.coach && <div><span>مربی</span><b>{coachById(b.coach).name}</b></div>}
           <div><span>منبع</span><b>{b.source === 'app' ? 'اپ' : 'پذیرش'}</b></div>
           <div><span>کد</span><b dir="ltr">{refCode(b.id)}</b></div>
-          {b.levels && <div><span>سطح‌ها</span><b>{b.levels.join(' · ')}</b></div>}
-          {b.type === 'open' && <div><span>نمایش</span><b>{b.visibility === 'private' ? `خصوصی · ${fa((b.invited || []).length)} دعوت` : 'عمومی'}</b></div>}
+          {b.levels && <div><span>سطح‌ها</span><b>{b.levels.join('، ')}</b></div>}
+          {b.type === 'open' && <div><span>نمایش</span><b>{b.visibility === 'private' ? `خصوصی، ${fa((b.invited || []).length)} دعوت` : 'عمومی'}</b></div>}
         </div>
         <h4>بازیکن‌ها {b.type === 'open' && `(${fa(b.players.length)}/۴)`}</h4>
         <div className="dr-ppl">
@@ -330,7 +330,7 @@ function BookingDetail({ id, onClose }) {
           {b.paid > 0 && <button className="adm-btn danger" onClick={() => cancel(true)}>لغو و استرداد</button>}
           <button className="adm-btn ghost" onClick={() => cancel(false)}>{b.type === 'block' ? 'حذف تعمیرات' : 'لغو بدون استرداد'}</button>
         </div>
-      ) : <p className="cancelled">این رزرو لغو شده است{b.refunded ? ' · مبلغ مسترد شد' : ''}.</p>}
+      ) : <p className="cancelled">این رزرو لغو شده است{b.refunded ? '، مبلغ مسترد شد' : ''}.</p>}
     </div>
   )
 }
@@ -348,7 +348,7 @@ function NewBooking({ d, onClose }) {
     const paid = f.pay === 'full' ? price : f.pay === 'half' ? Math.round(price / 2) : 0
     adminAddBooking({ court: f.court, date: f.date, start: f.start, dur: f.dur, type: f.type, by: f.type === 'block' ? null : f.member, players: f.type === 'block' ? [] : [f.member],
       levels: f.type === 'open' ? [MEMBERS.find((m) => m.id === f.member).level] : null, coach: f.type === 'coach' ? f.coach : null, price, paid, method: paid ? f.method : null, note: f.note })
-    chime('success'); toast({ icon: '📅', title: 'رزرو ثبت شد', body: `${courtById(f.court).name} · ${range(f.start, f.dur)}` }); onClose()
+    chime('success'); toast({ icon: '📅', title: 'رزرو ثبت شد', body: `${courtById(f.court).name}، ${range(f.start, f.dur)}` }); onClose()
   }
   return (
     <div className="dr">
@@ -369,7 +369,7 @@ function NewBooking({ d, onClose }) {
           {f.pay !== 'none' && <label>روش<div className="seg-adm">{['card', 'cash', 'online'].map((m) => <button key={m} className={f.method === m ? 'on' : ''} onClick={() => set({ method: m })}>{METHOD_NAME[m]}</button>)}</div></label>}
         </>) : <label>توضیح<input placeholder="مثلاً تعویض چمن" value={f.note} onChange={(e) => set({ note: e.target.value })} /></label>}
       </div>
-      <div className="dr-total"><span>{courtById(f.court).name} · {range(f.start, f.dur)}</span><b>{toman(price)}</b></div>
+      <div className="dr-total"><span>{courtById(f.court).name}، {range(f.start, f.dur)}</span><b>{toman(price)}</b></div>
       {!free && <p className="cancelled">{coachClash ? `${coachById(f.coach).name} در این ساعت کلاس دیگری دارد.` : `این بازه روی ${courtById(f.court).name} آزاد نیست.`}</p>}
       <button className="adm-btn primary full" disabled={!free} onClick={save}>ثبت رزرو</button>
     </div>

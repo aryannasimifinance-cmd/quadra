@@ -49,7 +49,7 @@ export function Coaches({ nav, onBack, focus }) {
               <div className="cb-txt">
                 <div className="row-between"><span className="cb-rank">#{fa(i + 1)} مربی باشگاه</span><LevelPill id={c.level} /></div>
                 <h3>{c.name}</h3>
-                <small>{c.title} · {fa(c.exp)} سال سابقه</small>
+                <small>{c.title}، {fa(c.exp)} سال سابقه</small>
                 <div className="cb-score"><Stars value={c.avg} /><b>{fa(c.avg)}</b><small>از {fa(c.count)} نظر ناشناس</small></div>
                 <ul className="record light">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
                 {[...new Set(c.list.filter((r) => r.text).map((r) => r.text))].slice(0, 2).map((t) => <p key={t} className="cb-quote">«{t}» <small>— ناشناس</small></p>)}
@@ -81,7 +81,7 @@ export function Packages({ onBack, nav }) {
     setTimeout(() => {
       const r = s.buyPackage(sel, method)
       celebrate(); chime('level'); haptic([20, 40, 20])
-      s.toast({ icon: '💎', title: `${sel.name} فعال شد`, body: `+${fa(r.xp)} XP${r.badges.length ? ' · نشان «وفادار»' : ''}`, duration: 4500 })
+      s.toast({ icon: '💎', title: `${sel.name} فعال شد`, body: `+${fa(r.xp)} XP${r.badges.length ? '، نشان «وفادار»' : ''}`, duration: 4500 })
       setBusy(false); setSel(null)
     }, method === 'online' ? 1300 : 600)
   }
@@ -89,17 +89,17 @@ export function Packages({ onBack, nav }) {
     <div className="page">
       <TopBar onBack={onBack} title="پکیج‌ها و عضویت" />
       <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
-        {mem && <div className="mem-active"><Icon name="crown" /><div><b>{mem.name} فعال است</b><small>{fa(Math.ceil((s.membership.until - Date.now()) / 864e5))} روز مانده · {fa(mem.off * 100)}٪ تخفیف روی همه‌ی رزروها</small></div></div>}
+        {mem && <div className="mem-active"><Icon name="crown" /><div><b>{mem.name} فعال است</b><small>{fa(Math.ceil((s.membership.until - Date.now()) / 864e5))} روز مانده، {fa(mem.off * 100)}٪ تخفیف روی همه‌ی رزروها</small></div></div>}
         {PACKAGES.map((p) => (
           <motion.button key={p.id} variants={rise} className={`pkg ${p.kind}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); p.kind === 'series' ? nav.start({ intent: 'court', series: p.id }) : setSel(p) }}>
             <Photo src={p.img} />
             <div className="pkg-shade" />
             {p.tag && <span className="pkg-tag">{p.tag}</span>}
             <div className="pkg-txt">
-              <small>{p.kind === 'series' ? 'پکیج زمین' : 'عضویت'} · {p.sub}</small>
+              <small>{p.kind === 'series' ? 'پکیج زمین' : 'عضویت'}، {p.sub}</small>
               <h3>{p.name}</h3>
               <ul>{p.perks.map((x) => <li key={x}><Icon name="check" size={14} stroke={3} />{x}</li>)}</ul>
-              <div className="pkg-price">{p.kind === 'series' ? <b>{fa(p.off * 100)}٪ تخفیف · انتخاب روز و ساعت</b> : <b>{toman(p.price)}</b>}</div>
+              <div className="pkg-price">{p.kind === 'series' ? <b>{fa(p.off * 100)}٪ تخفیف، انتخاب روز و ساعت</b> : <b>{toman(p.price)}</b>}</div>
             </div>
           </motion.button>
         ))}
@@ -107,14 +107,14 @@ export function Packages({ onBack, nav }) {
       <Sheet open={!!sel} onClose={() => setSel(null)} title={sel?.name}>
         {sel && (
           <div className="buy">
-            <p className="muted">{sel.sub} · {fa(sel.days)} روز اعتبار</p>
+            <p className="muted">{sel.sub}، {fa(sel.days)} روز اعتبار</p>
             <div className="methods">
               {[['wallet', 'کیف پول', toman(s.wallet), 'wallet', s.wallet >= sel.price], ['online', 'کارت بانکی', 'درگاه شتاب', 'card', true]].map(([id, n, sub, ic, ok]) => (
                 <button key={id} disabled={!ok} className={`method ${method === id ? 'on' : ''}`} onClick={() => setMethod(id)}><Icon name={ic} /><div className="grow"><b>{n}</b><small>{ok ? sub : 'موجودی کافی نیست'}</small></div><span className={`radio ${method === id ? 'on' : ''}`} /></button>
               ))}
             </div>
             <Loading show={busy} text="در حال پرداخت…" />
-            <Button full variant="q" disabled={busy} onClick={buy}>{busy ? 'در حال پرداخت…' : `خرید · ${toman(sel.price)}`}</Button>
+            <Button full variant="q" disabled={busy} onClick={buy}>{busy ? 'در حال پرداخت…' : `خرید، ${toman(sel.price)}`}</Button>
           </div>
         )}
       </Sheet>
@@ -185,21 +185,21 @@ export function Events({ nav, onBack, kind: initial = 'friday' }) {
               <Photo src={e.img} />
               <div className="ev-shade" />
               <div className="ev-txt">
-                <span className={`pill-q ${e.kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))} · {hourLabel(e.start)}</span>
+                <span className={`pill-q ${e.kind === 'official' ? 'gold' : ''}`}>{dayLabel(e.date)} {dayMonth(fromKey(e.date))}، {hourLabel(e.start)}</span>
                 <b>{e.title}</b>
-                <small>{e.format} · سطح {e.levels.join(' / ')} · جایزه: {e.prize}</small>
+                <small>{e.format}، سطح {e.levels.join(' / ')}، جایزه: {e.prize}</small>
                 <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.cap - e.taken)} جای خالی</span></div>
               </div>
               <em>{joined.includes(e.id) ? '✓ ثبت‌نام' : short(e.fee)}</em>
             </motion.button>
           ))}
         </motion.div>
-        <p className="label">برگزارشده‌ها · امتیاز ناشناس</p>
+        <p className="label">برگزارشده‌ها، امتیاز ناشناس</p>
         {past.map((e) => {
           const r = ratingOf(club, 'event:' + e.id), done = rated.includes('event:' + e.id)
           return (
             <div key={e.id} className="past-ev">
-              <div className="grow"><b>{e.title}</b><small>{dayMonth(fromKey(e.date))} · {e.format}</small>
+              <div className="grow"><b>{e.title}</b><small>{dayMonth(fromKey(e.date))}، {e.format}</small>
                 <div className="cb-score dark"><Stars value={r.avg} size={13} /><b>{fa(r.avg)}</b><small>{fa(r.count)} نظر</small></div></div>
               <Button small variant={done ? 'ghost' : 'dark'} disabled={done} onClick={() => setRate(e)}>{done ? '✓ ثبت شد' : 'امتیاز بدهید'}</Button>
             </div>
@@ -245,7 +245,7 @@ export function Journey({ onBack }) {
           <div className="grow">
             <small>رتبه‌ی فعلی شما</small>
             <h2>{rank.name}</h2>
-            <p>{fa(xp)} XP{rank.next ? ` · ${fa(rank.next.xp - xp)} XP تا «${rank.next.name}»` : ' · بالاترین رتبه'}</p>
+            <p>{fa(xp)} XP{rank.next ? `، ${fa(rank.next.xp - xp)} XP تا «${rank.next.name}»` : '، بالاترین رتبه'}</p>
             <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${rank.progress * 100}%` }} transition={{ duration: 1 }} /></div>
           </div>
           <div className="jr-badges"><b>{fa(badges.length)}</b><small>از {fa(BADGES.length)} نشان</small></div>
@@ -280,7 +280,7 @@ export function Journey({ onBack }) {
           ))}
         </div>
 
-        <p className="label">نشان‌ها · هر نشان ۱۵ XP</p>
+        <p className="label">نشان‌ها، هر نشان ۱۵ XP</p>
         <div className="badges">
           {BADGES.map((b) => {
             const has = badges.includes(b.id)

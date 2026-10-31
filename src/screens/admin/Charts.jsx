@@ -84,7 +84,7 @@ export function Heatmap({ grid }) {
         ))}
       </div>
       <div className="heat-foot">
-        {hov ? <span><b>{DAYS[hov[0]]} ساعت {fa(hov[1] + 7)}</b> · اشغال {fa(Math.round(hov[2] * 100))}٪</span> : <span>روی خانه‌ها بروید</span>}
+        {hov ? <span><b>{DAYS[hov[0]]} ساعت {fa(hov[1] + 7)}</b>، اشغال {fa(Math.round(hov[2] * 100))}٪</span> : <span>روی خانه‌ها بروید</span>}
         <span className="heat-scale"><small>کم</small>{[0.1, 0.35, 0.6, 0.85].map((v) => <i key={v} style={{ background: col(v) }} />)}<small>پر</small></span>
       </div>
     </div>

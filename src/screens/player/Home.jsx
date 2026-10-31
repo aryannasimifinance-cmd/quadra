@@ -43,7 +43,7 @@ export default function Home({ nav }) {
           <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('journey')}>
             <Ring value={rank.progress} size={58} stroke={5}><LevelPill id={user.level} /></Ring>
             <div className="grow">
-              <b>{rank.name} <span>· {fa(xp)} XP</span></b>
+              <b>{rank.name} <span>، {fa(xp)} XP</span></b>
               <small>{rank.next ? `${fa(rank.next.xp - xp)} XP تا ${rank.next.name}` : 'بالاترین رتبه!'}</small>
               <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${rank.progress * 100}%` }} transition={{ delay: 0.4, duration: 1 }} /></div>
             </div>
@@ -54,7 +54,7 @@ export default function Home({ nav }) {
           </motion.div>
           <motion.div className="hero-cta" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <motion.button className="cta-main" whileTap={{ scale: 0.96 }} onClick={() => nav.start({})}>
-              <span><b>بازی بسازید</b><small>زمین · مچ · مربی · تورنمنت</small></span>
+              <span><b>بازی بسازید</b><small>زمین، مچ، مربی، تورنمنت</small></span>
               <i><Icon name="plus" size={24} stroke={2.6} /></i>
             </motion.button>
             <motion.button className="cta-side" whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'match' })}>
@@ -66,13 +66,13 @@ export default function Home({ nav }) {
 
       <div className="home-body">
         <section className="h-sec">
-          <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۱ ساعت" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
+          <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد، ۱ ساعت" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
           <motion.div className="slot-row-q" variants={stagger} initial="hidden" animate="show">
             {slots.length === 0 && <div className="empty-card">تا فردا شب ساعت آزادی نمانده — روزهای دیگر را ببینید.</div>}
             {slots.map((x) => (
               <motion.button key={x.court + x.date + x.start} variants={rise} className="qslot" whileTap={{ scale: 0.95 }}
                 onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1 })}>
-                <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
+                <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? '، پیک' : ''}</small>
                 <b>{hourLabel(x.start)}</b>
                 <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>
                 <em>{fa(x.price)} <small>تومان</small></em>
@@ -89,7 +89,7 @@ export default function Home({ nav }) {
         )}
 
         <section className="h-sec">
-          <SectionHead title="بازی‌های باز هم‌سطح شما" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
+          <SectionHead title="بازی‌های باز هم‌سطح شما" sub={`سطح ${user.level}، ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
           <div className="og-row">
             {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودتون یکی بسازید!</div>}
             {games.map((g, i) => (
@@ -99,7 +99,7 @@ export default function Home({ nav }) {
                   <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطح شما' : 'سطح دیگر'}</span>
                   <small>{courtById(g.court).name}</small>
                 </div>
-                <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+                <b>{dayLabel(g.date)}، {range(g.start, g.dur)}</b>
                 <div className="og-names">
                   <span>سازنده: <b>{memberName(g.by)}</b></span>
                   {g.players.length > 1 && <span>بازیکن‌ها: {g.players.filter((p) => p !== g.by).map((p) => memberName(p).split(' ')[0]).join('، ')}</span>}
@@ -116,7 +116,7 @@ export default function Home({ nav }) {
         </section>
 
         <section className="h-sec">
-          <SectionHead title="چالش‌های این هفته" sub="هر شنبه تازه می‌شوند · جایزه: XP" />
+          <SectionHead title="چالش‌های این هفته" sub="هر شنبه تازه می‌شوند، جایزه: XP" />
           <div className="quests">
             {qs.map((q) => <Quest key={q.id} q={q} />)}
           </div>
@@ -128,9 +128,9 @@ export default function Home({ nav }) {
             <Photo src={ev.img} />
             <div className="event-shade" />
             <div className="event-txt">
-              <span className={`pill-q ${ev.kind === 'official' ? 'gold' : ''}`}>{EVENT_KIND[ev.kind].name} · {dayLabel(ev.date)} {dayMonth(fromKey(ev.date))}</span>
+              <span className={`pill-q ${ev.kind === 'official' ? 'gold' : ''}`}>{EVENT_KIND[ev.kind].name}، {dayLabel(ev.date)} {dayMonth(fromKey(ev.date))}</span>
               <h3>{ev.title}</h3>
-              <p>{ev.format} · {fa(ev.cap - ev.taken)} جای خالی</p>
+              <p>{ev.format}، {fa(ev.cap - ev.taken)} جای خالی</p>
             </div>
             <span className="event-go"><Icon name="fwd" /></span>
           </motion.button>
@@ -143,7 +143,7 @@ export default function Home({ nav }) {
               <Tilt key={c.id} className="coach-card" onClick={() => nav.open('coaches', { focus: c.id })}>
                 <Photo src={c.img} />
                 <div className="coach-shade" />
-                <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>★ {fa(c.avg)} · {c.title}</small></div>
+                <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>★ {fa(c.avg)}، {c.title}</small></div>
               </Tilt>
             ))}
           </div>
@@ -153,7 +153,7 @@ export default function Home({ nav }) {
           <div>
             <span className="pill-ink">پکیج‌ها و عضویت</span>
             <h3>تا ۲۵٪ ارزان‌تر بازی کنید</h3>
-            <p>{PACKAGES.map((p) => p.name).join(' · ')}</p>
+            <p>{PACKAGES.map((p) => p.name).join('، ')}</p>
           </div>
           <div className="pack-stack">
             {PACKAGES.slice(0, 3).map((p, i) => <motion.span key={p.id} style={{ backgroundImage: `url(${p.img})` }} animate={{ rotate: (i - 1) * 8, y: i === 1 ? -6 : 0 }} whileHover={{ rotate: 0 }} />)}
@@ -178,7 +178,7 @@ export default function Home({ nav }) {
           <MiniBoard points={myPoints(s)} name={user.name} onClick={() => nav.open('ranking')} />
         </section>
 
-        <p className="foot-note">کوادرا · باشگاه پدل · ۷ صبح تا ۱۲ شب</p>
+        <p className="foot-note">کوادرا، باشگاه پدل، ۷ صبح تا ۱۲ شب</p>
       </div>
     </div>
   )
@@ -196,8 +196,8 @@ export function NextTicket({ b, onClick }) {
       <div className="ticket-shade" />
       <div className="ticket-main">
         <span className="pill-q">{left}</span>
-        <h3>{dayLabel(b.date)} · {range(b.start, b.dur)}</h3>
-        <p>{c.name} · {b.type === 'open' ? `بازی باز ${fa(b.players.length)}/۴` : b.type === 'coach' ? 'کلاس مربی' : 'رزرو خصوصی'}</p>
+        <h3>{dayLabel(b.date)}، {range(b.start, b.dur)}</h3>
+        <p>{c.name}، {b.type === 'open' ? `بازی باز ${fa(b.players.length)}/۴` : b.type === 'coach' ? 'کلاس مربی' : 'رزرو خصوصی'}</p>
       </div>
       <div className="ticket-cut" />
       <div className="ticket-side"><b>{fa(c.id)}</b><small>زمین</small></div>

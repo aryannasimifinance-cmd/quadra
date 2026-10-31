@@ -71,8 +71,8 @@ export const COACH_PACKS = [
 export const coachPackPrice = (coach, pack) => Math.round(coach.price * pack.sessions * (1 - pack.off) * (pack.mult || 1) / 10000) * 10000
 
 export const PACKAGES = [
-  { id: 'p5', kind: 'series', name: 'پکیج ۵ جلسه زمین', sub: 'هفته‌ای یک جلسه · همان روز و ساعت', sessions: 5, off: 0.1, img: img('court-indoor'), perks: ['۱۰٪ ارزان‌تر از رزرو تکی', 'هر ۵ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'] },
-  { id: 'p10', kind: 'series', name: 'پکیج ۱۰ جلسه زمین', sub: 'هفته‌ای یک جلسه · همان روز و ساعت', sessions: 10, off: 0.15, img: img('court-pano'), perks: ['۱۵٪ ارزان‌تر از رزرو تکی', 'هر ۱۰ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'], tag: 'پرفروش' },
+  { id: 'p5', kind: 'series', name: 'پکیج ۵ جلسه زمین', sub: 'هفته‌ای یک جلسه، همان روز و ساعت', sessions: 5, off: 0.1, img: img('court-indoor'), perks: ['۱۰٪ ارزان‌تر از رزرو تکی', 'هر ۵ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'] },
+  { id: 'p10', kind: 'series', name: 'پکیج ۱۰ جلسه زمین', sub: 'هفته‌ای یک جلسه، همان روز و ساعت', sessions: 10, off: 0.15, img: img('court-pano'), perks: ['۱۵٪ ارزان‌تر از رزرو تکی', 'هر ۱۰ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'], tag: 'پرفروش' },
   { id: 'gold', kind: 'member', name: 'عضویت طلایی', sub: 'ماهانه', off: 0.15, price: 2900000, days: 30, img: img('reach'), perks: ['۱۵٪ تخفیف همه‌ی رزروها', 'رزرو تا ۱۴ روز جلوتر', '۲ برابر امتیاز XP'] },
   { id: 'black', kind: 'member', name: 'عضویت بلک', sub: 'سه‌ماهه', off: 0.25, price: 7400000, days: 90, img: img('hit'), perks: ['۲۵٪ تخفیف همه‌ی رزروها', 'اولویت در تورنمنت‌ها', '۲ برابر XP + کمد اختصاصی'], tag: 'VIP' },
 ]
@@ -211,18 +211,18 @@ export const memberById = (id) => MEMBERS.find((m) => m.id === id)
 // ---------- رویدادها ----------
 // دو نوع: «مسابقات آدینه» (دوستانه، هر جمعه) و «تورنمنت رسمی» (جدول گروهی + حذفی، امتیاز رنکینگ)
 export const EVENT_KIND = {
-  friday: { name: 'مسابقات آدینه', sub: 'هر جمعه صبح · دوستانه با یار جدید در هر بازی' },
-  official: { name: 'تورنمنت‌های رسمی', sub: 'گروهی + حذفی · داور · امتیاز رنکینگ کوادرا' },
+  friday: { name: 'مسابقات آدینه', sub: 'هر جمعه صبح، دوستانه با یار جدید در هر بازی' },
+  official: { name: 'تورنمنت‌های رسمی', sub: 'گروهی + حذفی، داور، امتیاز رنکینگ کوادرا' },
 }
 const FRIDAY = [
   { title: 'آدینه‌ی دوستانه', format: 'هر بازی با یار جدید' },
-  { title: 'میکس بانوان آدینه', format: 'ویژه‌ی بانوان · هر بازی با یار جدید' },
+  { title: 'میکس بانوان آدینه', format: 'ویژه‌ی بانوان، هر بازی با یار جدید' },
   { title: 'کینگ آف کورت آدینه', format: 'برنده روی زمین می‌مونه' },
-  { title: 'میکس دبل آدینه', format: 'تیم‌های مختلط · هر بازی با یار جدید' },
+  { title: 'میکس دبل آدینه', format: 'تیم‌های مختلط، هر بازی با یار جدید' },
 ]
 const OFFICIAL = [
-  { title: 'تورنمنت ۵۰۰ امتیازی کشوری پدل', format: 'گروهی + حذفی · ۳۲ تیم · ۵۰۰ امتیاز رنکینگ کشوری', prize: 'جایزه‌ی نقدی + جام', in: 9 },
-  { title: 'تور رنکینگ کوادرا — مرحله‌ی پاییز', format: 'گروهی + حذفی · ۱۶ تیم · امتیاز ۲ برابر', prize: 'جایزه‌ی نقدی + راکت', in: 23 },
+  { title: 'تورنمنت ۵۰۰ امتیازی کشوری پدل', format: 'گروهی + حذفی، ۳۲ تیم، ۵۰۰ امتیاز رنکینگ کشوری', prize: 'جایزه‌ی نقدی + جام', in: 9 },
+  { title: 'تور رنکینگ کوادرا — مرحله‌ی پاییز', format: 'گروهی + حذفی، ۱۶ تیم، امتیاز ۲ برابر', prize: 'جایزه‌ی نقدی + راکت', in: 23 },
 ]
 // فقط عکس زمین، بدون آدم
 const EV_IMG = [img('court-blue'), img('tiles'), img('court-outdoor'), img('ball-court'), img('welcome-courts'), img('welcome-night')]
@@ -343,7 +343,7 @@ export function seedClub() {
     const ago = Math.floor(r('d') * 30)
     if (coach) {
       const c = COACHES[Math.floor(r('c') * COACHES.length)], p = COACH_PACKS[1 + Math.floor(r('p') * 2)]
-      return { id: 'S-' + (500 + i), kind: 'coach', item: c.id, pack: p.id, name: `${p.name} · ${c.name}`, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price: coachPackPrice(c, p), method: 'online', at: Date.now() - ago * 864e5 }
+      return { id: 'S-' + (500 + i), kind: 'coach', item: c.id, pack: p.id, name: `${p.name}، ${c.name}`, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price: coachPackPrice(c, p), method: 'online', at: Date.now() - ago * 864e5 }
     }
     const p = PACKAGES[Math.floor(r('p') * PACKAGES.length)]
     const price = p.kind === 'series' ? Math.round(p.sessions * 2 * pricing.offpeak * (1 - p.off) / 10000) * 10000 : p.price
