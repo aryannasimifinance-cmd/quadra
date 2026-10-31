@@ -4,7 +4,7 @@ import { LEVELS, fa } from '../data'
 import { celebrate, chime, haptic } from '../fx'
 import { useStore } from '../store'
 import { Button, Icon, LevelPill, Photo, TopBar } from '../components/ui'
-import { Logo, QuadraMark } from '../components/Logo'
+import { LiveLogo, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
@@ -53,6 +53,12 @@ export default function Gate() {
   )
 }
 
+// ذرات گرد و غبار در نور — موقعیت‌ها ثابت تا با هر رندر عوض نشوند
+const DUST = Array.from({ length: 16 }, (_, k) => ({
+  left: `${(k * 37) % 100}%`, bottom: `${(k * 23) % 60}%`, width: 2 + (k % 3), height: 2 + (k % 3),
+  animationDuration: `${9 + (k % 5) * 2}s`, animationDelay: `${-(k * 1.3)}s`, opacity: 0.25 + (k % 4) * 0.12,
+}))
+
 function HeroSlides({ dim, admin }) {
   const [i, setI] = useState(0)
   useEffect(() => { if (HERO.length < 2) return; const t = setInterval(() => setI((x) => (x + 1) % HERO.length), 4200); return () => clearInterval(t) }, [])
@@ -60,9 +66,15 @@ function HeroSlides({ dim, admin }) {
     <div className="auth-bg">
       <AnimatePresence>
         <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
-          <Photo src={HERO[i]} zoom pos="56% 50%" />
+          {/* حرکت آرام دوربین روی عکس */}
+          <motion.img className="bg-drift" src={HERO[i]} alt="" draggable={false}
+            initial={{ opacity: 0, scale: 1.08 }} animate={{ opacity: 1, scale: [1.08, 1.2, 1.1], x: ['0%', '-3%', '2%'], y: ['0%', '-2%', '1%'] }}
+            transition={{ opacity: { duration: 1.2 }, default: { duration: 26, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' } }} />
         </motion.div>
       </AnimatePresence>
+      <div className="bg-beam" />
+      <motion.div className="bg-floor" animate={{ opacity: [0.35, 0.8, 0.35] }} transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }} />
+      <div className="bg-dust">{DUST.map((d, k) => <i key={k} style={d} />)}</div>
       <div className={`auth-bg-shade ${dim ? 'dim' : ''} ${admin ? 'admin' : ''}`} />
       <div className="grain" />
     </div>
@@ -74,7 +86,7 @@ function Welcome({ onStart, onLogin, onAdmin }) {
   return (
     <div className="welcome-in">
       <motion.div className="brand" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <Logo tone="light" size={20} />
+        <LiveLogo size={26} />
         <span className="brand-tag">باشگاه پدل با ۴ زمین</span>
       </motion.div>
       <div className="welcome-copy">

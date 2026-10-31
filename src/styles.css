@@ -136,6 +136,16 @@ img { display: block; }
 /* ---------- ورود ---------- */
 .auth { position: absolute; inset: 0; color: #fff; overflow: hidden; }
 .auth-bg, .auth-bg-img { position: absolute; inset: 0; }
+.auth-bg { overflow: hidden; background: #070B14; }
+.bg-drift { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 56% 50%; }
+.bg-beam { position: absolute; inset: -30%; background: linear-gradient(105deg, transparent 40%, rgba(120,190,255,.10) 47%, rgba(5,224,218,.16) 50%, rgba(120,190,255,.10) 53%, transparent 60%); mix-blend-mode: screen; animation: beam 9s ease-in-out infinite; pointer-events: none; }
+@keyframes beam { 0% { transform: translateX(60%); } 55%, 100% { transform: translateX(-60%); } }
+.bg-floor { position: absolute; left: -10%; right: -10%; bottom: 18%; height: 40%; background: radial-gradient(ellipse at 50% 60%, rgba(40,120,255,.35), transparent 65%); mix-blend-mode: screen; pointer-events: none; }
+.bg-dust { position: absolute; inset: 0; pointer-events: none; }
+.bg-dust i { position: absolute; border-radius: 50%; background: #BFE9FF; box-shadow: 0 0 6px rgba(150,220,255,.9); animation: dust linear infinite; }
+@keyframes dust { 0% { transform: translate(0, 0); } 50% { transform: translate(14px, -120px); } 100% { transform: translate(-6px, -260px); opacity: 0; } }
+.live-logo { display: inline-flex; align-items: center; gap: .55em; color: #F2F2F0; font-weight: 700; }
+.live-word { display: inline-flex; letter-spacing: .22em; text-shadow: 0 0 18px rgba(5,224,218,.35); }
 .auth-bg-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,10,12,.35) 0%, rgba(10,10,12,0) 25%, rgba(10,10,12,.1) 48%, rgba(10,10,12,.75) 70%, rgba(10,10,12,.92) 100%); transition: background .6s; }
 .auth-bg-shade.dim { background: rgba(10,10,12,.72); }
 .auth-bg-shade.admin { background: linear-gradient(180deg, rgba(10,10,12,.85), #0B0B0C); }

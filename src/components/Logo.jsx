@@ -90,3 +90,37 @@ export function Sting({ onSkip }) {
     </motion.div>
   )
 }
+
+// لوگوی زنده‌ی صفحه‌ی اول: کشیده شدن قاب، ورود ۴، بعد تپش نور و رد نور هر چند ثانیه
+export function LiveLogo({ size = 26 }) {
+  const ease = [0.65, 0, 0.35, 1]
+  return (
+    <span className="live-logo" style={{ fontSize: size * 0.8 }}>
+      <motion.svg viewBox={VB} width={size * 1.154} height={size} style={{ overflow: 'visible' }}
+        animate={{ filter: ['drop-shadow(0 0 0px rgba(5,224,218,0))', 'drop-shadow(0 0 7px rgba(5,224,218,.75))', 'drop-shadow(0 0 0px rgba(5,224,218,0))'] }}
+        transition={{ duration: 2.6, repeat: Infinity, delay: 1.4, ease: 'easeInOut' }}>
+        <defs>
+          <linearGradient id="ll-g" gradientUnits="userSpaceOnUse" x1="177" x2="470">
+            <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor="#F2F2F0" />
+          </linearGradient>
+          <linearGradient id="ll-sh"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".95" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+          <clipPath id="ll-clip"><path d={FOUR} /><path d={STEM} /></clipPath>
+        </defs>
+        <motion.path d={FRAME} fill="none" stroke="#F2F2F0" strokeWidth="47" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.2, ease }} />
+        <motion.path d={STEM} fill="#F2F2F0" style={{ transformOrigin: '493px 510px' }} initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.9, type: 'spring', stiffness: 420, damping: 18 }} />
+        <motion.path d={FOUR} fill="url(#ll-g)" initial={{ x: -120, y: 120, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} transition={{ delay: 1, duration: 0.5, ease: [0.2, 0.9, 0.2, 1] }} />
+        <g clipPath="url(#ll-clip)">
+          <g transform="rotate(35 320 340)">
+            <motion.rect y="40" width="70" height="600" fill="url(#ll-sh)" initial={{ x: -140 }} animate={{ x: 640 }}
+              transition={{ duration: 0.9, delay: 1.8, repeat: Infinity, repeatDelay: 3.6, ease: 'easeInOut' }} />
+          </g>
+        </g>
+      </motion.svg>
+      <span className="live-word" dir="ltr">
+        {'QUADRA'.split('').map((l, i) => (
+          <motion.span key={i} initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ delay: 1.1 + i * 0.06, duration: 0.4 }}>{l}</motion.span>
+        ))}
+      </span>
+    </span>
+  )
+}
