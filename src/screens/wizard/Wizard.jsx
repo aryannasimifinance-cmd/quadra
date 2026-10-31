@@ -275,14 +275,14 @@ function StepSlot({ w, set, onNext }) {
               const cls = sel ? `sel ${inSel(c.id, h - 1) ? 'jt' : ''} ${inSel(c.id, h + 1) ? 'jb' : ''}` : ok ? 'free' : 'busy'
               return (
                 <button key={c.id} className={`cell ${cls}`} disabled={!ok} onClick={() => tap(c.id, h)}>
-                  {sel ? <Icon name="check" size={16} stroke={3} /> : ok ? <span>{short(isCoach ? coachById(w.coachId).price : priceFor(w.date, h, 1, club.pricing) / 4)}</span> : null}
+                  {sel ? <Icon name="check" size={16} stroke={3} /> : ok ? <span>{fa(isCoach ? coachById(w.coachId).price : priceFor(w.date, h, 1, club.pricing))}</span> : null}
                 </button>
               )
             })}
           </div>
         ))}
       </div>
-      <p className="slot-legend"><i className="lg free" /> آزاد · {isCoach ? 'قیمت جلسه' : 'قیمت هر نفر برای ۱ ساعت'} <i className="lg sel" /> انتخاب شما <i className="lg busy" /> رزرو شده{showPeak && <> <i className="lg peak" /> پیک</>}</p>
+      <p className="slot-legend"><i className="lg free" /> آزاد · {isCoach ? 'قیمت جلسه (تومان)' : 'قیمت هر ساعت زمین (تومان)'} <i className="lg sel" /> انتخاب شما <i className="lg busy" /> رزرو شده{showPeak && <> <i className="lg peak" /> پیک</>}</p>
       <AnimatePresence>
         {w.start != null && (
           <motion.div className="sel-sum" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
@@ -340,7 +340,7 @@ function StepPeople({ w, set, onNext }) {
                 <div className="spot-p" onClick={() => k > 0 && put(k, null)}>
                   <Avatar name={p.name} size={50} me={p.me} />
                   <span>{p.me ? 'شما' : p.name.split(' ')[0]}</span>
-                  {p.level ? <LevelPill id={p.level} /> : <em className="inv">دعوت‌شده</em>}
+                  {p.level ? <LevelPill id={p.level} /> : <em className="inv">مهمان</em>}
                 </div>
               ) : searching ? (
                 <div className="spot-p"><div className="spot-search"><Icon name="radar" size={22} /></div><span>در جستجو…</span></div>
@@ -406,41 +406,64 @@ function StepPeople({ w, set, onNext }) {
 
 function AddPlayer({ onAdd, exclude, noPhone }) {
   const { toast } = useStore()
+  const [tab, setTab] = useState('member')
   const [q, setQ] = useState('')
   const [side, setSide] = useState('all')
+  const [gName, setGName] = useState('')
+  const [invite, setInvite] = useState(false)
   const [phone, setPhone] = useState('')
   const list = MEMBERS.filter((m) => !exclude.includes(m.id) && (!q || m.name.includes(q.trim())) && (side === 'all' || m.side === side || m.side === 'both')).slice(0, 40)
   const digits = phone.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\D/g, '')
   const okPhone = /^09\d{9}$/.test(digits)
   const faD = (x) => x.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-  const invite = () => {
-    const link = `${location.origin}${location.pathname}?invite=${digits.slice(-4)}`
-    const text = `به بازی پدل در کوادرا دعوت شدید: ${link}`
-    if (navigator.share) navigator.share({ title: 'QUADRA', text }).catch(() => {})
-    toast({ icon: '✉️', title: 'لینک دعوت فرستاده شد', body: `${faD(digits)} · بعد از ثبت‌نام به بازی اضافه می‌شود` })
-    onAdd({ id: 'f:مهمان ' + faD(digits.slice(-4)), name: 'مهمان ' + faD(digits.slice(-4)), level: null })
+  const okGuest = gName.trim().length >= 2 && (!invite || okPhone)
+  const addGuest = () => {
+    const name = gName.trim()
+    if (invite) {
+      const link = `${location.origin}${location.pathname}?invite=${digits.slice(-4)}`
+      const text = `${name} عزیز، به کوادرا بپیوندید و با هم پدل بازی کنیم: ${link}`
+      if (navigator.share) navigator.share({ title: 'QUADRA', text }).catch(() => {})
+      toast({ icon: '✉️', title: 'لینک عضویت فرستاده شد', body: `${name} · ${faD(digits)}` })
+    }
+    onAdd({ id: 'f:' + name, name, level: null, guest: true })
   }
   return (
     <div className="add-p">
-      <label className="search"><Icon name="search" size={18} /><input autoFocus placeholder="جستجوی اعضا" value={q} onChange={(e) => setQ(e.target.value)} /></label>
-      <Chips id="sd" small value={side} onChange={setSide} options={[{ id: 'all', name: 'همه' }, { id: 'right', name: 'سمت راست' }, { id: 'left', name: 'سمت چپ' }]} />
-      <div className="member-list">
-        {list.length === 0 && <p className="muted">عضوی با این مشخصات پیدا نشد.</p>}
-        {list.map((m) => (
-          <button key={m.id} className="member-row" onClick={() => onAdd({ id: m.id, name: m.name, level: m.level })}>
-            <Avatar name={m.name} size={36} />
-            <div className="grow"><b>{m.name}</b><small>{sideById(m.side).name}</small></div>
-            <LevelPill id={m.level} />
-          </button>
-        ))}
-      </div>
-      {!noPhone && <div className="invite">
-        <p className="label">عضو نیست؟ لینک دعوت بفرستید</p>
-        <div className="invite-row">
-          <label className="field"><Icon name="phone" /><input inputMode="numeric" dir="ltr" placeholder="0912 345 6789" value={phone} onChange={(e) => setPhone(e.target.value)} /></label>
-          <Button variant="dark" disabled={!okPhone} onClick={invite}>ارسال</Button>
+      {!noPhone && (
+        <div className="seg">
+          {[['member', 'از اعضای کوادرا'], ['guest', 'مهمان (عضو نیست)']].map(([id, n]) => (
+            <button key={id} className={tab === id ? 'on' : ''} onClick={() => { haptic(6); setTab(id) }}>
+              {tab === id && <motion.span layoutId="seg-add" className="seg-bg" />}<span>{n}</span>
+            </button>
+          ))}
         </div>
-      </div>}
+      )}
+      {tab === 'member' ? (
+        <>
+          <label className="search"><Icon name="search" size={18} /><input placeholder="جستجوی اعضا" value={q} onChange={(e) => setQ(e.target.value)} /></label>
+          <Chips id="sd" small value={side} onChange={setSide} options={[{ id: 'all', name: 'همه' }, { id: 'right', name: 'سمت راست' }, { id: 'left', name: 'سمت چپ' }]} />
+          <div className="member-list">
+            {list.length === 0 && <p className="muted">عضوی با این مشخصات پیدا نشد.</p>}
+            {list.map((m) => (
+              <button key={m.id} className="member-row" onClick={() => onAdd({ id: m.id, name: m.name, level: m.level })}>
+                <Avatar name={m.name} size={36} />
+                <div className="grow"><b>{m.name}</b><small>{sideById(m.side).name}</small></div>
+                <LevelPill id={m.level} />
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="guest">
+          <p className="muted">فقط اسمش کافی است.</p>
+          <label className="field"><Icon name="user" /><input autoFocus placeholder="نام مهمان" value={gName} onChange={(e) => setGName(e.target.value)} /></label>
+          <button className={`tgl ${invite ? 'on' : ''}`} onClick={() => setInvite(!invite)}>
+            <span>لینک عضویت در کوادرا هم برایش فرستاده شود</span><i className={`switch ${invite ? 'on' : ''}`}><motion.i layout /></i>
+          </button>
+          {invite && <label className="field"><Icon name="phone" /><input inputMode="numeric" dir="ltr" placeholder="0912 345 6789" value={phone} onChange={(e) => setPhone(e.target.value)} /></label>}
+          <Button full variant="dark" disabled={!okGuest} onClick={addGuest}>{invite ? 'افزودن مهمان و ارسال لینک' : 'افزودن مهمان'}</Button>
+        </div>
+      )}
     </div>
   )
 }

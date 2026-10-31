@@ -5,13 +5,19 @@ const KEY = 'quadra-v1'
 const SEED_V = 9
 const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, rated: [], membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
 
+// حساب نمونه برای «ورود سریع نمایشی»
+const DEMO_ACCOUNTS = {
+  '09120000000': { user: { name: 'آریان نسیمی‌فر', phone: '09120000000', level: 'B', side: 'right', joined: Date.now() - 90 * 864e5 }, xp: 340, wallet: 800000, badges: ['first', 'host', 'social'] },
+}
 function load() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY))
-    if (s && s.club?.v === SEED_V) return { session: null, ...blankPlayer, ...s }
+    if (s && s.club?.v === SEED_V) return { session: null, ...blankPlayer, accounts: DEMO_ACCOUNTS, ...s }
   } catch { /* داده‌ی خراب یا حالت خصوصی */ }
-  return { session: null, ...blankPlayer, club: seedClub() }
+  return { session: null, ...blankPlayer, accounts: DEMO_ACCOUNTS, club: seedClub() }
 }
+// بخش‌هایی از وضعیت که مال هر حساب است و با خروج کنار گذاشته می‌شود
+const PERSONAL = Object.keys(blankPlayer)
 
 const Ctx = createContext(null)
 export const useStore = () => useContext(Ctx)
@@ -74,7 +80,11 @@ export function StoreProvider({ children }) {
     const myCourts = (bookings) => new Set(bookings.filter((b) => b.players?.includes(ME) && b.status !== 'cancelled').map((b) => b.court))
 
     return {
+      // ورود با شماره: اگر حساب قبلی هست، همان برمی‌گردد؛ وگرنه حساب تازه
+      hasAccount(phone) { return !!ref.current.accounts?.[phone] },
       loginPlayer(user) {
+        const saved = ref.current.accounts?.[user.phone]
+        if (saved) { commit((s) => ({ ...s, ...blankPlayer, ...saved, user: { ...saved.user }, session: { role: 'player' } })); return }
         commit((s) => ({
           ...s, session: { role: 'player' }, user, ...(s.user ? {} : { xp: 20, wallet: 500000 }),
           notifications: s.user ? s.notifications : [{
@@ -84,7 +94,14 @@ export function StoreProvider({ children }) {
         }))
       },
       loginAdmin() { commit((s) => ({ ...s, session: { role: 'admin' } })) },
-      logout() { commit((s) => (s.session?.role === 'admin' ? { ...s, session: null } : { ...s, ...blankPlayer, session: null })) },
+      logout() {
+        commit((s) => {
+          if (s.session?.role === 'admin') return { ...s, session: null }
+          const snap = Object.fromEntries(PERSONAL.map((k) => [k, s[k]]))
+          const accounts = s.user?.phone ? { ...s.accounts, [s.user.phone]: snap } : s.accounts
+          return { ...s, ...blankPlayer, accounts, session: null }
+        })
+      },
       resetDemo() { try { localStorage.removeItem(KEY) } catch { /* */ } location.reload() },
       updateUser(p) { commit((s) => ({ ...s, user: { ...s.user, ...p } })) },
 

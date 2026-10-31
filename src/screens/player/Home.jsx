@@ -75,7 +75,7 @@ export default function Home({ nav }) {
                 <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
                 <b>{hourLabel(x.start)}</b>
                 <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>
-                <em>{short(x.price / 4)} <small>هر نفر</small></em>
+                <em>{fa(x.price)} <small>تومان</small></em>
               </motion.button>
             ))}
           </motion.div>
