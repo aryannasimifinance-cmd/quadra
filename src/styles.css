@@ -698,3 +698,18 @@ img { display: block; }
 .plan-t { font-weight: 700; font-size: 13px; direction: ltr; }
 .hint.warn { background: #FBE9E4; color: #B0442F; }
 .intent-list .intent-card.big { height: 240px; }
+
+/* ---------- لودینگ با لوگو ---------- */
+.loading { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(11,11,12,.88); color: #F2F2F0; }
+.loading p { font-size: 13px; }
+
+/* ---------- صفحه‌ی +: بدون اسکرول ---------- */
+.app-scroll.locked { overflow: hidden; }
+.wz-body.fit { padding-bottom: 0; }
+.intent-list { grid-template-rows: 1.25fr 1fr 1fr; touch-action: none; }
+.intent-list .intent-card, .intent-list .intent-card.big { height: auto; min-height: 0; }
+.intent-txt b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.intent-card:not(.big) .intent-txt b { font-size: min(17px, 4.1vw); }
+/* توضیح همیشه دو خط جا دارد تا عنوان‌های کارت‌های کنار هم هم‌راستا باشند */
+.intent-txt p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 3em; }
+.intent-card.big .intent-txt p { min-height: 0; }

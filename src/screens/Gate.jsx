@@ -4,7 +4,7 @@ import { LEVELS, fa } from '../data'
 import { celebrate, chime, haptic } from '../fx'
 import { useStore } from '../store'
 import { Button, Icon, LevelPill, Photo, TopBar } from '../components/ui'
-import { LiveLogo, QuadraMark } from '../components/Logo'
+import { LiveLogo, Loading, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
@@ -132,6 +132,7 @@ function AdminLogin({ onBack }) {
         <label className="field dark"><Icon name="user" /><input dir="ltr" placeholder="نام کاربری" value={u} onChange={(e) => setU(e.target.value)} autoFocus /></label>
         <label className="field dark"><Icon name="lock" /><input dir="ltr" type="password" placeholder="رمز عبور" value={p} onChange={(e) => setP(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} /></label>
         <Button full variant="q" onClick={submit} disabled={!u || !p || busy}>{busy ? 'در حال ورود…' : 'ورود به پنل'}</Button>
+        <Loading show={busy} text="ورود به پنل مدیریت…" />
         <p className="demo-hint">نسخه‌ی نمایشی — نام کاربری <code>admin</code> · رمز <code>quadra</code></p>
       </motion.div>
     </div>

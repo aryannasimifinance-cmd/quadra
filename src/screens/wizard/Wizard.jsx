@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, EVENT_KIND, LEVELS, MEMBERS, SERIES, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
   events, fa, fromKey, hourLabel, isPeak, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, toman, weekday,
@@ -8,6 +8,7 @@ import { celebrate, chime, haptic } from '../../fx'
 import { ME, freeStarts, isFree, memberOff, useStore } from '../../store'
 import { openGames, planSeries } from '../../select'
 import { Avatar, Button, Chips, CountUp, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
+import { Loading } from '../../components/Logo'
 
 const FLOWS = {
   court: ['intent', 'when', 'slot', 'people', 'pay'],
@@ -56,7 +57,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
       <TopBar onBack={i > 0 ? back : null} title={TITLES[step]} step={i} total={flow.length} />
       {i > 0 && <Crumbs w={w} step={step} />}
       <AnimatePresence mode="wait" custom={dir}>
-        <motion.div key={step} className="wz-body" custom={dir}
+        <motion.div key={step} className={`wz-body ${step === 'intent' ? 'fit' : ''}`} custom={dir}
           variants={{ in: (d) => ({ x: d * -36, opacity: 0 }), on: { x: 0, opacity: 1 }, out: (d) => ({ x: d * 36, opacity: 0 }) }}
           initial="in" animate="on" exit="out" transition={{ duration: 0.18, ease: [0.2, 0.7, 0.2, 1] }}>
           {step === 'intent' && <StepIntent onPick={(intent) => { set({ intent, start: null, gameId: null, eventId: null, dur: 1 }); setDir(1); setI(1); scrollTop() }} />}
@@ -88,9 +89,24 @@ function Crumbs({ w, step }) {
 }
 
 function StepIntent({ onPick }) {
+  // ارتفاع کارت‌ها طوری حساب می‌شود که هر ۵ کارت بدون اسکرول در صفحه جا شوند
+  const ref = useRef(null)
+  const [h, setH] = useState(null)
+  useLayoutEffect(() => {
+    const fit = () => {
+      const sc = document.querySelector('.app-scroll'), el = ref.current
+      if (!sc || !el) return
+      const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop
+      setH(Math.max(420, sc.clientHeight - top - 92))
+    }
+    fit(); window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [])
   return (
-    <motion.div className="intent-list" variants={stagger} initial="hidden" animate="show">
+    <>
       <h2 className="wz-h">چی دوست دارید؟ <small>در کمتر از یک دقیقه تمومه</small></h2>
+      <motion.div ref={ref} className="intent-list" style={h ? { height: h } : null} variants={stagger} initial="hidden" animate="show"
+        drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={0.22} dragTransition={{ bounceStiffness: 420, bounceDamping: 22 }}>
       {INTENTS.map((t, k) => (
         <motion.button key={t.id} variants={rise} className={`intent-card ${k === 0 ? 'big' : ''}`} whileTap={{ scale: 0.97 }} onClick={() => { haptic(10); onPick(t.id) }}>
           <Photo src={t.img} />
@@ -100,7 +116,8 @@ function StepIntent({ onPick }) {
           <span className="intent-xp">+{fa(t.xp)} XP</span>
         </motion.button>
       ))}
-    </motion.div>
+      </motion.div>
+    </>
   )
 }
 
@@ -538,6 +555,7 @@ function StepPay({ w, set, onDone }) {
           </motion.button>
         ))}
       </div>
+      <Loading show={busy} text={useMethod === 'online' ? 'اتصال به درگاه پرداخت…' : count > 1 ? `ثبت ${fa(count)} جلسه در تقویم…` : 'در حال ثبت رزرو…'} />
       <p className="hint">لغو رایگان هر جلسه تا ۶ ساعت قبل از شروع — مبلغ همان جلسه به کیف پول برمی‌گرده.</p>
       <div className="cta-bar">
         <Button full variant="q" disabled={busy || blocked} onClick={confirm}>

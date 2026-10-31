@@ -2,7 +2,7 @@ import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useStore } from './store'
 import { Toasts } from './components/ui'
-import { Sting } from './components/Logo'
+import { Loading, Sting } from './components/Logo'
 import Gate from './screens/Gate'
 import Main from './screens/player/Main'
 
@@ -17,7 +17,7 @@ export default function App() {
   return (
     <>
       {admin && !sting ? (
-        <Suspense fallback={<div className="admin-loading" />}><Admin /></Suspense>
+        <Suspense fallback={<Loading text="بارگذاری پنل مدیریت…" />}><Admin /></Suspense>
       ) : (
         <div className="stage">
           <div className="stage-bg" style={{ backgroundImage: 'url(./img/welcome-night.jpg)' }} />

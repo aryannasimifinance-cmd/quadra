@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { useId } from 'react'
 
 // لوگوی کوادرا — بازترسیم برداری از فایل اصلی (قاب Q + عدد ۴ فیروزه‌ای)
@@ -119,5 +120,34 @@ export function LiveLogo({ size = 26 }) {
         ))}
       </span>
     </span>
+  )
+}
+
+// لودر: قاب لوگو مدام کشیده می‌شود و «۴» تپش دارد
+export function LoaderMark({ size = 64, tone = 'light' }) {
+  const ink = tone === 'light' ? '#F2F2F0' : '#141413'
+  return (
+    <svg viewBox={VB} width={size * 1.154} height={size} style={{ overflow: 'visible' }} aria-hidden="true">
+      <path d={FRAME} fill="none" stroke={ink} strokeOpacity=".14" strokeWidth="47" />
+      <motion.path d={FRAME} fill="none" stroke={ink} strokeWidth="47" initial={{ pathLength: 0 }}
+        animate={{ pathLength: [0, 1, 1], opacity: [1, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', times: [0, 0.75, 1] }} />
+      <path d={STEM} fill={ink} />
+      <motion.path d={FOUR} fill={CYAN} animate={{ opacity: [0.35, 1, 0.35], x: [-10, 0, -10], y: [10, 0, 10] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }} />
+    </svg>
+  )
+}
+
+// صفحه‌ی لودینگ تمام‌صفحه با لوگوی متحرک — برای پرداخت، ورود و بارگذاری بخش‌ها
+export function Loading({ show = true, text }) {
+  return createPortal(
+    <AnimatePresence>
+      {show && (
+        <motion.div className="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <LoaderMark size={58} />
+          {text && <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 0.8, y: 0 }} transition={{ delay: 0.15 }}>{text}</motion.p>}
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body,
   )
 }

@@ -6,6 +6,7 @@ import { myPoints, useStore } from '../../store'
 import { activeMembership } from '../../select'
 import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
 import { leaderboard } from './Home'
+import { Loading } from '../../components/Logo'
 
 export function Coaches({ nav, onBack, focus }) {
   useEffect(() => { if (focus) document.getElementById('c-' + focus)?.scrollIntoView({ behavior: 'smooth' }) }, [focus])
@@ -81,6 +82,7 @@ export function Packages({ onBack, nav }) {
                 <button key={id} disabled={!ok} className={`method ${method === id ? 'on' : ''}`} onClick={() => setMethod(id)}><Icon name={ic} /><div className="grow"><b>{n}</b><small>{ok ? sub : 'موجودی کافی نیست'}</small></div><span className={`radio ${method === id ? 'on' : ''}`} /></button>
               ))}
             </div>
+            <Loading show={busy} text="در حال پرداخت…" />
             <Button full variant="q" disabled={busy} onClick={buy}>{busy ? 'در حال پرداخت…' : `خرید · ${toman(sel.price)}`}</Button>
           </div>
         )}

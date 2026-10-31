@@ -5,6 +5,7 @@ import { celebrate, chime, haptic } from '../../fx'
 import { useStore } from '../../store'
 import { Button, Chips, Icon, Sheet, Stepper } from '../../components/ui'
 import { MerchArt, ProductImage } from '../../components/Merch'
+import { Loading } from '../../components/Logo'
 
 const PRICES = [
   { id: 'any', name: 'همه', min: 0, max: Infinity },
@@ -231,6 +232,7 @@ function Cart({ onClose }) {
           <button key={id} className={`method ${method === id ? 'on' : ''}`} onClick={() => setMethod(id)}><Icon name={ic} /><div className="grow"><b>{n}</b><small>{sub}</small></div><span className={`radio ${method === id ? 'on' : ''}`} /></button>
         ))}
       </div>
+      <Loading show={busy} text={method === 'online' ? 'اتصال به درگاه پرداخت…' : 'ثبت سفارش…'} />
       <Button full variant="q" disabled={!ok || busy} onClick={pay}>{busy ? 'در حال پرداخت…' : ok ? `پرداخت ${toman(total)}` : 'موجودی کیف پول کافی نیست'}</Button>
     </div>
   )

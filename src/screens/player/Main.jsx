@@ -42,7 +42,7 @@ export default function Main() {
 
   return (
     <motion.div className="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="app-scroll" ref={scrollRef}>
+      <div className={`app-scroll ${wizard && wzStep === 'intent' ? 'locked' : ''}`} ref={scrollRef}>
         <AnimatePresence mode="wait">
           {wizard ? (
             <motion.div key={'wz' + wzKey} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
