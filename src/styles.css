@@ -144,13 +144,13 @@ img { display: block; }
 .brand { display: flex; align-items: center; justify-content: space-between; }
 .brand-tag { font-size: 12px; opacity: .7; }
 .welcome-copy { margin-top: auto; }
-.welcome-copy h1 { font-size: 46px; line-height: 1.3; font-weight: 700; letter-spacing: -.3px; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
+.welcome-copy h1 { font-size: 36px; line-height: 1.45; font-weight: 700; letter-spacing: -.3px; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
 .welcome-copy h1 span { display: block; }
 .welcome-copy h1 .hl { color: var(--q); font-weight: 700; }
 .slogan { display: inline-flex; align-items: center; gap: 10px; color: var(--q); font-size: 14px; font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
 .slogan::before { content: ''; width: 26px; height: 2px; border-radius: 2px; background: var(--q); }
 .welcome-copy p b { font-weight: 700; }
-.welcome-copy p.sub-line { margin-top: 14px; font-size: 15px; font-weight: 400; }
+.welcome-copy p.sub-line { margin-top: 10px; font-size: 11.5px; font-weight: 300; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .welcome-copy p.sub-line + p { margin-top: 4px; }
 .welcome-copy p { margin-top: 12px; font-size: 14px; line-height: 1.8; font-weight: 300; letter-spacing: .2px; }
 .welcome-cta { display: grid; gap: 10px; margin-top: 24px; }
