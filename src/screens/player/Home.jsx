@@ -100,6 +100,10 @@ export default function Home({ nav }) {
                   <small>{courtById(g.court).name}</small>
                 </div>
                 <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+                <div className="og-names">
+                  <span>سازنده: <b>{memberName(g.by)}</b></span>
+                  {g.players.length > 1 && <span>بازیکن‌ها: {g.players.filter((p) => p !== g.by).map((p) => memberName(p).split(' ')[0]).join('، ')}</span>}
+                </div>
                 <div className="og-levels">{g.levels.map((l) => <LevelPill key={l} id={l} />)}</div>
                 <div className="og-ppl">
                   {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={MEMBERS.find((m) => m.id === g.players[k])?.name || 'ش'} size={30} /> : <span key={k} className="og-empty" />)}
@@ -179,6 +183,8 @@ export default function Home({ nav }) {
     </div>
   )
 }
+
+const memberName = (id) => id?.startsWith('f:') ? id.slice(2) : MEMBERS.find((m) => m.id === id)?.name || 'بازیکن'
 
 export function NextTicket({ b, onClick }) {
   const c = courtById(b.court)
