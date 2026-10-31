@@ -7,7 +7,7 @@ const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, rated: [], membe
 
 // حساب نمونه برای «ورود سریع نمایشی»
 const DEMO_ACCOUNTS = {
-  '09120000000': { user: { name: 'آریان نسیمی‌فر', phone: '09120000000', level: 'B', side: 'right', joined: Date.now() - 90 * 864e5 }, xp: 340, wallet: 800000, badges: ['first', 'host', 'social'] },
+  '09120000000': { user: { name: 'آریان نسیمی‌فر', phone: '09120000000', level: 'C+', side: 'right', joined: Date.now() - 90 * 864e5 }, xp: 340, wallet: 800000, badges: ['first', 'host', 'social'] },
 }
 function load() {
   try {
@@ -83,7 +83,9 @@ export function StoreProvider({ children }) {
       // ورود با شماره: اگر حساب قبلی هست، همان برمی‌گردد؛ وگرنه حساب تازه
       hasAccount(phone) { return !!ref.current.accounts?.[phone] },
       loginPlayer(user) {
-        const saved = ref.current.accounts?.[user.phone]
+        // «قبلاً عضو شده‌ام» با شماره‌ی ناشناخته: پروفایل نمونه با همان شماره
+        const demo = DEMO_ACCOUNTS['09120000000']
+        const saved = ref.current.accounts?.[user.phone] || (!user.name && { ...demo, user: { ...demo.user, phone: user.phone } })
         if (saved) { commit((s) => ({ ...s, ...blankPlayer, ...saved, user: { ...saved.user }, session: { role: 'player' } })); return }
         commit((s) => ({
           ...s, session: { role: 'player' }, user, ...(s.user ? {} : { xp: 20, wallet: 500000 }),

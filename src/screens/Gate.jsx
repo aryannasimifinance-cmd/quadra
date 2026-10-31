@@ -10,7 +10,7 @@ const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.index
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
 
 export default function Gate() {
-  const { loginPlayer, hasAccount, toast } = useStore()
+  const { loginPlayer, hasAccount } = useStore()
   const [step, setStep] = useState('welcome') // welcome → phone → otp → name → level → done | admin
   const [mode, setMode] = useState('signup')
   const [dir, setDir] = useState(1)
@@ -20,12 +20,8 @@ export default function Gate() {
   const go = (s) => { setDir(order.indexOf(s) >= order.indexOf(step) ? 1 : -1); setStep(s) }
   const back = () => go(step === 'admin' ? 'welcome' : order[order.indexOf(step) - 1])
   const afterOtp = () => {
-    // عضو قبلی فقط با شماره و کد وارد می‌شود
-    if (hasAccount(form.phone)) { loginPlayer({ phone: form.phone }); return }
-    if (mode === 'login') {
-      toast({ icon: '👋', title: 'این شماره هنوز عضو نیست', body: 'در کمتر از یک دقیقه عضو شوید' })
-      setMode('signup')
-    }
+    // عضو قبلی فقط با شماره و کد وارد می‌شود — بدون پرسیدن نام و سطح
+    if (mode === 'login' || hasAccount(form.phone)) { loginPlayer({ phone: form.phone }); return }
     go('name')
   }
   const finish = () => { celebrate(); chime('level'); haptic([20, 40, 20]); go('done') }
