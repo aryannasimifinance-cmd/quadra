@@ -29,7 +29,7 @@ export function Coaches({ nav, onBack, focus }) {
                 {COACH_PACKS.map((p) => <div key={p.id}><small>{p.name}</small><b>{short(coachPackPrice(c, p))}</b></div>)}
               </div>
               <Button full variant="q" onClick={() => nav.start({ intent: 'coach', coachId: c.id })}>
-                {coachCredits[c.id] ? `رزرو جلسه · ${fa(coachCredits[c.id])} جلسه اعتبار داری` : 'رزرو جلسه یا خرید پکیج'}
+                {coachCredits[c.id] ? `رزرو جلسه · ${fa(coachCredits[c.id])} جلسه اعتبار دارید` : 'رزرو جلسه یا خرید پکیج'}
               </Button>
             </div>
           </motion.article>
@@ -59,7 +59,7 @@ export function Packages({ onBack }) {
       <TopBar onBack={onBack} title="پکیج‌ها و عضویت" />
       <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
         {mem && <div className="mem-active"><Icon name="crown" /><div><b>{mem.name} فعال است</b><small>{fa(Math.ceil((s.membership.until - Date.now()) / 864e5))} روز مانده · {fa(mem.off * 100)}٪ تخفیف روی همه‌ی رزروها</small></div></div>}
-        {s.credits > 0 && <div className="mem-active"><Icon name="ticket" /><div><b>{fa(s.credits)} سانس اعتبار</b><small>هنگام پرداخت رزرو، «اعتبار پکیج» را انتخاب کن</small></div></div>}
+        {s.credits > 0 && <div className="mem-active"><Icon name="ticket" /><div><b>{fa(s.credits)} سانس اعتبار</b><small>هنگام پرداخت رزرو، «اعتبار پکیج» را انتخاب کنید</small></div></div>}
         {PACKAGES.map((p) => (
           <motion.button key={p.id} variants={rise} className={`pkg ${p.kind}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); setSel(p) }}>
             <Photo src={p.img} />
@@ -109,7 +109,7 @@ export function Ranking({ onBack }) {
             <motion.div key={top[k].id} className={`pod p${k + 1}`} initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 + (k === 0 ? 0.3 : k * 0.12), type: 'spring', stiffness: 220, damping: 16 }}>
               {k === 0 && <motion.span className="crown" animate={{ rotate: [-8, 8, -8] }} transition={{ repeat: Infinity, duration: 2.4 }}>👑</motion.span>}
               <Avatar name={top[k].name} size={k === 0 ? 68 : 54} me={top[k].me} />
-              <b>{top[k].me ? 'تو' : top[k].name.split(' ')[0]}</b>
+              <b>{top[k].me ? 'شما' : top[k].name.split(' ')[0]}</b>
               <small>{fa(top[k].points)}</small>
               <div className="pod-bar"><span>{fa(k + 1)}</span></div>
             </motion.div>
@@ -120,16 +120,16 @@ export function Ranking({ onBack }) {
             <motion.div key={p.id} className={`rk-row ${p.me ? 'me' : ''}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i, 15) * 0.02 }}>
               <span className="rk-n">{fa(i + 4)}</span>
               <Avatar name={p.name} size={34} me={p.me} />
-              <div className="grow"><b>{p.me ? `${p.name} (تو)` : p.name}</b><small>{p.games ? `${fa(p.games)} بازی` : 'بازیکن جدید'}</small></div>
+              <div className="grow"><b>{p.me ? `${p.name} (شما)` : p.name}</b><small>{p.games ? `${fa(p.games)} بازی` : 'بازیکن جدید'}</small></div>
               <LevelPill id={p.level} />
               <em>{fa(p.points)}</em>
             </motion.div>
           ))}
         </div>
-        {pos > 40 && <div className="rk-row me sticky"><span className="rk-n">{fa(pos)}</span><Avatar name={s.user.name} size={34} me /><div className="grow"><b>تو</b><small>با هر بازی بالاتر می‌ری</small></div><em>{fa(pts)}</em></div>}
+        {pos > 40 && <div className="rk-row me sticky"><span className="rk-n">{fa(pos)}</span><Avatar name={s.user.name} size={34} me /><div className="grow"><b>شما</b><small>با هر بازی بالاتر می‌رید</small></div><em>{fa(pts)}</em></div>}
         <div className="rk-how">
           <b>امتیاز رنکینگ چطور حساب می‌شه؟</b>
-          <p>هر سطح امتیاز پایه دارد ({LEVELS.slice(0, 3).map((l) => `${l.id}: ${fa(l.base)}`).join('، ')} …) و هر XP که از بازی، کلاس و تورنمنت می‌گیری نصفش به رنکینگت اضافه می‌شه.</p>
+          <p>هر سطح امتیاز پایه دارد ({LEVELS.slice(0, 3).map((l) => `${l.id}: ${fa(l.base)}`).join('، ')} …) و هر XP که از بازی، کلاس و تورنمنت می‌گیرید نصفش به رنکینگتون اضافه می‌شه.</p>
         </div>
       </div>
     </div>
@@ -173,7 +173,7 @@ export function Notifications({ onBack }) {
     <div className="page">
       <TopBar onBack={onBack} title="اعلان‌ها" />
       <div className="page-body">
-        {notifications.length === 0 && <div className="empty-card">اعلانی نداری.</div>}
+        {notifications.length === 0 && <div className="empty-card">اعلانی ندارید.</div>}
         {notifications.map((n, i) => (
           <motion.div key={n.id} className={`notif ${n.read ? '' : 'new'}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
             <span className="notif-ic">{n.icon}</span>

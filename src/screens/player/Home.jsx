@@ -41,7 +41,7 @@ export default function Home({ nav }) {
         <div className="hero-body">
           <motion.p className="hello" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 0.75, y: 0 }}>{hello}، {first}</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, type: 'spring', stiffness: 200, damping: 20 }}>
-            امروز روی کدوم <em>زمین</em> می‌درخشی؟
+            امروز روی کدوم <em>زمین</em> می‌درخشید؟
           </motion.h1>
           <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('ranking')}>
             <Ring value={rank.progress} size={58} stroke={5}><LevelPill id={user.level} /></Ring>
@@ -57,7 +57,7 @@ export default function Home({ nav }) {
           </motion.div>
           <motion.div className="hero-cta" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <motion.button className="cta-main" whileTap={{ scale: 0.96 }} onClick={() => nav.start({})}>
-              <span><b>بازی بساز</b><small>زمین · مچ · مربی · تورنمنت</small></span>
+              <span><b>بازی بسازید</b><small>زمین · مچ · مربی · تورنمنت</small></span>
               <i><Icon name="plus" size={24} stroke={2.6} /></i>
             </motion.button>
             <motion.button className="cta-side" whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'match' })}>
@@ -68,7 +68,7 @@ export default function Home({ nav }) {
       </section>
 
       <div className="home-body">
-        <SectionHead title="زمین‌ها، همین حالا" sub="روی هر زمین بزن تا رزروش کنی" />
+        <SectionHead title="زمین‌ها، همین حالا" sub="روی هر زمین بزنید تا رزروش کنید" />
         <motion.div className="court-grid" variants={stagger} initial="hidden" animate="show">
           {courts.map((c) => {
             const st = c.off ? 'off' : c.busy ? 'busy' : 'free'
@@ -87,19 +87,19 @@ export default function Home({ nav }) {
 
         {mine.length > 0 && (
           <>
-            <SectionHead title="بازی بعدی تو" action="همه" onAction={() => nav.tab('games')} />
+            <SectionHead title="بازی بعدی شما" action="همه" onAction={() => nav.tab('games')} />
             <NextTicket b={mine[0]} onClick={() => nav.tab('games')} />
           </>
         )}
 
-        <SectionHead title="بازی‌های باز هم‌سطح تو" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
+        <SectionHead title="بازی‌های باز هم‌سطح شما" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
         <div className="og-row">
-          {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودت یکی بساز!</div>}
+          {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودتون یکی بسازید!</div>}
           {games.map((g, i) => (
             <motion.button key={g.id} className="og-card" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
               whileTap={{ scale: 0.97 }} onClick={() => nav.start({ intent: 'match', gameId: g.id })}>
               <div className="og-top">
-                <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطحت' : 'سطح دیگر'}</span>
+                <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطح شما' : 'سطح دیگر'}</span>
                 <small>{courtById(g.court).name}</small>
               </div>
               <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
@@ -113,7 +113,7 @@ export default function Home({ nav }) {
           ))}
         </div>
 
-        <SectionHead title="چالش‌های این هفته" sub="تموم کن، XP بگیر" />
+        <SectionHead title="چالش‌های این هفته" sub="تموم کنید، XP بگیرید" />
         <div className="quests">
           {qs.map((q) => <Quest key={q.id} q={q} />)}
         </div>
@@ -146,7 +146,7 @@ export default function Home({ nav }) {
         <motion.button className="pack-promo" whileTap={{ scale: 0.98 }} onClick={() => nav.open('packages')}>
           <div>
             <span className="pill-ink">پکیج‌ها و عضویت</span>
-            <h3>تا ۲۵٪ ارزان‌تر بازی کن</h3>
+            <h3>تا ۲۵٪ ارزان‌تر بازی کنید</h3>
             <p>{PACKAGES.map((p) => p.name).join(' · ')}</p>
           </div>
           <div className="pack-stack">
@@ -221,7 +221,7 @@ function Quest({ q }) {
         <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${p * 100}%` }} transition={{ duration: 0.9 }} /></div>
       </div>
       {q.ready ? (
-        <motion.button className="claim" onClick={claim} animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>بگیر +{fa(q.xp)}</motion.button>
+        <motion.button className="claim" onClick={claim} animate={{ scale: [1, 1.08, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>دریافت +{fa(q.xp)}</motion.button>
       ) : (
         <span className="quest-xp">{q.claimed ? '✓' : `${fa(Math.min(q.have, q.goal))}/${fa(q.goal)}`}</span>
       )}
@@ -250,7 +250,7 @@ function MiniBoard({ points, name, onClick }) {
       <div className="mb-row me">
         <span className="mb-n">#{fa(pos)}</span>
         <Avatar name={name} size={32} me />
-        <b>تو</b>
+        <b>شما</b>
         <em>{fa(points)}</em>
       </div>
     </motion.button>

@@ -97,7 +97,7 @@ function Welcome({ onStart, onLogin, onAdmin }) {
           ))}
         </h1>
         <motion.p className="sub-line" initial={{ opacity: 0 }} animate={{ opacity: 0.85 }} transition={{ delay: 0.7 }}>
-          به سادگی زمین رزرو کن، بازی بچین و لذت ببر.
+          به سادگی زمین رزرو کنید، بازی بچینید و لذت ببرید.
         </motion.p>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.85 }}>
           <b>مدرن‌ترین باشگاه</b> پدل استان البرز
@@ -145,8 +145,8 @@ function PhoneStep({ value, onChange, onNext, mode }) {
   const pretty = value.replace(/^(\d{4})(\d{0,3})(\d{0,4}).*/, (_, a, b, c) => [a, b, c].filter(Boolean).join(' '))
   return (
     <div className="step-body">
-      <h2>{mode === 'login' ? 'خوش برگشتی 👋' : 'شماره موبایلت؟'}</h2>
-      <p className="muted">یک کد ۴ رقمی برات پیامک می‌کنیم.</p>
+      <h2>{mode === 'login' ? 'خوش برگشتید 👋' : 'شماره موبایلتون؟'}</h2>
+      <p className="muted">یک کد ۴ رقمی براتون پیامک می‌کنیم.</p>
       <label className={`field phone ${valid ? 'ok' : ''}`}>
         <Icon name="phone" />
         <input inputMode="numeric" autoFocus dir="ltr" placeholder="0912 345 6789" value={fa0(pretty)}
@@ -219,24 +219,24 @@ function NameStep({ form, set, onNext }) {
 
 // آزمون تعیین سطح — هر پاسخ ۰ تا ۳ امتیاز؛ مجموع ۰ تا ۳۰
 const QUIZ = [
-  { q: 'چند وقته به‌طور منظم پدل بازی می‌کنی؟', a: ['کمتر از ۳ ماه', '۳ ماه تا یک سال', 'یک تا سه سال', 'بیشتر از سه سال'] },
-  { q: 'هفته‌ای چند بار بازی می‌کنی؟', a: ['کمتر از یک بار', 'یک بار', 'دو تا سه بار', 'چهار بار یا بیشتر'] },
-  { q: 'سابقه‌ی تنیس یا اسکواش داری؟', a: ['نه', 'تفریحی', 'باشگاهی و منظم', 'رقابتی'] },
-  { q: 'سرویست چطوره؟', a: ['هنوز زیاد خطا می‌زنم', 'وارد می‌کنم ولی ساده', 'با جهت و عمق کنترل‌شده', 'با اسپین و برای شروع حمله'] },
-  { q: 'توپی که از دیوار پشتی برمی‌گرده رو چطور جواب می‌دی؟', a: ['معمولاً از دستم می‌ره', 'توپ‌های ساده رو برمی‌گردونم', 'بیشترشون رو کنترل‌شده می‌زنم', 'حتی دو دیوار و کرنر رو راحت می‌زنم'] },
+  { q: 'چند وقته به‌طور منظم پدل بازی می‌کنید؟', a: ['کمتر از ۳ ماه', '۳ ماه تا یک سال', 'یک تا سه سال', 'بیشتر از سه سال'] },
+  { q: 'هفته‌ای چند بار بازی می‌کنید؟', a: ['کمتر از یک بار', 'یک بار', 'دو تا سه بار', 'چهار بار یا بیشتر'] },
+  { q: 'سابقه‌ی تنیس یا اسکواش دارید؟', a: ['نه', 'تفریحی', 'باشگاهی و منظم', 'رقابتی'] },
+  { q: 'سرویستون چطوره؟', a: ['هنوز زیاد خطا می‌زنم', 'وارد می‌کنم ولی ساده', 'با جهت و عمق کنترل‌شده', 'با اسپین و برای شروع حمله'] },
+  { q: 'توپی که از دیوار پشتی برمی‌گرده رو چطور جواب می‌دید؟', a: ['معمولاً از دستم می‌ره', 'توپ‌های ساده رو برمی‌گردونم', 'بیشترشون رو کنترل‌شده می‌زنم', 'حتی دو دیوار و کرنر رو راحت می‌زنم'] },
   { q: 'پشت تور و والی؟', a: ['کمتر جلو می‌رم', 'والی ساده می‌زنم', 'والی با جهت و عمق', 'بلاک، دراپ و والی تهاجمی'] },
   { q: 'بندخا و ویبورا؟', a: ['نمی‌شناسم', 'می‌شناسم ولی نمی‌زنم', 'گاهی درست درمیاد', 'ابزار ثابت بازیمه'] },
   { q: 'اسمش (ضربه‌ی بالای سر)؟', a: ['نمی‌زنم', 'تخت و بی‌جهت', 'با قدرت و جهت', 'توپ رو از زمین بیرون می‌فرستم (x3 / x4)'] },
-  { q: 'از لوب چطور استفاده می‌کنی؟', a: ['اتفاقی پیش میاد', 'برای فرار از فشار', 'عمدی برای گرفتن تور', 'دقیق روی ضعف حریف'] },
-  { q: 'تجربه‌ی مسابقه داری؟', a: ['نه', 'فقط دوستانه', 'تورنمنت باشگاهی', 'مسابقات رسمی / رنکینگ'] },
+  { q: 'از لوب چطور استفاده می‌کنید؟', a: ['اتفاقی پیش میاد', 'برای فرار از فشار', 'عمدی برای گرفتن تور', 'دقیق روی ضعف حریف'] },
+  { q: 'تجربه‌ی مسابقه دارید؟', a: ['نه', 'فقط دوستانه', 'تورنمنت باشگاهی', 'مسابقات رسمی / رنکینگ'] },
 ]
-const CUTS = [27, 23, 19, 16, 13, 10, 7, 4] // حداقل امتیاز A، B+، B، B-، C+، C، C-، D+
+const CUTS = [27, 23, 19, 16, 13, 10, 7, 4] // حداقل امتیاز A، B+، B، B-، C+، C، C-، D+ (نتیجه حداکثر B)
 const quizLevel = (ans) => {
   const score = ans.reduce((s, k) => s + k, 0)
   let i = CUTS.findIndex((c) => score >= c)
   if (i === -1) i = 8
-  if (i === 0 && ans[9] < 3) i = 1 // سطح حرفه‌ای فقط با سابقه‌ی مسابقه‌ی رسمی
-  return LEVELS[i].id
+  // آزمون حداکثر سطح B می‌دهد؛ B+ و A فقط با انتخاب مستقیم / ارزیابی مربی
+  return LEVELS[Math.max(i, 2)].id
 }
 
 function LevelStep({ value, onChange, onNext }) {
@@ -252,7 +252,7 @@ function LevelStep({ value, onChange, onNext }) {
   const prev = () => (quiz === 0 ? setQuiz(null) : setQuiz(quiz - 1))
   return (
     <div className="step-body">
-      <h2>سطحت چیه؟</h2>
+      <h2>سطحتون چیه؟</h2>
       <p className="muted">برای مچ‌میکینگ — بعد از هر بازی دقیق‌تر می‌شه.</p>
       <AnimatePresence mode="wait">
         {quiz === null ? (
@@ -260,6 +260,7 @@ function LevelStep({ value, onChange, onNext }) {
             <button className="quiz-cta" onClick={() => { setQuiz(0); setAns([]) }}>
               <Icon name="sparkle" /> مطمئن نیستم — با ۱۰ سؤال دقیق پیداش کن
             </button>
+            <p className="quiz-note">نتیجه‌ی آزمون حداکثر سطح B است؛ سطح‌های B+ و A با ارزیابی مربی باشگاه تأیید می‌شوند.</p>
             <div className="level-list">
               {LEVELS.map((l) => (
                 <motion.button key={l.id} className={`level-row ${value === l.id ? 'on' : ''}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(6); onChange(l.id) }}>
@@ -296,11 +297,11 @@ function Done({ form, onEnter }) {
       <motion.div className="done-badge" initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 14 }}>
         <LevelPill id={form.level} big />
       </motion.div>
-      <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{form.name}، آماده‌ای!</motion.h2>
+      <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{form.name}، آماده‌اید!</motion.h2>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.45 }}>سطح شروع: {form.level} · رتبه‌ی برنز</motion.p>
       <motion.div className="xp-pop" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}>+۲۰ XP · ۵۰۰ هزار تومان اعتبار هدیه</motion.div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} style={{ width: '100%' }}>
-        <Button full variant="q" onClick={onEnter}>بزن بریم</Button>
+        <Button full variant="q" onClick={onEnter}>بریم!</Button>
       </motion.div>
     </div>
   )

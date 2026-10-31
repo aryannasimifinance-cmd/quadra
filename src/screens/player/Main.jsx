@@ -115,7 +115,7 @@ function useMatchmaking(setTab) {
       const g = openGames(club, user.level).find((b) => !b.mine && b.gap <= 1)
       if (!g) return
       chime('alarm'); haptic([40, 30, 40])
-      toast({ icon: '📣', title: 'بازی هم‌سطح تو پیدا شد', body: `${dayLabel(g.date)} ${hourLabel(g.start)} · ${fa(4 - g.players.length)} جای خالی`, duration: 6000, action: { label: 'ببین', run: () => setTab('games') } })
+      toast({ icon: '📣', title: 'بازی هم‌سطح شما پیدا شد', body: `${dayLabel(g.date)} ${hourLabel(g.start)} · ${fa(4 - g.players.length)} جای خالی`, duration: 6000, action: { label: 'ببینید', run: () => setTab('games') } })
     }, 15000)
     return () => clearTimeout(t)
   }, [])

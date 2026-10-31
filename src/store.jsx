@@ -79,8 +79,8 @@ export function StoreProvider({ children }) {
         commit((s) => ({
           ...s, session: { role: 'player' }, user, ...(s.user ? {} : { xp: 20, wallet: 500000 }),
           notifications: s.user ? s.notifications : [{
-            id: 'welcome', at: Date.now(), read: false, icon: '👋', title: `${user.name}، به کوادرا خوش اومدی`,
-            body: '۲۰ امتیاز و ۵۰۰ هزار تومان اعتبار هدیه گرفتی. اولین بازیت رو بساز تا نشان «اولین سرو» باز بشه.',
+            id: 'welcome', at: Date.now(), read: false, icon: '👋', title: `${user.name}، به کوادرا خوش اومدید`,
+            body: '۲۰ امتیاز و ۵۰۰ هزار تومان اعتبار هدیه گرفتید. اولین بازیتون رو بسازید تا نشان «اولین سرو» باز بشه.',
           }],
         }))
       },

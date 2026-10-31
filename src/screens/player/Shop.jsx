@@ -208,7 +208,7 @@ function Cart({ onClose }) {
       setBusy(false); onClose()
     }, method === 'online' ? 1300 : 600)
   }
-  if (!cart.length) return <div className="empty-card">سبدت خالیه. یه نگاه به راکت‌ها بنداز 🎾</div>
+  if (!cart.length) return <div className="empty-card">سبدتون خالیه. یه نگاه به راکت‌ها بندازید 🎾</div>
   return (
     <div className="cart">
       {cart.map((x, i) => {
@@ -222,7 +222,7 @@ function Cart({ onClose }) {
         )
       })}
       <div className="pay-lines">
-        {save > 0 && <div><span>سود تو از تخفیف</span><b className="q-ink">{toman(save)}</b></div>}
+        {save > 0 && <div><span>سود شما از تخفیف</span><b className="q-ink">{toman(save)}</b></div>}
         <div><span>تحویل</span><b>رایگان — پذیرش باشگاه</b></div>
         <div className="big"><span>جمع کل</span><b>{toman(total)}</b></div>
       </div>

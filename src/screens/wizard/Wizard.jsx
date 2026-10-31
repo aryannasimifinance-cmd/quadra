@@ -15,10 +15,10 @@ const FLOWS = {
   coach: ['intent', 'coach', 'when', 'slot', 'pay'],
   event: ['intent', 'event', 'pay'],
 }
-const TITLES = { intent: 'امروز چی می‌خوای؟', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'مسابقه‌ها', pay: 'پرداخت' }
+const TITLES = { intent: 'امروز چی می‌خواید؟', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'مسابقه‌ها', pay: 'پرداخت' }
 const INTENTS = [
-  { id: 'court', name: 'رزرو زمین', desc: 'با رفقات بازی کن؛ جای خالی رو با هم‌سطح پر می‌کنیم', img: './img/court-pano.jpg', xp: 50, icon: '🎾' },
-  { id: 'match', name: 'پیدا کردن مچ', desc: 'یار نداری؟ به بازی‌های باز هم‌سطحت بپیوند', img: './img/action.jpg', xp: 40, icon: '⚡' },
+  { id: 'court', name: 'رزرو زمین', desc: 'با رفقاتون بازی کنید؛ جای خالی رو با هم‌سطح پر می‌کنیم', img: './img/court-pano.jpg', xp: 50, icon: '🎾' },
+  { id: 'match', name: 'پیدا کردن مچ', desc: 'یار ندارید؟ به بازی‌های باز هم‌سطحتون بپیوندید', img: './img/action.jpg', xp: 40, icon: '⚡' },
   { id: 'coach', name: 'کلاس با مربی', desc: 'جلسه‌ی خصوصی یا گروهی، تک یا پکیج', img: './img/coach-a.jpg', xp: 40, icon: '🧢' },
   { id: 'event', name: 'مسابقه و تورنمنت', desc: 'مسابقات آدینه و تورنمنت‌های رسمی', img: './img/four-women.jpg', xp: 80, icon: '🏆' },
 ]
@@ -85,7 +85,7 @@ function Crumbs({ w, step }) {
 function StepIntent({ onPick }) {
   return (
     <motion.div className="intent-list" variants={stagger} initial="hidden" animate="show">
-      <h2 className="wz-h">چی دوست داری؟ <small>در کمتر از یک دقیقه تمومه</small></h2>
+      <h2 className="wz-h">چی دوست دارید؟ <small>در کمتر از یک دقیقه تمومه</small></h2>
       {INTENTS.map((t, k) => (
         <motion.button key={t.id} variants={rise} className={`intent-card ${k === 0 ? 'big' : ''}`} whileTap={{ scale: 0.97 }} onClick={() => { haptic(10); onPick(t.id) }}>
           <Photo src={t.img} />
@@ -135,7 +135,7 @@ function StepWhen({ w, set, onNext }) {
           <Chips id="dur" options={DURATIONS.map((d) => ({ id: d.h, name: d.name, sub: d.tag }))} value={w.dur} onChange={(dur) => set({ dur, start: null })} />
         </section>
       )}
-      <p className="hint">{w.intent === 'match' ? '⚡ بازی‌هایی که نزدیک به سطح تو هستند اول نمایش داده می‌شوند.' : w.intent === 'coach' ? '🧢 جلسه‌ی مربی ۶۰ دقیقه است؛ زمین توسط باشگاه تخصیص داده می‌شود.' : '🎾 پدل همیشه دونفره است — ۴ بازیکن. ساعت‌های عصر و آخر هفته پیک هستند.'}</p>
+      <p className="hint">{w.intent === 'match' ? '⚡ بازی‌هایی که نزدیک به سطح شما هستند اول نمایش داده می‌شوند.' : w.intent === 'coach' ? '🧢 جلسه‌ی مربی ۶۰ دقیقه است؛ زمین توسط باشگاه تخصیص داده می‌شود.' : '🎾 پدل همیشه دونفره است — ۴ بازیکن. ساعت‌های عصر و آخر هفته پیک هستند.'}</p>
       <div className="cta-bar">
         <Button full variant="dark" disabled={!count && w.intent !== 'match'} onClick={onNext}>
           {w.intent === 'match'
@@ -168,7 +168,7 @@ function StepSlot({ w, set, onNext }) {
         ))}
       </div>
       <div className="slot-grid">
-        {rows.length === 0 && <div className="empty-card">در این بازه ساعت آزاد نیست؛ روز یا ساعت دیگری انتخاب کن.</div>}
+        {rows.length === 0 && <div className="empty-card">در این بازه ساعت آزاد نیست؛ روز یا ساعت دیگری انتخاب کنید.</div>}
         {rows.map((h, ri) => (
           <motion.div key={h} className="slot-row" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(ri, 12) * 0.02 }}>
             <span className={`slot-t ${isPeak(w.date, h, club.pricing) ? 'peak' : ''}`}>{hourLabel(h)}</span>
@@ -189,7 +189,7 @@ function StepSlot({ w, set, onNext }) {
       <p className="slot-legend"><i className="lg free" /> آزاد · قیمت {w.intent === 'coach' ? 'جلسه' : 'هر نفر'} <i className="lg busy" /> رزرو شده <i className="lg peak" /> ساعت پیک</p>
       <div className="cta-bar">
         <Button full variant="dark" disabled={w.start == null} onClick={onNext}>
-          {w.start == null ? 'یک خانه‌ی آزاد انتخاب کن' : <>{courtById(w.court).name} · {range(w.start, dur)} · ادامه</>}
+          {w.start == null ? 'یک خانه‌ی آزاد انتخاب کنید' : <>{courtById(w.court).name} · {range(w.start, dur)} · ادامه</>}
         </Button>
       </div>
     </div>
@@ -209,7 +209,7 @@ function StepPeople({ w, set, onNext }) {
   const reach = MEMBERS.filter((m) => w.levels.includes(m.level)).length * 7 + 12
   return (
     <div className="people">
-      <h2 className="wz-h">کی‌ها بازی می‌کنن؟ <small>روی جای خالی بزن و دوستت رو اضافه کن</small></h2>
+      <h2 className="wz-h">کی‌ها بازی می‌کنن؟ <small>روی جای خالی بزنید و دوستتون رو اضافه کنید</small></h2>
       <div className="court-viz">
         <div className="cv-net" /><div className="cv-line a" /><div className="cv-line b" /><div className="cv-mid" />
         {w.players.map((p, k) => (
@@ -219,7 +219,7 @@ function StepPeople({ w, set, onNext }) {
                 <motion.div key={p.name} className="spot-p" initial={{ y: -30, opacity: 0, scale: 0.4 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ scale: 0, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 380, damping: 16 }} onClick={() => !p.me && put(k, null)}>
                   <Avatar name={p.name} size={50} me={p.me} />
-                  <span>{p.me ? 'تو' : p.name.split(' ')[0]}</span>
+                  <span>{p.me ? 'شما' : p.name.split(' ')[0]}</span>
                   <LevelPill id={p.level} />
                 </motion.div>
               ) : (
@@ -239,7 +239,7 @@ function StepPeople({ w, set, onNext }) {
           <motion.div className={`mm ${w.open ? 'on' : ''}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }}>
             <div className="mm-head" onClick={() => { haptic(10); set({ open: !w.open }) }}>
               <div className="mm-ic"><Icon name="radar" /></div>
-              <div className="grow"><b>{fa(empty)} یار کم داری؟</b><small>بازی رو باز می‌کنیم و به هم‌سطح‌ها اعلان می‌دیم</small></div>
+              <div className="grow"><b>{fa(empty)} یار کم دارید؟</b><small>بازی رو باز می‌کنیم و به هم‌سطح‌ها اعلان می‌دیم</small></div>
               <div className={`switch ${w.open ? 'on' : ''}`}><motion.i layout transition={{ type: 'spring', stiffness: 600, damping: 30 }} /></div>
             </div>
             <AnimatePresence>
@@ -259,7 +259,7 @@ function StepPeople({ w, set, onNext }) {
         )}
       </AnimatePresence>
       <div className="cta-bar">
-        <Button full variant="dark" onClick={onNext}>{empty === 0 ? 'تیم کامله! پرداخت' : w.open ? 'باز کن و پرداخت سهم' : 'ادامه با جای خالی'}</Button>
+        <Button full variant="dark" onClick={onNext}>{empty === 0 ? 'تیم کامله! پرداخت' : w.open ? 'باز کردن و پرداخت سهم' : 'ادامه با جای خالی'}</Button>
       </div>
       <Sheet open={edit !== null} onClose={() => setEdit(null)} title="اضافه کردن بازیکن">
         <AddPlayer exclude={w.players.filter(Boolean).map((p) => p.name)} onAdd={(p) => { put(edit, p); setEdit(null) }} />
@@ -273,7 +273,7 @@ function AddPlayer({ onAdd, exclude }) {
   const [level, setLevel] = useState('C')
   return (
     <div className="add-p">
-      <p className="label">از دوستانت در کوادرا</p>
+      <p className="label">از دوستانتون در کوادرا</p>
       <div className="friend-list">
         {FRIENDS.filter((f) => !exclude.includes(f.name)).map((f) => (
           <motion.button key={f.id} className="friend" whileTap={{ scale: 0.92 }} onClick={() => onAdd({ id: f.id, name: f.name, level: f.level })}>
@@ -284,7 +284,7 @@ function AddPlayer({ onAdd, exclude }) {
       <p className="label">یا اسم مهمان</p>
       <label className="field"><Icon name="user" /><input placeholder="نام" value={name} onChange={(e) => setName(e.target.value)} /></label>
       <Chips id="g-lvl" small scroll options={LEVELS.map((l) => ({ id: l.id, name: l.id }))} value={level} onChange={setLevel} />
-      <Button full variant="dark" disabled={name.trim().length < 2} onClick={() => onAdd({ id: 'f:' + name.trim(), name: name.trim(), level })}>اضافه کن</Button>
+      <Button full variant="dark" disabled={name.trim().length < 2} onClick={() => onAdd({ id: 'f:' + name.trim(), name: name.trim(), level })}>اضافه شود</Button>
     </div>
   )
 }
@@ -295,15 +295,15 @@ function StepGames({ w, set, onNext, onCreate }) {
   const list = openGames(club, user.level, { date: w.date }).filter((g) => !g.mine && g.start >= dp.from && g.start < dp.to)
   return (
     <div className="games-pick">
-      <h2 className="wz-h">به یکی بپیوند <small>مرتب‌شده بر اساس نزدیکی به سطح {user.level}</small></h2>
+      <h2 className="wz-h">به یکی بپیوندید <small>مرتب‌شده بر اساس نزدیکی به سطح {user.level}</small></h2>
       <motion.div variants={stagger} initial="hidden" animate="show" className="og-list">
         {list.map((g) => <motion.div key={g.id} variants={rise}><GameCard g={g} on={w.gameId === g.id} onClick={() => { haptic(8); set({ gameId: g.id }) }} /></motion.div>)}
         <motion.button variants={rise} className="create-card" whileTap={{ scale: 0.97 }} onClick={onCreate}>
-          <Icon name="plus" size={26} /><div><b>خودم یه بازی باز می‌سازم</b><small>زمین رو انتخاب کن، بقیه رو ما پیدا می‌کنیم</small></div>
+          <Icon name="plus" size={26} /><div><b>خودم یه بازی باز می‌سازم</b><small>زمین رو انتخاب کنید، بقیه رو ما پیدا می‌کنیم</small></div>
         </motion.button>
       </motion.div>
       <div className="cta-bar">
-        <Button full variant="dark" disabled={!w.gameId} onClick={onNext}>{w.gameId ? 'پیوستن و پرداخت سهم' : 'یک بازی انتخاب کن'}</Button>
+        <Button full variant="dark" disabled={!w.gameId} onClick={onNext}>{w.gameId ? 'پیوستن و پرداخت سهم' : 'یک بازی انتخاب کنید'}</Button>
       </div>
     </div>
   )
@@ -389,7 +389,7 @@ function StepEvent({ w, set, onNext }) {
                   <small>{e.format} · سطح {e.levels.join(' / ')}</small>
                   <div className="ev-cap"><div className="bar"><i style={{ width: `${(e.taken / e.cap) * 100}%` }} /></div><span>{fa(e.taken)}/{fa(e.cap)}</span></div>
                 </div>
-                <em>{has ? 'ثبت‌نام شدی' : short(e.fee)}</em>
+                <em>{has ? 'ثبت‌نام شدید' : short(e.fee)}</em>
               </motion.button>
             )
           })}
@@ -414,7 +414,7 @@ function StepPay({ w, onDone }) {
   if (w.intent === 'match' && game) {
     kind = 'join'
     title = 'پیوستن به بازی باز'; sub = `${dayLabel(game.date)} · ${range(game.start, game.dur)} · ${courtById(game.court).name}`
-    lines = [['کل زمین', toman(game.price)], ['سهم تو (۱ از ۴)', toman(game.price / 4)]]
+    lines = [['کل زمین', toman(game.price)], ['سهم شما (۱ از ۴)', toman(game.price / 4)]]
     total = game.price / 4
   } else if (w.intent === 'coach') {
     kind = 'coach'
@@ -433,7 +433,7 @@ function StepPay({ w, onDone }) {
     const isOpen = w.open && filled < 4
     title = isOpen ? 'بازی باز' : 'رزرو زمین'; sub = `${dayLabel(w.date)} · ${range(w.start, w.dur)} · ${courtById(w.court).name}`
     const full = base * (1 - off)
-    lines = [['زمین ' + DURATIONS.find((d) => d.h === w.dur).name, toman(base)], off > 0 && ['تخفیف عضویت', '−' + toman(base * off)], isOpen && ['سهم تو (بقیه سهم خودشون رو می‌دن)', toman(full / 4)]].filter(Boolean)
+    lines = [['زمین ' + DURATIONS.find((d) => d.h === w.dur).name, toman(base)], off > 0 && ['تخفیف عضویت', '−' + toman(base * off)], isOpen && ['سهم شما (بقیه سهم خودشون رو می‌دن)', toman(full / 4)]].filter(Boolean)
     total = isOpen ? full / 4 : full
   }
   if (kind === 'join' && off) { lines.push(['تخفیف عضویت', '−' + toman(total * off)]); total *= 1 - off }
@@ -504,7 +504,7 @@ function Success({ r, w, onHome, onGames }) {
         <svg viewBox="0 0 52 52" width="92" height="92"><motion.path d="M14 27l8 8 16-17" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
           initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.35, duration: 0.45 }} /></svg>
       </motion.div>
-      <motion.h2 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{r.kind === 'event' ? 'ثبت‌نام شد!' : r.kind === 'join' ? 'به بازی پیوستی!' : 'رزرو شد!'}</motion.h2>
+      <motion.h2 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{r.kind === 'event' ? 'ثبت‌نام شد!' : r.kind === 'join' ? 'به بازی پیوستید!' : 'رزرو شد!'}</motion.h2>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.75 }} transition={{ delay: 0.4 }}>{r.title} · {r.sub}</motion.p>
       <motion.div className="xp-big" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.55, type: 'spring', stiffness: 300, damping: 14 }}>
         +<CountUp to={r.xp || 0} duration={1} /> <small>XP{r.mult > 1 ? ' · ۲ برابر عضویت' : ''}</small>
@@ -513,7 +513,7 @@ function Success({ r, w, onHome, onGames }) {
         <motion.div className="radar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           {[0, 1, 2].map((k) => <motion.span key={k} animate={{ scale: [0.3, 2.4], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 2.2, delay: k * 0.7 }} />)}
           <Icon name="radar" size={26} />
-          <p>در حال پیدا کردن بازیکن هم‌سطح… وقتی کسی درخواست بده خبرت می‌کنیم.</p>
+          <p>در حال پیدا کردن بازیکن هم‌سطح… وقتی کسی درخواست بده خبرتون می‌کنیم.</p>
         </motion.div>
       )}
       <AnimatePresence>

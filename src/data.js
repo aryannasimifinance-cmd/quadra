@@ -29,9 +29,9 @@ export const LEVELS = [
   { id: 'B-', title: 'نیمه‌پیشرفته', desc: 'ضربه‌های ثابت، شروع بازی تاکتیکی', color: '#2C7FA0', base: 1550 },
   { id: 'C+', title: 'متوسط قوی', desc: 'رالی پیوسته، سرویس مطمئن', color: '#0E9F98', base: 1400 },
   { id: 'C', title: 'متوسط', desc: 'بازی منظم با چند ماه سابقه', color: '#3DA57E', base: 1250 },
-  { id: 'C-', title: 'متوسط مبتدی', desc: 'ضربه‌های پایه را بلدی ولی هنوز ناپایدار', color: '#B8901C', base: 1100 },
-  { id: 'D+', title: 'مبتدی باتجربه', desc: 'چند بار بازی کرده‌ای و قوانین را می‌دانی', color: '#D0692F', base: 950 },
-  { id: 'D', title: 'تازه‌کار', desc: 'تازه شروع کرده‌ای — خوش آمدی!', color: '#C2503A', base: 800 },
+  { id: 'C-', title: 'متوسط مبتدی', desc: 'ضربه‌های پایه را بلدید ولی هنوز ناپایدار است', color: '#B8901C', base: 1100 },
+  { id: 'D+', title: 'مبتدی باتجربه', desc: 'چند بار بازی کرده‌اید و قوانین را می‌دانید', color: '#D0692F', base: 950 },
+  { id: 'D', title: 'تازه‌کار', desc: 'تازه شروع کرده‌اید — خوش آمدید!', color: '#C2503A', base: 800 },
 ]
 export const levelIndex = (id) => LEVELS.findIndex((l) => l.id === id)
 export const levelById = (id) => LEVELS.find((l) => l.id === id) || LEVELS[5]
@@ -319,17 +319,17 @@ export function rankOf(xp) {
 }
 
 export const BADGES = [
-  { id: 'first', icon: '🎾', name: 'اولین سرو', desc: 'اولین رزروت رو زدی' },
-  { id: 'host', icon: '📣', name: 'بازی‌ساز', desc: 'یه بازی باز ساختی' },
-  { id: 'social', icon: '🤝', name: 'رفیق‌باز', desc: 'به بازی دیگران پیوستی' },
+  { id: 'first', icon: '🎾', name: 'اولین سرو', desc: 'اولین رزروتون رو زدید' },
+  { id: 'host', icon: '📣', name: 'بازی‌ساز', desc: 'یه بازی باز ساختید' },
+  { id: 'social', icon: '🤝', name: 'رفیق‌باز', desc: 'به بازی دیگران پیوستید' },
   { id: 'squad', icon: '🧩', name: 'تیم کامل', desc: 'هر چهار جای بازی پر شد' },
-  { id: 'quad', icon: '4️⃣', name: 'کوادرا', desc: 'روی هر ۴ زمین بازی کردی' },
+  { id: 'quad', icon: '4️⃣', name: 'کوادرا', desc: 'روی هر ۴ زمین بازی کردید' },
   { id: 'early', icon: '🌅', name: 'سحرخیز', desc: 'بازی قبل از ۹ صبح' },
   { id: 'night', icon: '🌙', name: 'شب‌زنده‌دار', desc: 'بازی بعد از ۲۲' },
   { id: 'student', icon: '🧢', name: 'شاگرد', desc: 'اولین کلاس با مربی' },
   { id: 'champ', icon: '🏆', name: 'اهل رقابت', desc: 'ثبت‌نام در تورنمنت' },
   { id: 'shopper', icon: '🛍', name: 'خوش‌تیپ', desc: 'اولین خرید از فروشگاه' },
-  { id: 'loyal', icon: '💎', name: 'وفادار', desc: 'پکیج یا عضویت خریدی' },
+  { id: 'loyal', icon: '💎', name: 'وفادار', desc: 'پکیج یا عضویت خریدید' },
 ]
 
 export const CREDITS = [

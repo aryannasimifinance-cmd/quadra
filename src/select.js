@@ -37,8 +37,8 @@ export function quests(s) {
   const orders = s.club.orders.filter((o) => o.by === ME && o.at >= from)
   const done = s.quests[wk] || []
   return [
-    { id: 'play2', icon: '🎾', name: 'این هفته ۲ بازی کن', goal: 2, have: mine.length, xp: 60 },
-    { id: 'social', icon: '🤝', name: 'یه بازی باز بساز یا بهش بپیوند', goal: 1, have: mine.filter((b) => b.type === 'open').length, xp: 40 },
+    { id: 'play2', icon: '🎾', name: 'این هفته ۲ بازی کنید', goal: 2, have: mine.length, xp: 60 },
+    { id: 'social', icon: '🤝', name: 'یه بازی باز بسازید یا بهش بپیوندید', goal: 1, have: mine.filter((b) => b.type === 'open').length, xp: 40 },
     { id: 'shop', icon: '🛍', name: 'یه خرید از فروشگاه', goal: 1, have: orders.length, xp: 30 },
   ].map((q) => ({ ...q, ready: q.have >= q.goal && !done.includes(q.id), claimed: done.includes(q.id) }))
 }

@@ -35,7 +35,7 @@ export default function Games({ nav }) {
             {up.length === 0 && (
               <div className="empty-hero">
                 <Photo src="./img/ball-court.jpg" />
-                <div><b>هنوز بازی‌ای نداری</b><p>اولین بازیت رو بساز — کمتر از یک دقیقه.</p><Button variant="q" onClick={() => nav.start({})}>بازی بساز</Button></div>
+                <div><b>هنوز بازی‌ای ندارید</b><p>اولین بازیتون رو بسازید — کمتر از یک دقیقه.</p><Button variant="q" onClick={() => nav.start({})}>بازی بسازید</Button></div>
               </div>
             )}
             {up.map((b, i) => <MyGame key={b.id} b={b} i={i} onClick={() => setSel(b.id)} />)}
@@ -86,7 +86,7 @@ function GameSheet({ id, onClose }) {
   const hoursLeft = (startsAt(b) - Date.now()) / 36e5
   const cancel = () => {
     cancelMine(b.id); chime('tap'); setConfirm(false); onClose()
-    toast({ icon: '↩️', title: 'لغو شد', body: 'مبلغ به کیف پولت برگشت' })
+    toast({ icon: '↩️', title: 'لغو شد', body: 'مبلغ به کیف پولتون برگشت' })
   }
   const share = () => {
     const text = `بیا کوادرا پدل بازی کنیم! ${dayLabel(b.date)} ${range(b.start, b.dur)} · ${c.name}`
@@ -99,7 +99,7 @@ function GameSheet({ id, onClose }) {
         <div className="gs-photo"><Photo src={c.img} /><div className="gs-shade" /><div><small>{c.name} · {c.kind}</small><h3>{dayLabel(b.date)} · {range(b.start, b.dur)}</h3></div></div>
         <div className="gs-ppl">
           {[0, 1, 2, 3].map((k) => b.players[k] ? (
-            <div key={k} className="gs-p"><Avatar name={nameOf(b.players[k], user)} me={b.players[k] === ME} size={48} /><small>{b.players[k] === ME ? 'تو' : nameOf(b.players[k]).split(' ')[0]}</small>
+            <div key={k} className="gs-p"><Avatar name={nameOf(b.players[k], user)} me={b.players[k] === ME} size={48} /><small>{b.players[k] === ME ? 'شما' : nameOf(b.players[k]).split(' ')[0]}</small>
               {MEMBERS.find((m) => m.id === b.players[k]) && <LevelPill id={MEMBERS.find((m) => m.id === b.players[k]).level} />}</div>
           ) : <div key={k} className="gs-p"><Avatar empty size={48} /><small>{b.type === 'open' ? 'در جستجو' : 'خالی'}</small></div>)}
         </div>
@@ -114,7 +114,7 @@ function GameSheet({ id, onClose }) {
           {!confirm ? (
             <Button variant="ghost" disabled={hoursLeft < 6} onClick={() => setConfirm(true)}>{hoursLeft < 6 ? 'لغو ممکن نیست' : 'لغو'}</Button>
           ) : (
-            <Button variant="danger" onClick={cancel}>مطمئنم، لغو کن</Button>
+            <Button variant="danger" onClick={cancel}>مطمئنم، لغو شود</Button>
           )}
         </div>
       </div>
