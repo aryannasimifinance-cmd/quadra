@@ -954,3 +954,12 @@ img { display: block; }
 .emblem .em-rally { transform: scale(.72); margin-top: 0; }
 .emblem .em-racket { filter: drop-shadow(5px 6px 3px rgba(0,0,0,.45)); }
 .emblem .bl-ball { filter: none; }
+
+/* هایلایت تب پایین دقیقاً پشت آیکون */
+.nav-pill { top: 4px; height: 36px; width: 50px; }
+
+/* لوگوی صفحه‌ی اول: سفید و پررنگ‌تر، هنوز هم‌رنگ فضای ویدیو */
+.emblem { opacity: .92; mix-blend-mode: normal; }
+.emblem .em-core { filter: drop-shadow(0 1px 6px rgba(0,0,0,.25)); }
+.emblem .em-core path[fill^="url"] { fill: #fff; }
+.emblem .em-word, .emblem .em-sub { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.3); }
