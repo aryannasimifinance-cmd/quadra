@@ -39,7 +39,7 @@ export default function Me({ nav }) {
         </div>
         <div className="me-stats">
           <button onClick={() => nav.tab('games')}><b><CountUp to={games} /></b><small>بازی</small></button>
-          <button onClick={() => nav.open('ranking')}><b>#<CountUp to={pos} /></b><small>رنکینگ</small></button>
+          <button onClick={() => nav.open('ranking')}><b>#<CountUp to={pos} /></b><small>رنکینگ در باشگاه</small></button>
           <button onClick={() => nav.open('ranking')}><b><CountUp to={pts} /></b><small>امتیاز</small></button>
           <button><b><CountUp to={badges.length} /></b><small>نشان</small></button>
         </div>
