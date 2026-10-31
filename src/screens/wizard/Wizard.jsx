@@ -490,8 +490,12 @@ function StepGames({ w, set, onNext, onCreate }) {
   )
 }
 
+// نام بازیکن برای کارت‌ها: عضو، مهمان (f:نام) یا خود کاربر
+const playerName = (id) => id === ME ? 'شما' : id?.startsWith('f:') ? id.slice(2) : MEMBERS.find((m) => m.id === id)?.name || 'بازیکن'
+
 export function GameCard({ g, on, onClick }) {
   const c = courtById(g.court)
+  const others = g.players.filter((p) => p !== g.by)
   return (
     <motion.button className={`og-wide ${on ? 'on' : ''}`} whileTap={{ scale: 0.98 }} onClick={onClick}>
       <Photo src={c.img} />
@@ -501,8 +505,12 @@ export function GameCard({ g, on, onClick }) {
           <small>{c.name} · {c.kind}</small>
         </div>
         <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+        <div className="og-names">
+          <span>سازنده: <b>{playerName(g.by)}</b></span>
+          {others.length > 0 && <span>بازیکن‌ها: {others.map((p) => playerName(p).split(' ')[0]).join('، ')}</span>}
+        </div>
         <div className="og-ppl">
-          {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={MEMBERS.find((m) => m.id === g.players[k])?.name || 'ت'} size={28} /> : <span key={k} className="og-empty" />)}
+          {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={playerName(g.players[k])} size={28} /> : <span key={k} className="og-empty" />)}
           <div className="og-levels">{g.levels.map((l) => <LevelPill key={l} id={l} />)}</div>
         </div>
         <div className="og-foot"><span>{fa(4 - g.players.length)} جای خالی</span><b>{toman(g.price / 4)}</b></div>

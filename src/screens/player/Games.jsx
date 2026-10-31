@@ -87,6 +87,7 @@ function MyGame({ b, i, past, onClick }) {
       <div className="grow">
         <b>{range(b.start, b.dur)}</b>
         <small>{c.name} · {label}</small>
+        {b.players?.length > 0 && <small className="mg-names">{b.by === ME ? 'سازنده: شما' : `سازنده: ${nameOf(b.by, user)}`}{b.players.length > 1 && ` · ${b.players.filter((p) => p !== b.by).map((p) => p === ME ? 'شما' : nameOf(p, user).split(' ')[0]).join('، ')}`}</small>}
       </div>
       {b.type === 'open' && !past && b.players.length < 4 && <span className="pulse-dot" />}
       <div className="mg-ppl">{b.players.slice(0, 4).map((p, k) => <Avatar key={k} name={nameOf(p, user)} size={24} me={p === ME} />)}</div>
