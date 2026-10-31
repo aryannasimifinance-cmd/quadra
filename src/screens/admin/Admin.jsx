@@ -336,12 +336,13 @@ function BookingDetail({ id, onClose }) {
 
 function NewBooking({ d, onClose }) {
   const { club, adminAddBooking, toast } = useStore()
-  const [f, setF] = useState({ court: d.court || 1, date: d.date, start: d.start ?? 17, dur: 1.5, type: 'private', member: MEMBERS[0].id, coach: COACHES[0].id, pay: 'none', method: 'card', note: '', q: '' })
+  const [f, setF] = useState({ court: d.court || 1, date: d.date, start: d.start ?? 17, dur: 1, type: 'private', member: MEMBERS[0].id, coach: COACHES[0].id, pay: 'none', method: 'card', note: '', q: '' })
   const set = (p) => setF((x) => ({ ...x, ...p }))
   const price = f.type === 'coach' ? coachById(f.coach).price * f.dur : f.type === 'block' ? 0 : priceFor(f.date, f.start, f.dur, club.pricing)
-  const free = isFree(club, f.date, f.court, f.start, f.dur) && f.start + f.dur <= 24
+  const coachClash = f.type === 'coach' && club.bookings.some((b) => b.coach === f.coach && b.date === f.date && b.status !== 'cancelled' && f.start < b.start + b.dur && b.start < f.start + f.dur)
+  const free = isFree(club, f.date, f.court, f.start, f.dur) && f.start + f.dur <= 24 && !coachClash
   const matches = MEMBERS.filter((m) => !f.q || m.name.includes(f.q) || m.phone.includes(f.q)).slice(0, 6)
-  const times = []; for (let h = 7; h < 24; h += 0.5) times.push(h)
+  const times = []; for (let h = 7; h < 24; h += 1) times.push(h)
   const save = () => {
     const paid = f.pay === 'full' ? price : f.pay === 'half' ? Math.round(price / 2) : 0
     adminAddBooking({ court: f.court, date: f.date, start: f.start, dur: f.dur, type: f.type, by: f.type === 'block' ? null : f.member, players: f.type === 'block' ? [] : [f.member],
@@ -358,7 +359,7 @@ function NewBooking({ d, onClose }) {
           <label>تاریخ<select value={f.date} onChange={(e) => set({ date: e.target.value })}>{Array.from({ length: 21 }, (_, i) => addDays(todayKey(), i - 3)).map((k) => <option key={k} value={k}>{dayLabel(k)} {dayMonth(fromKey(k))}</option>)}</select></label>
           <label>ساعت شروع<select value={f.start} onChange={(e) => set({ start: +e.target.value })}>{times.map((h) => <option key={h} value={h}>{hourLabel(h)}</option>)}</select></label>
         </div>
-        <label>مدت<div className="seg-adm">{[...DURATIONS, { h: 3, name: '۳ ساعت' }].map((x) => <button key={x.h} className={f.dur === x.h ? 'on' : ''} onClick={() => set({ dur: x.h })}>{x.name}</button>)}</div></label>
+        <label>مدت<div className="seg-adm">{DURATIONS.map((x) => <button key={x.h} className={f.dur === x.h ? 'on' : ''} onClick={() => set({ dur: x.h })}>{x.name}</button>)}</div></label>
         {f.type === 'coach' && <label>مربی<select value={f.coach} onChange={(e) => set({ coach: e.target.value })}>{COACHES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
         {f.type !== 'block' ? (<>
           <label>مشتری<input placeholder="جستجوی نام یا موبایل" value={f.q} onChange={(e) => set({ q: e.target.value })} /></label>
@@ -368,7 +369,7 @@ function NewBooking({ d, onClose }) {
         </>) : <label>توضیح<input placeholder="مثلاً تعویض چمن" value={f.note} onChange={(e) => set({ note: e.target.value })} /></label>}
       </div>
       <div className="dr-total"><span>{courtById(f.court).name} · {range(f.start, f.dur)}</span><b>{toman(price)}</b></div>
-      {!free && <p className="cancelled">این بازه روی {courtById(f.court).name} آزاد نیست.</p>}
+      {!free && <p className="cancelled">{coachClash ? `${coachById(f.coach).name} در این ساعت کلاس دیگری دارد.` : `این بازه روی ${courtById(f.court).name} آزاد نیست.`}</p>}
       <button className="adm-btn primary full" disabled={!free} onClick={save}>ثبت رزرو</button>
     </div>
   )

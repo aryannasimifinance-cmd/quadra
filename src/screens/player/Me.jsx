@@ -3,13 +3,14 @@ import { useState } from 'react'
 import { BADGES, COACHES, CREDITS, RANKS, fa, levelById, productById, rankOf, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { ME, myPoints, useStore } from '../../store'
-import { activeMembership, myBookings } from '../../select'
+import { activeMembership, myBookings, isUpcoming } from '../../select'
 import { Avatar, Button, CountUp, Icon, LevelPill, Ring, SectionHead, Sheet } from '../../components/ui'
 import { leaderboard } from './Home'
 
 export default function Me({ nav }) {
   const s = useStore()
-  const { user, xp, badges, wallet, credits, coachCredits, club, logout, topUp, toast } = s
+  const { user, xp, badges, wallet, club, logout, topUp, toast } = s
+  const upcoming = myBookings(club).filter(isUpcoming)
   const rank = rankOf(xp)
   const pts = myPoints(s)
   const pos = leaderboard(pts, user.name).findIndex((x) => x.me) + 1
@@ -52,10 +53,10 @@ export default function Me({ nav }) {
 
         <div className="assets">
           <button className="asset" onClick={() => nav.open('packages')}>
-            <Icon name="ticket" /><b>{fa(credits)}</b><small>سانس پکیج</small>
+            <Icon name="ticket" /><b>{fa(upcoming.filter((b) => b.series && b.type !== 'coach').length)}</b><small>جلسه‌ی پکیج زمین</small>
           </button>
           <button className="asset" onClick={() => nav.open('coaches')}>
-            <Icon name="coach" /><b>{fa(Object.values(coachCredits).reduce((a, b) => a + b, 0))}</b><small>جلسه‌ی مربی</small>
+            <Icon name="coach" /><b>{fa(upcoming.filter((b) => b.type === 'coach').length)}</b><small>جلسه‌ی مربی پیش رو</small>
           </button>
           <button className={`asset ${mem ? 'gold' : ''}`} onClick={() => nav.open('packages')}>
             <Icon name="crown" /><b>{mem ? mem.name.replace('عضویت ', '') : '—'}</b><small>{mem ? `${fa(Math.ceil((s.membership.until - Date.now()) / 864e5))} روز مانده` : 'عضویت'}</small>

@@ -8,13 +8,12 @@ import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet, TopBar, rise, sta
 import { leaderboard } from './Home'
 
 export function Coaches({ nav, onBack, focus }) {
-  const { coachCredits } = useStore()
   useEffect(() => { if (focus) document.getElementById('c-' + focus)?.scrollIntoView({ behavior: 'smooth' }) }, [focus])
   return (
     <div className="page">
       <TopBar onBack={onBack} title="مربی‌ها و کلاس‌ها" />
       <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
-        <p className="lead">جلسه‌ی ۶۰ دقیقه‌ای خصوصی یا گروهی. پکیج‌های ۴ و ۸ جلسه‌ای تا ۱۵٪ ارزان‌ترند.</p>
+        <p className="lead">جلسه‌ی ۶۰ دقیقه‌ای خصوصی یا گروهی. پکیج‌های ۵ و ۱۰ جلسه‌ای تا ۱۵٪ ارزان‌ترند و همه‌ی جلسه‌ها همان لحظه در تقویم رزرو می‌شوند.</p>
         {COACHES.map((c) => (
           <motion.article key={c.id} id={'c-' + c.id} variants={rise} className="coach-big">
             <Photo src={c.img} />
@@ -29,7 +28,7 @@ export function Coaches({ nav, onBack, focus }) {
                 {COACH_PACKS.map((p) => <div key={p.id}><small>{p.name}</small><b>{short(coachPackPrice(c, p))}</b></div>)}
               </div>
               <Button full variant="q" onClick={() => nav.start({ intent: 'coach', coachId: c.id })}>
-                {coachCredits[c.id] ? `رزرو جلسه · ${fa(coachCredits[c.id])} جلسه اعتبار دارید` : 'رزرو جلسه یا خرید پکیج'}
+                رزرو جلسه یا خرید پکیج
               </Button>
             </div>
           </motion.article>
@@ -39,7 +38,7 @@ export function Coaches({ nav, onBack, focus }) {
   )
 }
 
-export function Packages({ onBack }) {
+export function Packages({ onBack, nav }) {
   const s = useStore()
   const [sel, setSel] = useState(null)
   const [method, setMethod] = useState('online')
@@ -59,17 +58,16 @@ export function Packages({ onBack }) {
       <TopBar onBack={onBack} title="پکیج‌ها و عضویت" />
       <motion.div className="page-body" variants={stagger} initial="hidden" animate="show">
         {mem && <div className="mem-active"><Icon name="crown" /><div><b>{mem.name} فعال است</b><small>{fa(Math.ceil((s.membership.until - Date.now()) / 864e5))} روز مانده · {fa(mem.off * 100)}٪ تخفیف روی همه‌ی رزروها</small></div></div>}
-        {s.credits > 0 && <div className="mem-active"><Icon name="ticket" /><div><b>{fa(s.credits)} سانس اعتبار</b><small>هنگام پرداخت رزرو، «اعتبار پکیج» را انتخاب کنید</small></div></div>}
         {PACKAGES.map((p) => (
-          <motion.button key={p.id} variants={rise} className={`pkg ${p.kind}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); setSel(p) }}>
+          <motion.button key={p.id} variants={rise} className={`pkg ${p.kind}`} whileTap={{ scale: 0.98 }} onClick={() => { haptic(8); p.kind === 'series' ? nav.start({ intent: 'court', series: p.id }) : setSel(p) }}>
             <Photo src={p.img} />
             <div className="pkg-shade" />
             {p.tag && <span className="pkg-tag">{p.tag}</span>}
             <div className="pkg-txt">
-              <small>{p.kind === 'credit' ? 'پکیج سانس' : 'عضویت'} · {p.sub}</small>
+              <small>{p.kind === 'series' ? 'پکیج زمین' : 'عضویت'} · {p.sub}</small>
               <h3>{p.name}</h3>
               <ul>{p.perks.map((x) => <li key={x}><Icon name="check" size={14} stroke={3} />{x}</li>)}</ul>
-              <div className="pkg-price">{p.was && <s>{short(p.was)}</s>}<b>{toman(p.price)}</b></div>
+              <div className="pkg-price">{p.kind === 'series' ? <b>{fa(p.off * 100)}٪ تخفیف · انتخاب روز و ساعت</b> : <b>{toman(p.price)}</b>}</div>
             </div>
           </motion.button>
         ))}

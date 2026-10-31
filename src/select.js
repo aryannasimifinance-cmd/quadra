@@ -1,5 +1,5 @@
 import { COURTS, PACKAGES, addDays, fromKey, isPeak, levelIndex, priceFor, todayKey } from './data'
-import { ME, freeStarts, weekKey } from './store'
+import { ME, freeStarts, isFree, weekKey } from './store'
 
 const nowH = () => { const n = new Date(); return n.getHours() + n.getMinutes() / 60 }
 export const startsAt = (b) => fromKey(b.date).getTime() + b.start * 36e5
@@ -25,21 +25,41 @@ export function courtsNow(club) {
   return COURTS.map((c) => {
     const list = club.bookings.filter((b) => b.date === k && b.court === c.id && b.status === 'ok')
     const cur = list.find((b) => b.start <= h && h < b.start + b.dur)
-    const next = freeStarts(club, k, c.id, 1.5)
+    const next = freeStarts(club, k, c.id, 1)
     return { ...c, off: !!club.off[c.id], busy: !!cur, cur, nextFree: next[0], freeCount: next.length }
   })
 }
 
-// نزدیک‌ترین ساعت‌های آزاد ۹۰ دقیقه‌ای روی ۴ زمین (امروز و فردا) برای رزرو سریع
+// نزدیک‌ترین ساعت‌های آزاد یک‌ساعته روی ۴ زمین (امروز و فردا) برای رزرو سریع
 export function upcomingSlots(club, n = 10) {
   const out = []
-  ;[todayKey(), addDays(todayKey(), 1)].forEach((d) => COURTS.forEach((c) => freeStarts(club, d, c.id, 1.5).forEach((h) => {
-    if (h % 1 === 0) out.push({ court: c.id, date: d, start: h, price: priceFor(d, h, 1.5, club.pricing), peak: isPeak(d, h, club.pricing) })
+  ;[todayKey(), addDays(todayKey(), 1)].forEach((d) => COURTS.forEach((c) => freeStarts(club, d, c.id, 1).forEach((h) => {
+    if (h % 1 === 0) out.push({ court: c.id, date: d, start: h, price: priceFor(d, h, 1, club.pricing), peak: isPeak(d, h, club.pricing) })
   })))
   out.sort((a, b) => fromKey(a.date) - fromKey(b.date) || a.start - b.start || a.court - b.court)
   // از هر ساعت حداکثر دو زمین تا فهرست متنوع بماند
   const seen = {}
   return out.filter((x) => (seen[x.date + x.start] = (seen[x.date + x.start] || 0) + 1) <= 2).slice(0, n)
+}
+
+// برنامه‌ی جلسه‌های پکیج: هر هفته همان روز و ساعت؛ اگر زمین پر بود زمین دیگر،
+// بعد یک یا دو ساعت جلوتر/عقب‌تر همان روز، و اگر هیچ‌کدام نشد آن هفته رد می‌شود
+export function planSeries(club, { court, date, start, dur, count, coach }) {
+  const coachFree = (d, h) => !coach || !club.bookings.some((b) => b.coach === coach && b.date === d && b.status !== 'cancelled' && h < b.start + b.dur && b.start < h + dur)
+  const ok = (d, c, h) => h >= 7 && h + dur <= 24 && isFree(club, d, c, h, dur) && coachFree(d, h)
+  const courts = [court, ...COURTS.map((c) => c.id).filter((x) => x !== court)]
+  const out = []
+  let skipped = 0
+  for (let k = 0; out.length < count && k < count + 8; k++) {
+    const d = addDays(date, 7 * k)
+    let pick = null
+    for (const delta of [0, 1, -1, 2, -2]) {
+      const c = courts.find((x) => ok(d, x, start + delta))
+      if (c) { pick = { date: d, court: c, start: start + delta, dur, moved: c !== court || delta !== 0 }; break }
+    }
+    if (pick) out.push(pick); else skipped++
+  }
+  return { sessions: out, skipped, complete: out.length === count }
 }
 
 export function quests(s) {

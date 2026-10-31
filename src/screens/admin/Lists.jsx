@@ -252,7 +252,7 @@ export function Members() {
 export function Settings() {
   const { club, adminPricing, adminCourt, resetDemo, toast } = useStore()
   const [p, setP] = useState(club.pricing)
-  const ex = (h) => priceFor(todayKey(), h, 1.5, p)
+  const ex = (h) => priceFor(todayKey(), h, 1, p)
   const save = () => { adminPricing({ offpeak: +p.offpeak, peak: +p.peak, peakFrom: +p.peakFrom }); chime('success'); toast({ icon: '💾', title: 'نرخ‌ها ذخیره شد', body: 'در اپ بازیکن‌ها هم اعمال شد' }) }
   return (
     <div className="two">
@@ -263,8 +263,8 @@ export function Settings() {
           <label>شروع ساعت پیک<select value={p.peakFrom} onChange={(e) => setP({ ...p, peakFrom: e.target.value })}>{[15, 16, 17, 18, 19].map((h) => <option key={h} value={h}>{fa(h)}:۰۰</option>)}</select></label>
           <p className="muted small">پنجشنبه و جمعه تمام روز پیک حساب می‌شود.</p>
           <div className="preview">
-            <div><small>۹۰ دقیقه ساعت ۱۰ (امروز)</small><b>{toman(ex(10))}</b><small>هر نفر {toman(ex(10) / 4)}</small></div>
-            <div><small>۹۰ دقیقه ساعت ۲۰ (امروز)</small><b>{toman(ex(20))}</b><small>هر نفر {toman(ex(20) / 4)}</small></div>
+            <div><small>۱ ساعت، ساعت ۱۰ (امروز)</small><b>{toman(ex(10))}</b><small>هر نفر {toman(ex(10) / 4)}</small></div>
+            <div><small>۱ ساعت، ساعت ۲۰ (امروز)</small><b>{toman(ex(20))}</b><small>هر نفر {toman(ex(20) / 4)}</small></div>
           </div>
           <button className="adm-btn primary" onClick={save}>ذخیره‌ی نرخ‌ها</button>
         </div>

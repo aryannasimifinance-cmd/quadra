@@ -15,9 +15,9 @@ export const COURTS = [
 export const courtById = (id) => COURTS.find((c) => c.id === id)
 
 export const DURATIONS = [
-  { h: 1, name: '۶۰ دقیقه' },
-  { h: 1.5, name: '۹۰ دقیقه', tag: 'محبوب' },
-  { h: 2, name: '۱۲۰ دقیقه' },
+  { h: 1, name: '۱ ساعت' },
+  { h: 2, name: '۲ ساعت', tag: 'محبوب' },
+  { h: 3, name: '۳ ساعت' },
 ]
 
 export const DEFAULT_PRICING = { offpeak: 1200000, peak: 1600000, peakFrom: 17 } // هر ساعت، کل زمین
@@ -59,19 +59,25 @@ export const coachById = (id) => COACHES.find((c) => c.id === id)
 // پکیج‌های مربی — قیمت بر اساس نرخ جلسه‌ی مربی
 export const COACH_PACKS = [
   { id: 'one', name: 'تک جلسه', sessions: 1, off: 0, people: 1 },
-  { id: 'four', name: '۴ جلسه', sessions: 4, off: 0.08, people: 1, tag: '۸٪ تخفیف' },
-  { id: 'eight', name: '۸ جلسه', sessions: 8, off: 0.15, people: 1, tag: 'به‌صرفه‌ترین' },
+  { id: 'five', name: 'پکیج ۵ جلسه', sessions: 5, off: 0.1, people: 1, tag: '۱۰٪ تخفیف' },
+  { id: 'ten', name: 'پکیج ۱۰ جلسه', sessions: 10, off: 0.15, people: 1, tag: '۱۵٪ تخفیف' },
   { id: 'group', name: 'گروهی ۴ نفره', sessions: 1, off: 0, people: 4, mult: 0.4, tag: 'هر نفر' },
 ]
 export const coachPackPrice = (coach, pack) => Math.round(coach.price * pack.sessions * (1 - pack.off) * (pack.mult || 1) / 10000) * 10000
 
 export const PACKAGES = [
-  { id: 'p5', kind: 'credit', name: 'پکیج ۵ سانس', sub: '۵ سانس ۹۰ دقیقه‌ای · هر ساعتی', credits: 5, price: 9900000, was: 11000000, days: 60, img: img('action-wide'), perks: ['۱۰٪ ارزان‌تر از رزرو تکی', 'قابل استفاده برای بازی باز', '۶۰ روز اعتبار'] },
-  { id: 'p10', kind: 'credit', name: 'پکیج ۱۰ سانس', sub: '۱۰ سانس ۹۰ دقیقه‌ای · هر ساعتی', credits: 10, price: 18700000, was: 22000000, days: 120, img: img('four-women'), perks: ['۱۵٪ ارزان‌تر', 'هدیه: یک قوطی توپ', '۱۲۰ روز اعتبار'], tag: 'پرفروش' },
+  { id: 'p5', kind: 'series', name: 'پکیج ۵ جلسه زمین', sub: 'هفته‌ای یک جلسه · همان روز و ساعت', sessions: 5, off: 0.1, img: img('court-indoor'), perks: ['۱۰٪ ارزان‌تر از رزرو تکی', 'هر ۵ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'] },
+  { id: 'p10', kind: 'series', name: 'پکیج ۱۰ جلسه زمین', sub: 'هفته‌ای یک جلسه · همان روز و ساعت', sessions: 10, off: 0.15, img: img('court-pano'), perks: ['۱۵٪ ارزان‌تر از رزرو تکی', 'هر ۱۰ جلسه همان لحظه در تقویم رزرو می‌شود', 'مدت ۱، ۲ یا ۳ ساعت'], tag: 'پرفروش' },
   { id: 'gold', kind: 'member', name: 'عضویت طلایی', sub: 'ماهانه', off: 0.15, price: 2900000, days: 30, img: img('reach'), perks: ['۱۵٪ تخفیف همه‌ی رزروها', 'رزرو تا ۱۴ روز جلوتر', '۲ برابر امتیاز XP'] },
   { id: 'black', kind: 'member', name: 'عضویت بلک', sub: 'سه‌ماهه', off: 0.25, price: 7400000, days: 90, img: img('hit'), perks: ['۲۵٪ تخفیف همه‌ی رزروها', 'اولویت در تورنمنت‌ها', '۲ برابر XP + کمد اختصاصی'], tag: 'VIP' },
 ]
 export const packageById = (id) => PACKAGES.find((p) => p.id === id)
+// گزینه‌های تعداد جلسه در رزرو زمین (تک یا پکیج هفتگی)
+export const SERIES = [
+  { id: 'single', name: 'تک جلسه', sessions: 1, off: 0 },
+  { id: 'p5', name: 'پکیج ۵ جلسه', sessions: 5, off: 0.1, tag: '۱۰٪ تخفیف' },
+  { id: 'p10', name: 'پکیج ۱۰ جلسه', sessions: 10, off: 0.15, tag: '۱۵٪ تخفیف' },
+]
 
 // ---------- فروشگاه ----------
 export const CATEGORIES = [
@@ -230,7 +236,7 @@ export function events() {
 
 // ---------- داده‌ی اولیه‌ی باشگاه (برای پنل مدیر) ----------
 const METHODS = ['online', 'online', 'online', 'card', 'cash', 'wallet', 'package']
-export const METHOD_NAME = { online: 'درگاه آنلاین', card: 'کارتخوان', cash: 'نقدی', wallet: 'کیف پول', package: 'اعتبار پکیج', 'coach-pack': 'پکیج مربی' }
+export const METHOD_NAME = { online: 'درگاه آنلاین', card: 'کارتخوان', cash: 'نقدی', wallet: 'کیف پول', package: 'پکیج', 'coach-pack': 'پکیج مربی' }
 export const TYPE_NAME = { private: 'رزرو خصوصی', open: 'بازی باز', coach: 'کلاس مربی', event: 'تورنمنت', block: 'تعمیرات' }
 
 export function seedClub() {
@@ -241,16 +247,18 @@ export function seedClub() {
     const k = addDays(todayKey(), d), date = fromKey(k)
     COURTS.forEach((c) => {
       let h = 7
-      while (h < 22.5) {
+      while (h < 23) {
         const r = hash(`s${k}${c.id}${h}`)
         const busyP = (h >= 17 ? 0.62 : h >= 9 && h < 12 ? 0.4 : 0.26) * (isWeekend(date) ? 1.15 : 1) * (d > 3 ? 0.55 : 1)
-        if (r > busyP) { h += 0.5; continue }
-        const dur = r < busyP * 0.65 ? 1.5 : r < busyP * 0.85 ? 1 : 2
+        if (r > busyP) { h += 1; continue }
+        const dur = r < busyP * 0.5 ? 1 : r < busyP * 0.9 ? 2 : 3
         if (h + dur > 24) break
         const t = hash(`t${k}${c.id}${h}`)
-        const type = t < 0.6 ? 'private' : t < 0.82 ? 'open' : 'coach'
+        let type = t < 0.6 ? 'private' : t < 0.82 ? 'open' : 'coach'
         const m = MEMBERS[Math.floor(hash(`m${k}${c.id}${h}`) * MEMBERS.length)]
-        const coach = type === 'coach' ? COACHES[Math.floor(t * 40) % COACHES.length] : null
+        let coach = type === 'coach' ? COACHES[Math.floor(t * 40) % COACHES.length] : null
+        // یک مربی هم‌زمان روی دو زمین کلاس ندارد
+        if (coach && bookings.some((b) => b.coach === coach.id && b.date === k && h < b.start + b.dur && b.start < h + dur)) { type = 'private'; coach = null }
         const price = type === 'coach' ? coach.price * dur : priceFor(k, h, dur, pricing)
         const past = d < 0 || (d === 0 && h + dur <= now.getHours())
         const players = type === 'open'
@@ -266,12 +274,18 @@ export function seedClub() {
           status: cancelled ? 'cancelled' : 'ok', refunded: cancelled && paid > 0, source: hash('src' + k + h) < 0.8 ? 'app' : 'desk',
           at: fromKey(addDays(k, -1 - Math.floor(pr * 5))).getTime() + 36e5 * 10,
         })
-        h += dur + (hash(`g${k}${c.id}${h}`) < 0.5 ? 0 : 0.5)
+        h += dur + (hash(`g${k}${c.id}${h}`) < 0.5 ? 0 : 1)
       }
     })
   }
   // تعمیرات نمونه
-  bookings.push({ id: 'blk1', court: 4, date: addDays(todayKey(), 2), start: 7, dur: 3, type: 'block', by: null, players: [], price: 0, paid: 0, status: 'ok', note: 'تعویض چمن مصنوعی', at: Date.now() })
+  // تعمیرات نمونه — رزروهای هم‌پوشان آن بازه حذف می‌شوند
+  const blk = { court: 4, date: addDays(todayKey(), 2), start: 7, dur: 3 }
+  for (let i = bookings.length - 1; i >= 0; i--) {
+    const b = bookings[i]
+    if (b.court === blk.court && b.date === blk.date && b.start < blk.start + blk.dur && blk.start < b.start + b.dur) bookings.splice(i, 1)
+  }
+  bookings.push({ id: 'blk1', court: 4, date: blk.date, start: 7, dur: 3, type: 'block', by: null, players: [], price: 0, paid: 0, status: 'ok', note: 'تعویض چمن مصنوعی', at: Date.now() })
 
   const orders = Array.from({ length: 34 }, (_, i) => {
     const r = (k) => hash('o' + i + k)
@@ -296,10 +310,11 @@ export function seedClub() {
       return { id: 'S-' + (500 + i), kind: 'coach', item: c.id, pack: p.id, name: `${p.name} · ${c.name}`, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price: coachPackPrice(c, p), method: 'online', at: Date.now() - ago * 864e5 }
     }
     const p = PACKAGES[Math.floor(r('p') * PACKAGES.length)]
-    return { id: 'S-' + (500 + i), kind: 'package', item: p.id, name: p.name, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price: p.price, method: r('pm') < 0.7 ? 'online' : 'card', at: Date.now() - ago * 864e5 }
+    const price = p.kind === 'series' ? Math.round(p.sessions * 2 * pricing.offpeak * (1 - p.off) / 10000) * 10000 : p.price
+    return { id: 'S-' + (500 + i), kind: 'package', item: p.id, name: p.name, by: MEMBERS[Math.floor(r('m') * MEMBERS.length)].id, price, method: r('pm') < 0.7 ? 'online' : 'card', at: Date.now() - ago * 864e5 }
   })
   const stock = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.stock]))
-  return { v: 4, pricing, off: {}, bookings, orders, sales, stock, expenses: [] }
+  return { v: 6, pricing, off: {}, bookings, orders, sales, stock, expenses: [] }
 }
 
 // ---------- گیمیفیکیشن ----------

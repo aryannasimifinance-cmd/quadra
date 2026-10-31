@@ -68,10 +68,13 @@ export function heat(club) {
   return grid
 }
 
+// جلسه‌های پکیج درآمد جدا ندارند؛ مبلغشان در فروش پکیج حساب شده
+const notPack = (b) => b.method !== 'package' && b.method !== 'coach-pack'
+
 export function memberStats(club, user) {
   const rows = MEMBERS.map((m) => {
     const bk = club.bookings.filter((b) => b.status !== 'cancelled' && (b.by === m.id || b.players?.includes(m.id)))
-    const spent = bk.filter((b) => b.by === m.id).reduce((s, b) => s + b.paid, 0) + club.orders.filter((o) => o.by === m.id).reduce((s, o) => s + o.total, 0) + club.sales.filter((x) => x.by === m.id).reduce((s, x) => s + x.price, 0)
+    const spent = bk.filter((b) => b.by === m.id && notPack(b)).reduce((s, b) => s + b.paid, 0) + club.orders.filter((o) => o.by === m.id).reduce((s, o) => s + o.total, 0) + club.sales.filter((x) => x.by === m.id).reduce((s, x) => s + x.price, 0)
     const lastB = bk.map((b) => fromKey(b.date).getTime()).filter((t) => t <= Date.now()).sort((a, b) => b - a)[0]
     const lastDays = lastB ? Math.floor((Date.now() - lastB) / 864e5) : 99
     const seg = m.member ? 'vip' : lastDays > 10 ? 'risk' : m.joined < 30 ? 'new' : 'active'
@@ -79,7 +82,7 @@ export function memberStats(club, user) {
   })
   if (user) {
     const bk = club.bookings.filter((b) => b.status !== 'cancelled' && (b.by === ME || b.players?.includes(ME)))
-    rows.unshift({ id: ME, name: user.name + ' (اپ)', phone: user.phone, level: user.level, games: bk.length, visits: bk.length, wins: 0, points: 0, joined: 0, spent: bk.filter((b) => b.by === ME).reduce((s, b) => s + b.paid, 0) + club.orders.filter((o) => o.by === ME).reduce((s, o) => s + o.total, 0), lastDays: 0, seg: 'new', member: null })
+    rows.unshift({ id: ME, name: user.name + ' (اپ)', phone: user.phone, level: user.level, games: bk.length, visits: bk.length, wins: 0, points: 0, joined: 0, spent: bk.filter((b) => b.by === ME && notPack(b)).reduce((s, b) => s + b.paid, 0) + club.orders.filter((o) => o.by === ME).reduce((s, o) => s + o.total, 0) + club.sales.filter((x) => x.by === ME).reduce((s, x) => s + x.price, 0), lastDays: 0, seg: 'new', member: null })
   }
   return rows
 }
@@ -90,7 +93,7 @@ export function coachStats(club) {
     const bk = club.bookings.filter((b) => b.coach === c.id && b.status !== 'cancelled')
     const past = bk.filter((b) => fromKey(b.date) < fromKey(todayKey()))
     const sales = club.sales.filter((s) => s.kind === 'coach' && s.item === c.id)
-    return { ...c, sessions: past.length, upcoming: bk.length - past.length, revenue: past.reduce((s, b) => s + b.paid, 0) + sales.reduce((s, x) => s + x.price, 0), packs: sales.length }
+    return { ...c, sessions: past.length, upcoming: bk.length - past.length, revenue: past.filter(notPack).reduce((s, b) => s + b.paid, 0) + sales.reduce((s, x) => s + x.price, 0), packs: sales.length }
   })
 }
 

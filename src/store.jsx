@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { COURTS, PACKAGES, levelById, productById, seedClub, todayKey } from './data'
 
 const KEY = 'quadra-v1'
-const SEED_V = 4
-const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, credits: 0, coachCredits: {}, membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
+const SEED_V = 6
+const blankPlayer = { user: null, xp: 0, badges: [], wallet: 0, membership: null, cart: [], wish: [], notifications: [], quests: {}, events: [] }
 
 function load() {
   try {
@@ -69,7 +69,6 @@ export function StoreProvider({ children }) {
     }
     function pay(s, amount, method) {
       if (method === 'wallet') return { ...s, wallet: s.wallet - amount }
-      if (method === 'package') return { ...s, credits: s.credits - 1 }
       return s
     }
     const myCourts = (bookings) => new Set(bookings.filter((b) => b.players?.includes(ME) && b.status !== 'cancelled').map((b) => b.court))
@@ -151,28 +150,39 @@ export function StoreProvider({ children }) {
         })
         return out
       },
+      // پکیج چندجلسه‌ای: همه‌ی جلسه‌ها همین حالا در تقویم رزرو می‌شوند و یک فروش ثبت می‌شود
+      bookSeries(list, sale, method) {
+        let out
+        commit((s) => {
+          const sid = 'P' + Date.now()
+          // بررسی دوباره‌ی آزاد بودن، تا اگر بین برنامه‌ریزی و پرداخت پر شده باشد رزرو تکراری ثبت نشود
+          const clash = list.find((x) => !isFree(s.club, x.date, x.court, x.start, x.dur) ||
+            (x.coach && s.club.bookings.some((b) => b.coach === x.coach && b.date === x.date && b.status !== 'cancelled' && x.start < b.start + b.dur && b.start < x.start + x.dur)))
+          if (clash) { out = { error: clash }; return s }
+          const recs = list.map((x, k) => ({ id: `${sid}-${k}`, by: ME, status: 'ok', source: 'app', at: Date.now(), method: 'package', series: sid, levels: null, ...x, paid: x.price }))
+          const bookings = [...s.club.bookings, ...recs]
+          const saleRec = { id: 'S-' + Date.now(), kind: sale.kind, item: sale.item, pack: sale.pack, name: sale.name, by: ME, price: sale.total, method, at: Date.now() }
+          const r = reward(pay(s, sale.total, method), 40 + list.length * 15, [
+            'first', 'loyal', sale.kind === 'coach' && 'student', list.some((x) => x.start < 9) && 'early',
+            list.some((x) => x.start + x.dur > 22) && 'night', myCourts(bookings).size >= 4 && 'quad',
+          ])
+          out = { ...r.result, count: recs.length, series: sid }
+          return { ...r.next, club: { ...s.club, bookings, sales: [saleRec, ...s.club.sales] } }
+        })
+        return out
+      },
       buyPackage(p, method) {
         let out
         commit((s) => {
           const sale = { id: 'S-' + Date.now(), kind: 'package', item: p.id, name: p.name, by: ME, price: p.price, method, at: Date.now() }
           const base = pay(s, p.price, method)
-          const withPkg = p.kind === 'credit'
-            ? { ...base, credits: base.credits + p.credits }
-            : { ...base, membership: { id: p.id, until: Date.now() + p.days * 864e5 } }
+          const withPkg = { ...base, membership: { id: p.id, until: Date.now() + p.days * 864e5 } }
           const r = reward(withPkg, 60, ['loyal'])
           out = r.result
           return { ...r.next, club: { ...s.club, sales: [sale, ...s.club.sales] } }
         })
         return out
       },
-      buyCoachPack(coach, pack, price, method) {
-        commit((s) => {
-          const sale = { id: 'S-' + Date.now(), kind: 'coach', item: coach.id, pack: pack.id, name: `${pack.name} · ${coach.name}`, by: ME, price, method, at: Date.now() }
-          const base = pay(s, price, method)
-          return { ...base, coachCredits: { ...base.coachCredits, [coach.id]: (base.coachCredits[coach.id] || 0) + pack.sessions }, club: { ...s.club, sales: [sale, ...s.club.sales] } }
-        })
-      },
-      useCoachCredit(coachId) { commit((s) => ({ ...s, coachCredits: { ...s.coachCredits, [coachId]: s.coachCredits[coachId] - 1 } })) },
       topUp(n) { commit((s) => ({ ...s, wallet: s.wallet + n })) },
 
       // سبد خرید
@@ -241,7 +251,7 @@ export function isFree(club, date, court, start, dur) {
 export function freeStarts(club, date, court, dur, from = 7, to = 24) {
   const now = new Date(), today = date === todayKey()
   const out = []
-  for (let h = Math.max(7, from); h + dur <= 24 && h < to; h += 0.5) {
+  for (let h = Math.max(7, from); h + dur <= 24 && h < to; h += 1) {
     if (today && h <= now.getHours() + now.getMinutes() / 60) continue
     if (isFree(club, date, court, h, dur)) out.push(h)
   }

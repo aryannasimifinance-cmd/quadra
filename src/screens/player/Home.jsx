@@ -66,12 +66,12 @@ export default function Home({ nav }) {
 
       <div className="home-body">
         <section className="h-sec">
-          <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۹۰ دقیقه" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
+          <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۱ ساعت" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
           <motion.div className="slot-row-q" variants={stagger} initial="hidden" animate="show">
             {slots.length === 0 && <div className="empty-card">تا فردا شب ساعت آزادی نمانده — روزهای دیگر را ببینید.</div>}
             {slots.map((x) => (
               <motion.button key={x.court + x.date + x.start} variants={rise} className="qslot" whileTap={{ scale: 0.95 }}
-                onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1.5 })}>
+                onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1 })}>
                 <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
                 <b>{hourLabel(x.start)}</b>
                 <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>

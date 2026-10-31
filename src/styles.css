@@ -683,3 +683,18 @@ img { display: block; }
 /* لوگوی زنده: هاله با opacity به‌جای فیلتر متحرک */
 .live-logo .ll-mark { position: relative; display: inline-grid; }
 .live-logo .ll-glow { position: absolute; inset: -30%; border-radius: 40%; background: radial-gradient(circle, rgba(5,224,218,.55), transparent 65%); pointer-events: none; will-change: opacity; }
+
+/* ---------- پکیج‌ها: انتخاب تعداد جلسه و برنامه‌ی جلسه‌ها ---------- */
+.pack-grid.three { grid-template-columns: repeat(3, 1fr); }
+.pack-opt:disabled { opacity: .4; }
+.series-pick { margin-bottom: 14px; }
+.series-pick .label { margin-top: 4px; }
+.plan { margin-top: 14px; display: grid; gap: 6px; }
+.plan .label { margin-bottom: 4px; }
+.plan-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+.plan-row b { font-size: 13.5px; display: block; } .plan-row small { font-size: 11.5px; color: var(--muted); }
+.plan-row.moved { box-shadow: inset 0 0 0 1.5px #E6B566; } .plan-row.moved small { color: #A6620F; }
+.plan-n { width: 26px; height: 26px; border-radius: 9px; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.plan-t { font-weight: 700; font-size: 13px; direction: ltr; }
+.hint.warn { background: #FBE9E4; color: #B0442F; }
+.intent-list .intent-card.big { height: 240px; }
