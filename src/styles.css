@@ -927,3 +927,10 @@ img { display: block; }
 @keyframes tap-ripple { 0% { opacity: .28; } to { transform: scale(1); opacity: 0; } }
 @keyframes tap-ring { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes tap-pop { 0% { filter: brightness(1); } 30% { filter: brightness(1.08); } 100% { filter: brightness(1); } }
+
+/* صفحه‌ی اول بدون نوار بالا: نشان کمی بالاتر و کوچک‌تر */
+.welcome-emblem { place-items: start center; padding-top: 7vh; min-height: 0; }
+.em-word { font-size: 17px; margin-top: 10px; }
+.em-sub { font-size: 9.5px; }
+.em-rally { transform: scale(.88); transform-origin: 50% 0; margin-top: 6px; }
+@media (max-height: 700px) { .welcome-emblem { padding-top: 3vh; min-height: 0; } .em-core svg { width: 80px; height: 69px; } }
