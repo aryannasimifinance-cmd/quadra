@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { BADGES, COACHES, CREDITS, RANKS, fa, levelById, productById, rankOf, toman } from '../../data'
+import { BADGES, COACHES, CREDITS, RANKS, XP_GUIDE, fa, levelById, productById, rankOf, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { ME, myPoints, useStore } from '../../store'
 import { activeMembership, myBookings, isUpcoming } from '../../select'
@@ -70,20 +70,29 @@ export default function Me({ nav }) {
             return (
               <motion.button key={b.id} className={`badge ${has ? 'on' : ''}`} initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03, type: 'spring', stiffness: 300, damping: 18 }}
                 whileTap={{ scale: 0.9, rotate: -6 }} onClick={() => { haptic(8); setBadge(b) }}>
-                <span>{has ? b.icon : '🔒'}</span><small>{b.name}</small>
+                <span className="badge-ic">{has ? b.icon : '🔒'}</span>
+                <div className="grow"><b>{b.name}</b><small>{b.desc}</small></div>
+                {has && <em className="badge-ok">✓</em>}
               </motion.button>
             )
           })}
         </div>
 
-        <SectionHead title="مسیر رتبه‌ها" />
-        <div className="rank-path">
+        <SectionHead title="رتبه‌ی باشگاه" sub="با هر فعالیت XP می‌گیرید و رتبه‌تان بالا می‌رود" />
+        <div className="ranks">
           {RANKS.map((r, i) => (
-            <div key={r.name} className={`rp ${i <= rank.index ? 'on' : ''} ${i === rank.index ? 'cur' : ''}`}>
-              <i style={{ '--c': r.c }} /><small>{r.name}</small><em>{fa(r.xp)}</em>
+            <div key={r.name} className={`rk ${i <= rank.index ? 'on' : ''} ${i === rank.index ? 'cur' : ''}`}>
+              <i style={{ '--c': r.c }} />
+              <div className="grow"><b>{r.name}</b><small>{r.desc}</small></div>
+              <em>{i === rank.index ? 'شما اینجایید' : `${fa(r.xp)} XP`}</em>
             </div>
           ))}
         </div>
+        <details className="xp-guide">
+          <summary>چطور XP بگیرم؟</summary>
+          {XP_GUIDE.map(([k, v]) => <div key={k}><span>{k}</span><b>{v}</b></div>)}
+          <p>جدا از رتبه، «سطح بازی» شما (A تا D) فقط برای پیدا کردن هم‌سطح در مچ‌هاست.</p>
+        </details>
 
         {orders.length > 0 && (<>
           <SectionHead title="سفارش‌های من" />

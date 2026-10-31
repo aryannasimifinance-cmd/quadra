@@ -112,7 +112,7 @@ export default function Home({ nav }) {
         </section>
 
         <section className="h-sec">
-          <SectionHead title="چالش‌های این هفته" sub="تموم کنید، XP بگیرید" />
+          <SectionHead title="چالش‌های این هفته" sub="هر شنبه تازه می‌شوند · جایزه: XP" />
           <div className="quests">
             {qs.map((q) => <Quest key={q.id} q={q} />)}
           </div>
@@ -225,6 +225,7 @@ function Quest({ q }) {
       <span className="quest-ic">{q.icon}</span>
       <div className="grow">
         <b>{q.name}</b>
+        <small className="quest-desc">{q.desc}</small>
         <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${p * 100}%` }} transition={{ duration: 0.9 }} /></div>
       </div>
       {q.ready ? (

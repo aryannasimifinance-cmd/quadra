@@ -297,7 +297,7 @@ function Done({ form, onEnter }) {
         <LevelPill id={form.level} big />
       </motion.div>
       <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>{form.name}، آماده‌اید!</motion.h2>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.45 }}>سطح شروع: {form.level} · رتبه‌ی برنز</motion.p>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.45 }}>سطح شروع: {form.level} · رتبه‌ی باشگاه: تازه‌وارد</motion.p>
       <motion.div className="xp-pop" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}>+۲۰ XP · ۵۰۰ هزار تومان اعتبار هدیه</motion.div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} style={{ width: '100%' }}>
         <Button full variant="q" onClick={onEnter}>بریم!</Button>

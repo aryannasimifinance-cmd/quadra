@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   BADGES, COACHES, COACH_PACKS, COURTS, DAYPARTS, DURATIONS, EVENT_KIND, LEVELS, MEMBERS, SERIES, coachById, coachPackPrice, courtById, dayKey, dayLabel, dayMonth, dayNum,
   events, fa, fromKey, hourLabel, isPeak, levelById, levelIndex, nearLevels, nextDays, priceFor, range, short, toman, weekday,
@@ -53,7 +53,7 @@ export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
   if (done) return <Success r={done} w={w} onHome={() => onDone('home')} onGames={() => onDone('games')} />
 
   return (
-    <div className="wizard">
+    <div className={`wizard ${step === 'intent' ? 'fit' : ''}`}>
       <TopBar onBack={i > 0 ? back : null} title={TITLES[step]} step={i} total={flow.length} />
       {i > 0 && <Crumbs w={w} step={step} />}
       <AnimatePresence mode="wait" custom={dir}>
@@ -89,33 +89,20 @@ function Crumbs({ w, step }) {
 }
 
 function StepIntent({ onPick }) {
-  // ارتفاع کارت‌ها طوری حساب می‌شود که هر ۵ کارت بدون اسکرول در صفحه جا شوند
-  const ref = useRef(null)
-  const [h, setH] = useState(null)
-  useLayoutEffect(() => {
-    const fit = () => {
-      const sc = document.querySelector('.app-scroll'), el = ref.current
-      if (!sc || !el) return
-      const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop
-      setH(Math.max(420, sc.clientHeight - top - 92))
-    }
-    fit(); window.addEventListener('resize', fit)
-    return () => window.removeEventListener('resize', fit)
-  }, [])
+  // چیدمان ثابت هم‌اندازه‌ی صفحه (CSS)؛ صفحه اسکرول نمی‌خورد و کارت‌ها زیر نوار پایین نمی‌روند
   return (
     <>
       <h2 className="wz-h">درخواست شما <small>زیر یک دقیقه درخواست شما ثبت و انجام می‌شود</small></h2>
-      <motion.div ref={ref} className="intent-list" style={h ? { height: h } : null} variants={stagger} initial="hidden" animate="show"
-        drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={0.22} dragTransition={{ bounceStiffness: 420, bounceDamping: 22 }}>
-      {INTENTS.map((t, k) => (
-        <motion.button key={t.id} variants={rise} className={`intent-card ${k === 0 ? 'big' : ''}`} whileTap={{ scale: 0.97 }} onClick={() => { haptic(10); onPick(t.id) }}>
-          <Photo src={t.img} />
-          <div className="intent-shade" />
-          <span className="intent-ic">{t.icon}</span>
-          <div className="intent-txt"><b>{t.name}</b><p>{t.desc}</p></div>
-          <span className="intent-xp">+{fa(t.xp)} XP</span>
-        </motion.button>
-      ))}
+      <motion.div className="intent-list" variants={stagger} initial="hidden" animate="show">
+        {INTENTS.map((t, k) => (
+          <motion.button key={t.id} variants={rise} className={`intent-card ${k === 0 ? 'big' : ''}`} whileTap={{ scale: 0.97 }} onClick={() => { haptic(10); onPick(t.id) }}>
+            <Photo src={t.img} />
+            <div className="intent-shade" />
+            <span className="intent-ic">{t.icon}</span>
+            <div className="intent-txt"><b>{t.name}</b><p>{t.desc}</p></div>
+            <span className="intent-xp">+{fa(t.xp)} XP</span>
+          </motion.button>
+        ))}
       </motion.div>
     </>
   )

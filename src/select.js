@@ -66,12 +66,11 @@ export function quests(s) {
   const wk = weekKey()
   const from = fromKey(wk.split('-').map(Number).join('-')).getTime()
   const mine = s.club.bookings.filter((b) => (b.by === ME || b.players?.includes(ME)) && b.status === 'ok' && b.at >= from)
-  const orders = s.club.orders.filter((o) => o.by === ME && o.at >= from)
   const done = s.quests[wk] || []
   return [
-    { id: 'play2', icon: '🎾', name: 'این هفته ۲ بازی کنید', goal: 2, have: mine.length, xp: 60 },
-    { id: 'social', icon: '🤝', name: 'یه بازی باز بسازید یا بهش بپیوندید', goal: 1, have: mine.filter((b) => b.type === 'open').length, xp: 40 },
-    { id: 'shop', icon: '🛍', name: 'یه خرید از فروشگاه', goal: 1, have: orders.length, xp: 30 },
+    { id: 'play2', icon: '🎾', name: 'هفته‌ی پرکار', desc: 'این هفته ۲ بار به زمین بیایید (رزرو، بازی باز یا کلاس)', goal: 2, have: mine.length, xp: 60 },
+    { id: 'social', icon: '🤝', name: 'یار جدید', desc: 'یک بازی باز بسازید یا به بازی باز دیگران بپیوندید', goal: 1, have: mine.filter((b) => b.type === 'open').length, xp: 40 },
+    { id: 'coach', icon: '🧢', name: 'جلسه‌ی هفته', desc: 'این هفته یک جلسه با یکی از مربی‌ها داشته باشید', goal: 1, have: mine.filter((b) => b.type === 'coach').length, xp: 40 },
   ].map((q) => ({ ...q, ready: q.have >= q.goal && !done.includes(q.id), claimed: done.includes(q.id) }))
 }
 
