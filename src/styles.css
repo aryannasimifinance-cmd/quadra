@@ -147,6 +147,9 @@ img { display: block; }
 .welcome-copy h1 { font-size: 36px; line-height: 1.55; font-weight: 700; letter-spacing: -.3px; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
 .welcome-copy h1 span { display: block; }
 .welcome-copy h1 .hl { color: var(--q); font-weight: 700; }
+.slogan { display: inline-flex; align-items: center; gap: 10px; color: var(--q); font-size: 14px; font-weight: 700; letter-spacing: .5px; margin-bottom: 10px; }
+.slogan::before { content: ''; width: 26px; height: 2px; border-radius: 2px; background: var(--q); }
+.welcome-copy p b { font-weight: 700; }
 .welcome-copy p { margin-top: 12px; font-size: 14px; line-height: 1.8; font-weight: 300; letter-spacing: .2px; }
 .welcome-cta { display: grid; gap: 10px; margin-top: 24px; }
 .admin-link { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; opacity: .65; padding: 10px; }

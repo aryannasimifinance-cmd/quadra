@@ -20,7 +20,7 @@ export default function App() {
         <Suspense fallback={<div className="admin-loading" />}><Admin /></Suspense>
       ) : (
         <div className="stage">
-          <div className="stage-bg" style={{ backgroundImage: 'url(./img/reach.jpg)' }} />
+          <div className="stage-bg" style={{ backgroundImage: 'url(./img/welcome-courts.jpg)' }} />
           <div className="app">
             {!sting && (session?.role === 'player' ? <Main key="m" /> : <Gate key="g" />)}
             <div id="portal" />
