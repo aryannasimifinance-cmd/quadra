@@ -123,19 +123,14 @@ export function LiveLogo({ size = 26 }) {
   )
 }
 
-// نشان وسط صفحه‌ی اول: لوگو داخل مدار نور، توپی که دورش می‌چرخد و موج ضربه‌ی توپ
-// حلقه‌ها همه CSS (transform/opacity) هستند تا روی گوشی ضعیف هم روان و بدون فایل اضافه باشند
-export function Emblem({ size = 132 }) {
+// نشان وسط صفحه‌ی اول: لوگو و زیرش یک رالی پدل — راکت ضربه می‌زند، توپ روی خط زمین یک بار زمین می‌خورد
+// حلقه‌ی رالی فقط CSS (transform/opacity) است تا روی گوشی ضعیف هم روان و بدون فایل اضافه باشد
+export function Emblem({ size = 96 }) {
   const ease = [0.65, 0, 0.35, 1]
   return (
-    <motion.div className="emblem" style={{ '--s': size + 'px' }} initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
-      <i className="em-wave" /><i className="em-wave w2" />
-      <i className="em-halo" />
-      <i className="em-orbit" />
-      <i className="em-lines" />
-      <span className="em-ball-track"><i className="em-ball" /></span>
+    <motion.div className="emblem" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
       <span className="em-core">
-        <svg viewBox={VB} width={size * 0.5} height={size * 0.5 / 1.154} style={{ overflow: 'visible' }} aria-hidden="true">
+        <svg viewBox={VB} width={size * 1.154} height={size} style={{ overflow: 'visible' }} aria-hidden="true">
           <defs>
             <linearGradient id="em-g" gradientUnits="userSpaceOnUse" x1="177" x2="470">
               <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor="#F2F2F0" />
@@ -159,7 +154,26 @@ export function Emblem({ size = 132 }) {
           <motion.span key={i} initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ delay: 1.4 + i * 0.07, duration: 0.45 }}>{l}</motion.span>
         ))}
       </span>
-      <motion.small className="em-sub" initial={{ opacity: 0, letterSpacing: '0.7em' }} animate={{ opacity: 0.7, letterSpacing: '0.38em' }} transition={{ delay: 1.9, duration: 0.8 }}>PADEL CLUB</motion.small>
+      <motion.small className="em-sub" initial={{ opacity: 0, letterSpacing: '0.7em' }} animate={{ opacity: 0.85, letterSpacing: '0.38em' }} transition={{ delay: 1.9, duration: 0.8 }}>PADEL CLUB</motion.small>
+      <div className="em-rally" aria-hidden="true">
+        <i className="em-floor" />
+        <svg className="em-racket" viewBox="0 0 60 120" width="34" height="68">
+          <path d="M30 4C14 4 5 17 5 34c0 14 7 25 15 31l4 14h12l4-14c8-6 15-17 15-31C55 17 46 4 30 4Z" fill="#1B1D21" stroke="#F2F2F0" strokeWidth="2.5" />
+          <path d="M8 22C12 11 20 6 30 6" fill="none" stroke={CYAN} strokeWidth="2.5" strokeLinecap="round" />
+          {[[22, 22], [30, 20], [38, 22], [18, 31], [26, 30], [34, 30], [42, 31], [22, 39], [30, 38], [38, 39], [26, 47], [34, 47]].map(([x, y]) => <circle key={x + '-' + y} cx={x} cy={y} r="1.8" fill="#F2F2F0" opacity=".55" />)}
+          <rect x="25" y="79" width="10" height="37" rx="4" fill="#F2F2F0" />
+          <path d="M25 88h10M25 96h10M25 104h10" stroke="#1B1D21" strokeWidth="1.5" opacity=".5" />
+        </svg>
+        <span className="bl-x">
+          <i className="bl-shadow" />
+          <span className="bl-y">
+            <svg className="bl-ball" viewBox="0 0 20 20" width="13" height="13">
+              <circle cx="10" cy="10" r="9.3" fill="#D9E84A" />
+              <path d="M3 5c4 2 4 8 0 10M17 5c-4 2-4 8 0 10" fill="none" stroke="#fff" strokeWidth="1.4" opacity=".85" />
+            </svg>
+          </span>
+        </span>
+      </div>
     </motion.div>
   )
 }

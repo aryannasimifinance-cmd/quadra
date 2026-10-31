@@ -4,6 +4,25 @@ export function haptic(pattern = 8) {
   try { navigator.vibrate?.(pattern) } catch { /* بدون پشتیبانی */ }
 }
 
+// موج لمس روی کارت‌ها و باکس‌ها — یک شنونده‌ی سراسری، بدون تغییر در تک‌تک کامپوننت‌ها
+const BOX = 'button, .coach-card, .intent-card, .event-banner, .ticket, .quest, .og-card, .pkg, .coach-big, .ev-card, .peek'
+export function installTapFx() {
+  document.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest?.(BOX)
+    if (!el || el.disabled || el.closest('.nav') || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const r = el.getBoundingClientRect()
+    if (r.width < 72 || r.height < 40) return
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative'
+    const wrap = document.createElement('span'), dot = document.createElement('i')
+    wrap.className = 'tap-fx'
+    const d = Math.hypot(r.width, r.height) * 2
+    Object.assign(dot.style, { width: d + 'px', height: d + 'px', left: e.clientX - r.left - d / 2 + 'px', top: e.clientY - r.top - d / 2 + 'px' })
+    wrap.appendChild(dot); el.appendChild(wrap)
+    el.classList.remove('tap-on'); void el.offsetWidth; el.classList.add('tap-on')
+    setTimeout(() => { wrap.remove(); el.classList.remove('tap-on') }, 650)
+  }, { passive: true })
+}
+
 let ctx
 function audio() {
   if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)() } catch { return null } }

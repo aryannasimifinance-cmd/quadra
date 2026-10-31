@@ -4,7 +4,7 @@ import { LEVELS, SIDES, fa } from '../data'
 import { celebrate, chime, haptic } from '../fx'
 import { useStore } from '../store'
 import { Button, Icon, LevelPill, Photo, TopBar } from '../components/ui'
-import { Emblem, Loading, QuadraMark } from '../components/Logo'
+import { Emblem, LiveLogo, Loading, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
@@ -80,6 +80,7 @@ function Welcome({ onStart, onLogin, onAdmin }) {
   return (
     <div className="welcome-in">
       <motion.div className="brand" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <LiveLogo size={26} />
         <span className="brand-tag">باشگاه پدل با ۴ زمین</span>
       </motion.div>
       <div className="welcome-emblem"><Emblem /></div>
