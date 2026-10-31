@@ -8,7 +8,7 @@ import { Logo, QuadraMark } from '../components/Logo'
 
 const toLatin = (s) => s.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
 const fa0 = (s) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d])
-const HERO = ['./img/welcome-courts.jpg']
+const HERO = ['./img/welcome-night.jpg']
 
 export default function Gate() {
   const { loginPlayer, user } = useStore()
@@ -60,7 +60,7 @@ function HeroSlides({ dim, admin }) {
     <div className="auth-bg">
       <AnimatePresence>
         <motion.div key={i} className="auth-bg-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.4 }}>
-          <Photo src={HERO[i]} zoom pos="58% 50%" />
+          <Photo src={HERO[i]} zoom pos="56% 50%" />
         </motion.div>
       </AnimatePresence>
       <div className={`auth-bg-shade ${dim ? 'dim' : ''} ${admin ? 'admin' : ''}`} />
@@ -70,7 +70,7 @@ function HeroSlides({ dim, admin }) {
 }
 
 function Welcome({ onStart, onLogin, onAdmin }) {
-  const words = ['به سادگی زمین رزرو کن،', 'بازی بچین', 'و لذت ببر.']
+  const words = ['فراتر از', 'یک بازی']
   return (
     <div className="welcome-in">
       <motion.div className="brand" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
@@ -78,14 +78,16 @@ function Welcome({ onStart, onLogin, onAdmin }) {
         <span className="brand-tag">باشگاه پدل با ۴ زمین</span>
       </motion.div>
       <div className="welcome-copy">
-        <motion.span className="slogan" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>فراتر از یک بازی</motion.span>
         <h1>
           {words.map((w, i) => (
-            <motion.span key={w} className={i === 2 ? 'hl' : ''} initial={{ opacity: 0, y: 40, rotate: 3 }} animate={{ opacity: 1, y: 0, rotate: 0 }}
+            <motion.span key={w} className={i === 1 ? 'hl' : ''} initial={{ opacity: 0, y: 40, rotate: 3 }} animate={{ opacity: 1, y: 0, rotate: 0 }}
               transition={{ delay: 0.3 + i * 0.15, type: 'spring', stiffness: 200, damping: 18 }}>{w}</motion.span>
           ))}
         </h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.8 }}>
+        <motion.p className="sub-line" initial={{ opacity: 0 }} animate={{ opacity: 0.85 }} transition={{ delay: 0.7 }}>
+          به سادگی زمین رزرو کن، بازی بچین و لذت ببر.
+        </motion.p>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} transition={{ delay: 0.85 }}>
           <b>مدرن‌ترین باشگاه</b> پدل استان البرز
         </motion.p>
       </div>
