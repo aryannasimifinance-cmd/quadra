@@ -24,7 +24,7 @@ export function Coaches({ nav, onBack, focus }) {
               <h3>{c.name}</h3>
               <small>{c.title} · {fa(c.exp)} سال سابقه</small>
               <p>{c.bio}</p>
-              <div className="tags light">{c.focus.map((f) => <span key={f}>{f}</span>)}</div>
+              <ul className="record light">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
               <div className="cb-packs">
                 {COACH_PACKS.map((p) => <div key={p.id}><small>{p.name}</small><b>{short(coachPackPrice(c, p))}</b></div>)}
               </div>

@@ -19,7 +19,7 @@ const FLOWS = {
   official: ['intent', 'event', 'pay'],
 }
 const EVENT_INTENTS = ['event', 'friday', 'official']
-const TITLES = { intent: 'امروز چی می‌خواید؟', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'مسابقه‌ها', pay: 'پرداخت' }
+const TITLES = { intent: 'درخواست شما', when: 'کِی؟', slot: 'زمین و ساعت', people: 'بازیکن‌ها', games: 'بازی‌های باز', coach: 'مربی و پکیج', event: 'مسابقه‌ها', pay: 'پرداخت' }
 // عکس‌ها فقط زمین و وسایل، بدون آدم
 const INTENTS = [
   { id: 'court', name: 'رزرو زمین', desc: 'تک جلسه یا پکیج ۵ و ۱۰ جلسه؛ جای خالی رو با هم‌سطح پر می‌کنیم', img: './img/court-pano.jpg', xp: 50, icon: '🎾' },
@@ -104,7 +104,7 @@ function StepIntent({ onPick }) {
   }, [])
   return (
     <>
-      <h2 className="wz-h">چی دوست دارید؟ <small>در کمتر از یک دقیقه تمومه</small></h2>
+      <h2 className="wz-h">درخواست شما <small>زیر یک دقیقه درخواست شما ثبت و انجام می‌شود</small></h2>
       <motion.div ref={ref} className="intent-list" style={h ? { height: h } : null} variants={stagger} initial="hidden" animate="show"
         drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={0.22} dragTransition={{ bounceStiffness: 420, bounceDamping: 22 }}>
       {INTENTS.map((t, k) => (
@@ -368,7 +368,7 @@ function StepCoach({ w, set, onNext }) {
             <div className="grow">
               <b>{c.name} <LevelPill id={c.level} /></b>
               <small>{c.title} · {fa(c.exp)} سال سابقه · ★ {fa(c.rating)}</small>
-              <div className="tags">{c.focus.map((f) => <span key={f}>{f}</span>)}</div>
+              <ul className="record">{c.record.map((f) => <li key={f}>{f}</li>)}</ul>
             </div>
             <em>{short(c.price)}<small>هر جلسه</small></em>
           </motion.button>
