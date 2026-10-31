@@ -885,3 +885,30 @@ img { display: block; }
 .bg-poster, .bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bg-video { opacity: 0; transition: opacity .8s ease; }
 .bg-video.on { opacity: 1; }
+
+/* ---------- خوش‌آمد بالای صفحه‌ی + ---------- */
+.wz-hello { flex-shrink: 0; font-size: 14px; color: var(--ink2); margin-bottom: 2px; }
+.wz-hello b { color: var(--ink); font-weight: 700; }
+
+/* ---------- نشان لوگو روی ویدیوی صفحه‌ی اول ---------- */
+.welcome-emblem { flex: 1; display: grid; place-items: center; min-height: 190px; padding: 8px 0; }
+.emblem { position: relative; width: var(--s); height: var(--s); display: grid; place-items: center; }
+.emblem > i, .em-ball-track { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+.em-halo { inset: -18% !important; background: radial-gradient(circle, rgba(5,224,218,.32), rgba(5,224,218,.08) 45%, transparent 68%); animation: em-breathe 3.2s ease-in-out infinite; }
+.em-orbit { background: conic-gradient(from 0deg, transparent 0 55%, rgba(5,224,218,.15) 70%, #05E0DA 98%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: em-spin 3.6s linear infinite; }
+.em-lines { inset: 12% !important; border: 1px dashed rgba(255,255,255,.28); animation: em-spin 24s linear infinite reverse; }
+.em-ball-track { animation: em-spin 3.6s linear infinite; }
+.em-ball { position: absolute; top: -5px; left: calc(50% - 5px); width: 10px; height: 10px; border-radius: 50%; background: #E4F75A; box-shadow: 0 0 10px 2px rgba(228,247,90,.75), 0 0 22px 6px rgba(5,224,218,.35); }
+.em-wave { border: 1.5px solid rgba(5,224,218,.55); opacity: 0; animation: em-wave 3.2s ease-out infinite 1.6s; }
+.em-wave.w2 { animation-delay: 3.2s; }
+.em-core { position: relative; width: 66%; height: 66%; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.14), rgba(10,12,16,.55) 70%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 12px 40px rgba(0,0,0,.45); }
+.em-word { position: absolute; top: calc(100% + 14px); display: flex; gap: .32em; font-size: 20px; font-weight: 700; letter-spacing: .02em; color: #F2F2F0; text-shadow: 0 2px 18px rgba(0,0,0,.5); }
+.em-sub { position: absolute; top: calc(100% + 44px); font-size: 10.5px; font-weight: 700; white-space: nowrap; color: var(--q); text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 14px rgba(0,0,0,.7); }
+.welcome-emblem { padding-bottom: 64px; }
+@keyframes em-spin { to { transform: rotate(360deg); } }
+@keyframes em-breathe { 0%, 100% { opacity: .7; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes em-wave { 0% { opacity: .7; transform: scale(.7); } 100% { opacity: 0; transform: scale(1.55); } }
+@media (max-height: 700px) { .emblem { --s: 104px !important; } .welcome-emblem { min-height: 150px; padding-bottom: 56px; } }
+@media (prefers-reduced-motion: reduce) { .emblem *, .emblem > i { animation: none !important; } }

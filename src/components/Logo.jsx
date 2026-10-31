@@ -123,6 +123,47 @@ export function LiveLogo({ size = 26 }) {
   )
 }
 
+// نشان وسط صفحه‌ی اول: لوگو داخل مدار نور، توپی که دورش می‌چرخد و موج ضربه‌ی توپ
+// حلقه‌ها همه CSS (transform/opacity) هستند تا روی گوشی ضعیف هم روان و بدون فایل اضافه باشند
+export function Emblem({ size = 132 }) {
+  const ease = [0.65, 0, 0.35, 1]
+  return (
+    <motion.div className="emblem" style={{ '--s': size + 'px' }} initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
+      <i className="em-wave" /><i className="em-wave w2" />
+      <i className="em-halo" />
+      <i className="em-orbit" />
+      <i className="em-lines" />
+      <span className="em-ball-track"><i className="em-ball" /></span>
+      <span className="em-core">
+        <svg viewBox={VB} width={size * 0.5} height={size * 0.5 / 1.154} style={{ overflow: 'visible' }} aria-hidden="true">
+          <defs>
+            <linearGradient id="em-g" gradientUnits="userSpaceOnUse" x1="177" x2="470">
+              <stop offset="0.55" stopColor={CYAN} /><stop offset="0.86" stopColor="#F2F2F0" />
+            </linearGradient>
+            <linearGradient id="em-sh"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".95" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+            <clipPath id="em-clip"><path d={FOUR} /><path d={STEM} /></clipPath>
+          </defs>
+          <motion.path d={FRAME} fill="none" stroke="#F2F2F0" strokeWidth="47" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.3, ease }} />
+          <motion.path d={STEM} fill="#F2F2F0" style={{ transformOrigin: '493px 510px' }} initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 1.1, type: 'spring', stiffness: 420, damping: 18 }} />
+          <motion.path d={FOUR} fill="url(#em-g)" initial={{ x: -120, y: 120, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} transition={{ delay: 1.2, duration: 0.5, ease: [0.2, 0.9, 0.2, 1] }} />
+          <g clipPath="url(#em-clip)">
+            <g transform="rotate(35 320 340)">
+              <motion.rect y="40" width="70" height="600" fill="url(#em-sh)" initial={{ x: -140 }} animate={{ x: 640 }}
+                transition={{ duration: 0.9, delay: 2, repeat: Infinity, repeatDelay: 3.4, ease: 'easeInOut' }} />
+            </g>
+          </g>
+        </svg>
+      </span>
+      <span className="em-word" dir="ltr">
+        {'QUADRA'.split('').map((l, i) => (
+          <motion.span key={i} initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ delay: 1.4 + i * 0.07, duration: 0.45 }}>{l}</motion.span>
+        ))}
+      </span>
+      <motion.small className="em-sub" initial={{ opacity: 0, letterSpacing: '0.7em' }} animate={{ opacity: 0.7, letterSpacing: '0.38em' }} transition={{ delay: 1.9, duration: 0.8 }}>PADEL CLUB</motion.small>
+    </motion.div>
+  )
+}
+
 // لودر: قاب لوگو مدام کشیده می‌شود و «۴» تپش دارد
 export function LoaderMark({ size = 64, tone = 'light' }) {
   const ink = tone === 'light' ? '#F2F2F0' : '#141413'

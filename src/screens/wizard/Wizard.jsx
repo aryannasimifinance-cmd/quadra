@@ -89,9 +89,11 @@ function Crumbs({ w, step }) {
 }
 
 function StepIntent({ onPick }) {
+  const { user } = useStore()
   // چیدمان ثابت هم‌اندازه‌ی صفحه (CSS)؛ صفحه اسکرول نمی‌خورد و کارت‌ها زیر نوار پایین نمی‌روند
   return (
     <>
+      <motion.p className="wz-hello" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>خوش اومدین <b>{user.name.split(' ')[0]} جان</b> 👋</motion.p>
       <h2 className="wz-h">درخواست شما <small>زیر یک دقیقه درخواست شما ثبت و انجام می‌شود</small></h2>
       <motion.div className="intent-list" variants={stagger} initial="hidden" animate="show">
         {INTENTS.map((t, k) => (
