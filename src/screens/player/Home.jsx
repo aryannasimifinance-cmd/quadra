@@ -65,54 +65,60 @@ export default function Home({ nav }) {
       </section>
 
       <div className="home-body">
-        <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۹۰ دقیقه" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
-        <motion.div className="slot-row-q" variants={stagger} initial="hidden" animate="show">
-          {slots.length === 0 && <div className="empty-card">تا فردا شب ساعت آزادی نمانده — روزهای دیگر را ببینید.</div>}
-          {slots.map((x) => (
-            <motion.button key={x.court + x.date + x.start} variants={rise} className="qslot" whileTap={{ scale: 0.95 }}
-              onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1.5 })}>
-              <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
-              <b>{hourLabel(x.start)}</b>
-              <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>
-              <em>{short(x.price / 4)} <small>هر نفر</small></em>
-            </motion.button>
-          ))}
-        </motion.div>
+        <section className="h-sec">
+          <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۹۰ دقیقه" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
+          <motion.div className="slot-row-q" variants={stagger} initial="hidden" animate="show">
+            {slots.length === 0 && <div className="empty-card">تا فردا شب ساعت آزادی نمانده — روزهای دیگر را ببینید.</div>}
+            {slots.map((x) => (
+              <motion.button key={x.court + x.date + x.start} variants={rise} className="qslot" whileTap={{ scale: 0.95 }}
+                onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1.5 })}>
+                <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
+                <b>{hourLabel(x.start)}</b>
+                <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>
+                <em>{short(x.price / 4)} <small>هر نفر</small></em>
+              </motion.button>
+            ))}
+          </motion.div>
+        </section>
 
         {mine.length > 0 && (
-          <>
+          <section className="h-sec">
             <SectionHead title="بازی بعدی شما" action="همه" onAction={() => nav.tab('games')} />
             <NextTicket b={mine[0]} onClick={() => nav.tab('games')} />
-          </>
+          </section>
         )}
 
-        <SectionHead title="بازی‌های باز هم‌سطح شما" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
-        <div className="og-row">
-          {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودتون یکی بسازید!</div>}
-          {games.map((g, i) => (
-            <motion.button key={g.id} className="og-card" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-              whileTap={{ scale: 0.97 }} onClick={() => nav.start({ intent: 'match', gameId: g.id })}>
-              <div className="og-top">
-                <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطح شما' : 'سطح دیگر'}</span>
-                <small>{courtById(g.court).name}</small>
-              </div>
-              <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
-              <div className="og-levels">{g.levels.map((l) => <LevelPill key={l} id={l} />)}</div>
-              <div className="og-ppl">
-                {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={MEMBERS.find((m) => m.id === g.players[k])?.name || 'ش'} size={30} /> : <span key={k} className="og-empty" />)}
-                <em>{fa(4 - g.players.length)} جای خالی</em>
-              </div>
-              <div className="og-foot"><span>سهم هر نفر</span><b>{toman(g.price / 4)}</b></div>
-            </motion.button>
-          ))}
-        </div>
+        <section className="h-sec">
+          <SectionHead title="بازی‌های باز هم‌سطح شما" sub={`سطح ${user.level} · ${levelById(user.level).title}`} action="همه" onAction={() => nav.start({ intent: 'match' })} />
+          <div className="og-row">
+            {games.length === 0 && <div className="empty-card">فعلاً بازی بازی نیست — خودتون یکی بسازید!</div>}
+            {games.map((g, i) => (
+              <motion.button key={g.id} className="og-card" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                whileTap={{ scale: 0.97 }} onClick={() => nav.start({ intent: 'match', gameId: g.id })}>
+                <div className="og-top">
+                  <span className={`og-fit ${g.gap === 0 ? 'hot' : ''}`}>{g.gap === 0 ? 'دقیقاً هم‌سطح' : g.gap === 1 ? 'نزدیک به سطح شما' : 'سطح دیگر'}</span>
+                  <small>{courtById(g.court).name}</small>
+                </div>
+                <b>{dayLabel(g.date)} · {range(g.start, g.dur)}</b>
+                <div className="og-levels">{g.levels.map((l) => <LevelPill key={l} id={l} />)}</div>
+                <div className="og-ppl">
+                  {[0, 1, 2, 3].map((k) => g.players[k] ? <Avatar key={k} name={MEMBERS.find((m) => m.id === g.players[k])?.name || 'ش'} size={30} /> : <span key={k} className="og-empty" />)}
+                  <em>{fa(4 - g.players.length)} جای خالی</em>
+                </div>
+                <div className="og-foot"><span>سهم هر نفر</span><b>{toman(g.price / 4)}</b></div>
+              </motion.button>
+            ))}
+          </div>
+        </section>
 
-        <SectionHead title="چالش‌های این هفته" sub="تموم کنید، XP بگیرید" />
-        <div className="quests">
-          {qs.map((q) => <Quest key={q.id} q={q} />)}
-        </div>
+        <section className="h-sec">
+          <SectionHead title="چالش‌های این هفته" sub="تموم کنید، XP بگیرید" />
+          <div className="quests">
+            {qs.map((q) => <Quest key={q.id} q={q} />)}
+          </div>
+        </section>
 
-        {nextEv.length > 0 && <SectionHead title="مسابقه‌ها" action="همه" onAction={() => nav.open('events')} />}
+        {nextEv.length > 0 && <section className="h-sec"><SectionHead title="مسابقه‌ها" action="همه" onAction={() => nav.open('events')} />
         {nextEv.map((ev) => (
           <motion.button key={ev.id} className="event-banner" whileTap={{ scale: 0.98 }} onClick={() => nav.open('events', { kind: ev.kind })}>
             <Photo src={ev.img} />
@@ -124,18 +130,20 @@ export default function Home({ nav }) {
             </div>
             <span className="event-go"><Icon name="fwd" /></span>
           </motion.button>
-        ))}
+        ))}</section>}
 
-        <SectionHead title="مربی‌ها" action="کلاس‌ها و پکیج‌ها" onAction={() => nav.open('coaches')} />
-        <div className="coach-row">
-          {COACHES.map((c) => (
-            <Tilt key={c.id} className="coach-card" onClick={() => nav.open('coaches', { focus: c.id })}>
-              <Photo src={c.img} />
-              <div className="coach-shade" />
-              <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>{c.title}</small></div>
-            </Tilt>
-          ))}
-        </div>
+        <section className="h-sec">
+          <SectionHead title="مربی‌ها" action="کلاس‌ها و پکیج‌ها" onAction={() => nav.open('coaches')} />
+          <div className="coach-row">
+            {COACHES.map((c) => (
+              <Tilt key={c.id} className="coach-card" onClick={() => nav.open('coaches', { focus: c.id })}>
+                <Photo src={c.img} />
+                <div className="coach-shade" />
+                <div className="coach-txt"><LevelPill id={c.level} /><b>{c.name}</b><small>{c.title}</small></div>
+              </Tilt>
+            ))}
+          </div>
+        </section>
 
         <motion.button className="pack-promo" whileTap={{ scale: 0.98 }} onClick={() => nav.open('packages')}>
           <div>
@@ -148,19 +156,24 @@ export default function Home({ nav }) {
           </div>
         </motion.button>
 
-        <SectionHead title="از فروشگاه" action="همه" onAction={() => nav.tab('shop')} />
-        <div className="shop-peek">
-          {PRODUCTS.filter((p) => p.tag).slice(0, 6).map((p) => (
-            <motion.button key={p.id} className="peek" whileTap={{ scale: 0.95 }} onClick={() => nav.tab('shop')}>
-              <ProductImage p={p} />
-              <small>{p.name}</small>
-              <b>{toman(p.price)}</b>
-            </motion.button>
-          ))}
-        </div>
+        <section className="h-sec">
+          <SectionHead title="از فروشگاه" action="همه" onAction={() => nav.tab('shop')} />
+          <div className="shop-peek">
+            {PRODUCTS.filter((p) => p.tag).slice(0, 6).map((p) => (
+              <motion.button key={p.id} className="peek" whileTap={{ scale: 0.95 }} onClick={() => nav.tab('shop')}>
+                <ProductImage p={p} />
+                <small>{p.name}</small>
+                <b>{toman(p.price)}</b>
+              </motion.button>
+            ))}
+          </div>
+        </section>
 
-        <SectionHead title="رنکینگ کوادرا" action="جدول کامل" onAction={() => nav.open('ranking')} />
-        <MiniBoard points={myPoints(s)} name={user.name} onClick={() => nav.open('ranking')} />
+        <section className="h-sec">
+          <SectionHead title="رنکینگ کوادرا" action="جدول کامل" onAction={() => nav.open('ranking')} />
+          <MiniBoard points={myPoints(s)} name={user.name} onClick={() => nav.open('ranking')} />
+        </section>
+
         <p className="foot-note">کوادرا · باشگاه پدل · ۷ صبح تا ۱۲ شب</p>
       </div>
     </div>
