@@ -879,7 +879,7 @@ img { display: block; }
 .guest .tgl { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 16px; background: var(--card); text-align: right; font-size: 13.5px; }
 .cell span { font-size: 10px; letter-spacing: -.2px; }
 
-.add-p .seg button.on { background: var(--card); box-shadow: var(--shadow); font-weight: 700; border-radius: 12px; }
+.add-p .seg button.on { font-weight: 700; border-radius: 12px; }
 
 /* ---------- پس‌زمینه‌ی ویدیویی صفحه‌ی اول ---------- */
 .bg-poster, .bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -934,3 +934,23 @@ img { display: block; }
 .em-sub { font-size: 9.5px; }
 .em-rally { transform: scale(.88); transform-origin: 50% 0; margin-top: 6px; }
 @media (max-height: 700px) { .welcome-emblem { padding-top: 3vh; min-height: 0; } .em-core svg { width: 80px; height: 69px; } }
+
+/* ---------- تب فعال واضح‌تر ---------- */
+.seg .seg-bg { position: absolute; inset: 0; display: block; border-radius: 12px; background: var(--ink); box-shadow: 0 6px 16px rgba(20,20,19,.22); }
+.seg button { color: var(--muted); transition: color .2s; }
+.seg button.on { color: #fff; font-weight: 700; }
+.nav-i { color: #9A988F; }
+.nav-i.on { color: var(--ink); }
+.nav-i.on small { font-weight: 700; }
+.nav-pill { background: var(--q); box-shadow: 0 4px 12px rgba(5,224,218,.35); }
+
+/* ---------- لوگوی صفحه‌ی اول: مثل نقش روی زمین ویدیو، نه چیزی جدا ---------- */
+.welcome-emblem { padding-top: 9vh; }
+.emblem { opacity: .82; mix-blend-mode: soft-light; }
+.emblem .em-core { filter: none; }
+.emblem .em-core svg { width: 66px; height: 57px; }
+.emblem .em-word { font-size: 14px; text-shadow: none; margin-top: 8px; }
+.emblem .em-sub { font-size: 8.5px; text-shadow: none; color: #fff; }
+.emblem .em-rally { transform: scale(.72); margin-top: 0; }
+.emblem .em-racket { filter: drop-shadow(5px 6px 3px rgba(0,0,0,.45)); }
+.emblem .bl-ball { filter: none; }

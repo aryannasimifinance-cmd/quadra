@@ -73,7 +73,7 @@ export default function Main() {
               <button key={t.id} className={`nav-i ${tab === t.id && !wizard ? 'on' : ''}`} onClick={() => nav.tab(t.id)}>
                 {tab === t.id && !wizard && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
                 <span className="nav-ic">
-                  <Icon name={t.icon} size={22} />
+                  <Icon name={t.icon} size={22} stroke={tab === t.id && !wizard ? 2.5 : 1.8} />
                   {t.id === 'shop' && cartN > 0 && <motion.i key={cartN} className="nav-badge" initial={{ scale: 0 }} animate={{ scale: 1 }}>{fa(cartN)}</motion.i>}
                 </span>
                 <small>{t.name}</small>
