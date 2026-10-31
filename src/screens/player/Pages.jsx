@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { COACHES, COACH_PACKS, EVENT_KIND, LEVELS, PACKAGES, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
+import { BADGES, COACHES, COACH_PACKS, EVENT_KIND, LEVELS, PACKAGES, RANKS, XP_GUIDE, rankOf, coachPackPrice, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, short, toman } from '../../data'
 import { celebrate, chime, haptic } from '../../fx'
 import { myPoints, useStore } from '../../store'
-import { activeMembership } from '../../select'
+import { activeMembership, quests } from '../../select'
 import { Avatar, Button, Chips, Icon, LevelPill, Photo, Sheet, TopBar, rise, stagger } from '../../components/ui'
 import { leaderboard } from './Home'
 import { Loading } from '../../components/Logo'
@@ -180,6 +180,80 @@ export function Notifications({ onBack }) {
             <div><b>{n.title}</b><p>{n.body}</p><small>{new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }).format(n.at)}</small></div>
           </motion.div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// مسیر باشگاه: رتبه‌ها روی یک مسیر عمودی، جای فعلی کاربر، نشان‌ها و راهنمای XP
+export function Journey({ onBack }) {
+  const s = useStore()
+  const { xp, badges } = s
+  const rank = rankOf(xp)
+  const qs = quests(s)
+  const fill = Math.min(1, (rank.index + rank.progress) / (RANKS.length - 1))
+  return (
+    <div className="page journey">
+      <TopBar onBack={onBack} title="مسیر باشگاه" />
+      <div className="page-body">
+        <div className="jr-head">
+          <div className="grow">
+            <small>رتبه‌ی فعلی شما</small>
+            <h2>{rank.name}</h2>
+            <p>{fa(xp)} XP{rank.next ? ` · ${fa(rank.next.xp - xp)} XP تا «${rank.next.name}»` : ' · بالاترین رتبه'}</p>
+            <div className="bar"><motion.i initial={{ width: 0 }} animate={{ width: `${rank.progress * 100}%` }} transition={{ duration: 1 }} /></div>
+          </div>
+          <div className="jr-badges"><b>{fa(badges.length)}</b><small>از {fa(BADGES.length)} نشان</small></div>
+        </div>
+
+        <p className="label">مسیر رتبه‌ها</p>
+        <div className="jr-path" style={{ '--fill': fill }}>
+          <div className="jr-line"><motion.i initial={{ height: 0 }} animate={{ height: `${fill * 100}%` }} transition={{ duration: 1.2, ease: [0.2, 0.7, 0.2, 1] }} /></div>
+          {RANKS.map((r, i) => {
+            const st = i < rank.index ? 'done' : i === rank.index ? 'cur' : 'next'
+            return (
+              <motion.div key={r.name} className={`jr-node ${st} ${i % 2 ? 'left' : 'right'}`} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.07 }}>
+                <span className="jr-dot" style={{ '--c': r.c }}>{st === 'done' ? '✓' : fa(i + 1)}</span>
+                <div className="jr-card">
+                  <b>{r.name}</b>
+                  <small>{r.desc}</small>
+                  <em>{st === 'cur' ? 'شما اینجایید' : st === 'done' ? 'گذرانده‌اید' : `از ${fa(r.xp)} XP`}</em>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        <p className="label">چالش‌های این هفته</p>
+        <div className="jr-quests">
+          {qs.map((q) => (
+            <div key={q.id} className={`jr-q ${q.claimed ? 'done' : ''}`}>
+              <span>{q.icon}</span>
+              <div className="grow"><b>{q.name}</b><small>{q.desc}</small></div>
+              <em>{q.claimed ? '✓' : `+${fa(q.xp)}`}</em>
+            </div>
+          ))}
+        </div>
+
+        <p className="label">نشان‌ها · هر نشان ۱۵ XP</p>
+        <div className="badges">
+          {BADGES.map((b) => {
+            const has = badges.includes(b.id)
+            return (
+              <div key={b.id} className={`badge ${has ? 'on' : ''}`}>
+                <span className="badge-ic">{has ? b.icon : '🔒'}</span>
+                <div className="grow"><b>{b.name}</b><small>{b.desc}</small></div>
+                {has && <em className="badge-ok">✓</em>}
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="xp-guide open">
+          <b>چطور XP بگیرم؟</b>
+          {XP_GUIDE.map(([k, v]) => <div key={k}><span>{k}</span><b>{v}</b></div>)}
+          <p>جدا از رتبه، «سطح بازی» شما (A تا D) فقط برای پیدا کردن هم‌سطح در مچ‌هاست و با XP عوض نمی‌شود.</p>
+        </div>
       </div>
     </div>
   )

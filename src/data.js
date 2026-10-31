@@ -206,7 +206,7 @@ export const EVENT_KIND = {
   official: { name: 'تورنمنت‌های رسمی', sub: 'گروهی + حذفی · داور · امتیاز رنکینگ کوادرا' },
 }
 const FRIDAY = [
-  { title: 'آمریکانوی آدینه', format: 'آمریکانو · هر بازی با یار جدید' },
+  { title: 'آدینه‌ی دوستانه', format: 'هر بازی با یار جدید' },
   { title: 'مکسیکانوی آدینه', format: 'مکسیکانو · جفت‌ها بر اساس امتیاز' },
   { title: 'کینگ آف کورت آدینه', format: 'برنده روی زمین می‌مونه' },
   { title: 'میکس دبل آدینه', format: 'تیم‌های مختلط · هر بازی با یار جدید' },
@@ -215,7 +215,8 @@ const OFFICIAL = [
   { title: 'تورنمنت ۵۰۰ امتیازی کشوری پدل', format: 'گروهی + حذفی · ۳۲ تیم · ۵۰۰ امتیاز رنکینگ کشوری', prize: 'جایزه‌ی نقدی + جام', in: 9 },
   { title: 'تور رنکینگ کوادرا — مرحله‌ی پاییز', format: 'گروهی + حذفی · ۱۶ تیم · امتیاز ۲ برابر', prize: 'جایزه‌ی نقدی + راکت', in: 23 },
 ]
-const EV_IMG = [img('four-women'), img('action'), img('reach'), img('action-wide'), img('sitting')]
+// فقط عکس زمین، بدون آدم
+const EV_IMG = [img('court-blue'), img('tiles'), img('court-outdoor'), img('ball-court'), img('welcome-courts'), img('welcome-night')]
 export function events() {
   const fridays = nextDays(28, 1).filter((d) => d.getDay() === 5).slice(0, 4).map((d, i) => {
     const r = hash('ev' + dayKey(d))

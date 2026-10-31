@@ -750,3 +750,34 @@ img { display: block; }
 .xp-guide div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
 .xp-guide div b { white-space: nowrap; }
 .xp-guide p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+/* ---------- مسیر باشگاه ---------- */
+.jr-head { display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 24px; background: var(--ink); color: #fff; }
+.jr-head small { opacity: .6; font-size: 12px; } .jr-head h2 { font-size: 24px; font-weight: 500; } .jr-head p { font-size: 12.5px; opacity: .75; }
+.jr-head .bar { background: rgba(255,255,255,.15); }
+.jr-badges { text-align: center; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.08); }
+.jr-badges b { display: block; font-size: 24px; color: var(--q); line-height: 1.1; } .jr-badges small { font-size: 10.5px; }
+.jr-path { position: relative; display: grid; gap: 14px; padding: 6px 0; }
+.jr-line { position: absolute; top: 18px; bottom: 18px; left: 50%; width: 4px; margin-left: -2px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.jr-line i { display: block; width: 100%; background: var(--q); border-radius: 4px; }
+.jr-node { position: relative; display: grid; grid-template-columns: 1fr 44px 1fr; align-items: center; }
+.jr-dot { grid-column: 2; justify-self: center; z-index: 1; width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--card); color: var(--muted); box-shadow: inset 0 0 0 2px var(--line); }
+.jr-node.done .jr-dot { background: var(--c); color: #fff; box-shadow: none; }
+.jr-node.cur .jr-dot { background: var(--q); color: var(--ink); box-shadow: 0 0 0 5px rgba(5,224,218,.25); animation: pulse 1.8s infinite; }
+.jr-card { padding: 10px 12px; border-radius: 16px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 1px; }
+.jr-node.right .jr-card { grid-column: 1; grid-row: 1; }
+.jr-node.left .jr-card { grid-column: 3; grid-row: 1; }
+.jr-card b { font-size: 14px; } .jr-card small { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.jr-card em { font-style: normal; font-size: 11px; font-weight: 700; color: var(--ink2); margin-top: 2px; }
+.jr-node.cur .jr-card { box-shadow: inset 0 0 0 2px var(--q); } .jr-node.cur .jr-card em { color: var(--q-ink); }
+.jr-node.next .jr-card { opacity: .6; }
+.jr-quests { display: grid; gap: 6px; }
+.jr-q { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px; background: var(--card); }
+.jr-q > span { font-size: 22px; } .jr-q b { display: block; font-size: 13.5px; } .jr-q small { font-size: 11.5px; color: var(--muted); }
+.jr-q em { font-style: normal; font-weight: 700; color: var(--q-ink); font-size: 13px; } .jr-q.done { opacity: .55; }
+.xp-guide.open > b { display: block; margin-bottom: 4px; }
+.jr-teaser { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 20px; background: var(--card); box-shadow: var(--shadow); margin-top: 6px; }
+.jr-teaser b { display: block; font-size: 15px; } .jr-teaser small { font-size: 12px; color: var(--muted); }
+.jr-steps { display: flex; flex-direction: column-reverse; gap: 3px; }
+.jr-steps i { width: 22px; height: 5px; border-radius: 3px; background: var(--line); }
+.jr-steps i.on { background: var(--c); }

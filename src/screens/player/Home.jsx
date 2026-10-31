@@ -40,7 +40,7 @@ export default function Home({ nav }) {
         </div>
         <div className="hero-body">
           <motion.p className="hello" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 0.75, y: 0 }}>{hello}، {first}</motion.p>
-          <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('ranking')}>
+          <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('journey')}>
             <Ring value={rank.progress} size={58} stroke={5}><LevelPill id={user.level} /></Ring>
             <div className="grow">
               <b>{rank.name} <span>· {fa(xp)} XP</span></b>

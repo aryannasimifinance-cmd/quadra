@@ -9,7 +9,7 @@ import Home from './Home'
 import Games from './Games'
 import Shop from './Shop'
 import Me from './Me'
-import { Coaches, Events, Notifications, Packages, Ranking } from './Pages'
+import { Coaches, Events, Journey, Notifications, Packages, Ranking } from './Pages'
 import Wizard from '../wizard/Wizard'
 
 const TABS = [
@@ -19,7 +19,7 @@ const TABS = [
   { id: 'shop', name: 'فروشگاه', icon: 'bag' },
   { id: 'me', name: 'من', icon: 'user' },
 ]
-const PAGES = { coaches: Coaches, packages: Packages, ranking: Ranking, events: Events, notifs: Notifications }
+const PAGES = { coaches: Coaches, packages: Packages, ranking: Ranking, events: Events, notifs: Notifications, journey: Journey }
 
 export default function Main() {
   const { cart } = useStore()

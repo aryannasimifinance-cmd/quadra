@@ -63,36 +63,16 @@ export default function Me({ nav }) {
           </button>
         </div>
 
-        <SectionHead title="نشان‌ها" sub={`${fa(badges.length)} از ${fa(BADGES.length)}`} />
-        <div className="badges">
-          {BADGES.map((b, i) => {
-            const has = badges.includes(b.id)
-            return (
-              <motion.button key={b.id} className={`badge ${has ? 'on' : ''}`} initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03, type: 'spring', stiffness: 300, damping: 18 }}
-                whileTap={{ scale: 0.9, rotate: -6 }} onClick={() => { haptic(8); setBadge(b) }}>
-                <span className="badge-ic">{has ? b.icon : '🔒'}</span>
-                <div className="grow"><b>{b.name}</b><small>{b.desc}</small></div>
-                {has && <em className="badge-ok">✓</em>}
-              </motion.button>
-            )
-          })}
-        </div>
-
-        <SectionHead title="رتبه‌ی باشگاه" sub="با هر فعالیت XP می‌گیرید و رتبه‌تان بالا می‌رود" />
-        <div className="ranks">
-          {RANKS.map((r, i) => (
-            <div key={r.name} className={`rk ${i <= rank.index ? 'on' : ''} ${i === rank.index ? 'cur' : ''}`}>
-              <i style={{ '--c': r.c }} />
-              <div className="grow"><b>{r.name}</b><small>{r.desc}</small></div>
-              <em>{i === rank.index ? 'شما اینجایید' : `${fa(r.xp)} XP`}</em>
-            </div>
-          ))}
-        </div>
-        <details className="xp-guide">
-          <summary>چطور XP بگیرم؟</summary>
-          {XP_GUIDE.map(([k, v]) => <div key={k}><span>{k}</span><b>{v}</b></div>)}
-          <p>جدا از رتبه، «سطح بازی» شما (A تا D) فقط برای پیدا کردن هم‌سطح در مچ‌هاست.</p>
-        </details>
+        <motion.button className="jr-teaser" whileTap={{ scale: 0.98 }} onClick={() => nav.open('journey')}>
+          <div className="jr-steps">
+            {RANKS.map((r, i) => <i key={r.name} className={i <= rank.index ? 'on' : ''} style={{ '--c': r.c }} />)}
+          </div>
+          <div className="grow">
+            <b>مسیر باشگاه</b>
+            <small>{rank.name} · {fa(badges.length)} از {fa(BADGES.length)} نشان · چالش‌های هفته</small>
+          </div>
+          <Icon name="fwd" size={18} />
+        </motion.button>
 
         {orders.length > 0 && (<>
           <SectionHead title="سفارش‌های من" />
@@ -105,7 +85,7 @@ export default function Me({ nav }) {
         </>)}
 
         <div className="menu-list">
-          {[['trophy', 'رنکینگ باشگاه', 'ranking'], ['ticket', 'پکیج‌ها و عضویت', 'packages'], ['coach', 'مربی‌ها و کلاس‌ها', 'coaches'], ['star', 'مسابقه‌ها و تورنمنت‌ها', 'events'], ['bell', 'اعلان‌ها', 'notifs']].map(([ic, n, pg]) => (
+          {[['sparkle', 'مسیر باشگاه: رتبه‌ها و نشان‌ها', 'journey'], ['trophy', 'رنکینگ باشگاه', 'ranking'], ['ticket', 'پکیج‌ها و عضویت', 'packages'], ['coach', 'مربی‌ها و کلاس‌ها', 'coaches'], ['star', 'مسابقه‌ها و تورنمنت‌ها', 'events'], ['bell', 'اعلان‌ها', 'notifs']].map(([ic, n, pg]) => (
             <button key={pg} onClick={() => nav.open(pg)}><Icon name={ic} /><span>{n}</span><Icon name="fwd" size={16} /></button>
           ))}
           <button className="danger" onClick={() => { haptic(10); logout() }}><Icon name="logout" /><span>خروج از حساب</span></button>
