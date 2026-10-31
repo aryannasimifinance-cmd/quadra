@@ -25,8 +25,10 @@ export default function Main() {
   const { cart } = useStore()
   const [tab, setTab] = useState('home')
   const [page, setPage] = useState(null)
-  // اپ مستقیم از ساخت بازی / رزرو باز می‌شود؛ بستن ویزارد به خانه می‌رود
+  // اپ مستقیم از صفحه‌ی + باز می‌شود؛ در مرحله‌ی اول ویزارد نوار پایین دیده می‌شود تا هر بخش دیگری را انتخاب کنند
   const [wizard, setWizard] = useState({})
+  const [wzStep, setWzStep] = useState('intent')
+  const [wzKey, setWzKey] = useState(0)
   const scrollRef = useRef(null)
   const cartN = cart.reduce((s, x) => s + x.qty, 0)
   useMatchmaking(setTab)
@@ -34,7 +36,7 @@ export default function Main() {
   const nav = {
     tab: (t) => { setPage(null); setWizard(null); haptic(6); setTab(t); scrollRef.current?.scrollTo({ top: 0 }) },
     open: (name, props = {}) => { haptic(6); setPage({ name, props }); scrollRef.current?.scrollTo({ top: 0 }) },
-    start: (preset = {}) => { setPage(null); setWizard(preset); scrollRef.current?.scrollTo({ top: 0 }) },
+    start: (preset = {}) => { setPage(null); setWizard(preset); setWzKey((k) => k + 1); scrollRef.current?.scrollTo({ top: 0 }) },
   }
   const Page = page && PAGES[page.name]
 
@@ -43,8 +45,8 @@ export default function Main() {
       <div className="app-scroll" ref={scrollRef}>
         <AnimatePresence mode="wait">
           {wizard ? (
-            <motion.div key="wz" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
-              <Wizard preset={wizard} onClose={() => setWizard(null)} onDone={(t) => { setWizard(null); setTab(t) }} />
+            <motion.div key={'wz' + wzKey} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 32 }}>
+              <Wizard preset={wizard} onStep={setWzStep} onClose={() => setWizard(null)} onDone={(t) => { setWizard(null); setTab(t) }} />
             </motion.div>
           ) : Page ? (
             <motion.div key={'p' + page.name} initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ type: 'spring', stiffness: 320, damping: 32 }}>
@@ -61,15 +63,15 @@ export default function Main() {
         </AnimatePresence>
       </div>
       <AnimatePresence>
-        {!wizard && (
+        {(!wizard || wzStep === 'intent') && (
           <motion.nav className="nav" initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             {TABS.map((t) => t.id === 'new' ? (
-              <motion.button key={t.id} className="fab" whileTap={{ scale: 0.85, rotate: 90 }} whileHover={{ scale: 1.06 }} onClick={() => nav.start({})} aria-label="بازی جدید">
+              <motion.button key={t.id} className={`fab ${wizard ? 'on' : ''}`} whileTap={{ scale: 0.85, rotate: 90 }} whileHover={{ scale: 1.06 }} onClick={() => nav.start({})} aria-label="بازی جدید">
                 <Icon name="plus" size={28} stroke={2.6} />
               </motion.button>
             ) : (
-              <button key={t.id} className={`nav-i ${tab === t.id && !page ? 'on' : ''}`} onClick={() => nav.tab(t.id)}>
-                {tab === t.id && !page && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
+              <button key={t.id} className={`nav-i ${tab === t.id && !page && !wizard ? 'on' : ''}`} onClick={() => nav.tab(t.id)}>
+                {tab === t.id && !page && !wizard && <motion.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
                 <span className="nav-ic">
                   <Icon name={t.icon} size={22} />
                   {t.id === 'shop' && cartN > 0 && <motion.i key={cartN} className="nav-badge" initial={{ scale: 0 }} animate={{ scale: 1 }}>{fa(cartN)}</motion.i>}

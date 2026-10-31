@@ -217,6 +217,7 @@ img { display: block; }
 .nav-pill { position: absolute; top: 0; width: 46px; height: 32px; border-radius: 12px; background: var(--q-soft); }
 .nav-ic { position: relative; display: grid; place-items: center; height: 32px; }
 .nav-badge { position: absolute; top: 0; left: -8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--ink); color: #fff; font-size: 10px; font-style: normal; font-weight: 700; display: grid; place-items: center; }
+.fab.on { color: var(--ink); background: var(--q); }
 .fab { width: 60px; height: 60px; border-radius: 22px; background: var(--ink); color: var(--q); display: grid; place-items: center; margin-top: -30px; box-shadow: 0 12px 30px rgba(20,20,19,.35), 0 0 0 6px var(--paper); }
 
 /* ---------- خانه ---------- */

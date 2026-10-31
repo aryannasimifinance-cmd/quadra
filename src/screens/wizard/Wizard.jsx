@@ -23,7 +23,7 @@ const INTENTS = [
   { id: 'event', name: 'مسابقه و تورنمنت', desc: 'مسابقات آدینه و تورنمنت‌های رسمی', img: './img/four-women.jpg', xp: 80, icon: '🏆' },
 ]
 
-export default function Wizard({ preset = {}, onClose, onDone }) {
+export default function Wizard({ preset = {}, onClose, onDone, onStep }) {
   const { user } = useStore()
   const [w, setW] = useState(() => ({
     intent: preset.intent || null, date: preset.date || dayKey(new Date()), daypart: 'any', dur: preset.dur || 1.5, court: preset.court || null, start: preset.start ?? null,
@@ -37,6 +37,7 @@ export default function Wizard({ preset = {}, onClose, onDone }) {
   const [dir, setDir] = useState(1)
   const [done, setDone] = useState(null)
   const step = flow[i]
+  useEffect(() => { onStep?.(done ? 'done' : step) }, [step, done])
 
   const scrollTop = () => document.querySelector('.app-scroll')?.scrollTo({ top: 0, behavior: 'smooth' })
   const next = () => { haptic(10); setDir(1); setI((x) => Math.min(x + 1, flow.length - 1)); scrollTop() }
@@ -47,8 +48,7 @@ export default function Wizard({ preset = {}, onClose, onDone }) {
 
   return (
     <div className="wizard">
-      <TopBar onBack={back} title={TITLES[step]} step={i} total={flow.length}
-        right={<motion.button className="icon-btn" whileTap={{ scale: 0.85 }} onClick={onClose} aria-label="بستن"><Icon name="close" /></motion.button>} />
+      <TopBar onBack={i > 0 ? back : null} title={TITLES[step]} step={i} total={flow.length} />
       {i > 0 && <Crumbs w={w} step={step} />}
       <AnimatePresence mode="wait" custom={dir}>
         <motion.div key={step} className="wz-body" custom={dir}
