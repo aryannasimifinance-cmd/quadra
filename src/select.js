@@ -1,4 +1,4 @@
-import { COURTS, PACKAGES, fromKey, levelIndex, todayKey } from './data'
+import { COURTS, PACKAGES, addDays, fromKey, isPeak, levelIndex, priceFor, todayKey } from './data'
 import { ME, freeStarts, weekKey } from './store'
 
 const nowH = () => { const n = new Date(); return n.getHours() + n.getMinutes() / 60 }
@@ -28,6 +28,18 @@ export function courtsNow(club) {
     const next = freeStarts(club, k, c.id, 1.5)
     return { ...c, off: !!club.off[c.id], busy: !!cur, cur, nextFree: next[0], freeCount: next.length }
   })
+}
+
+// نزدیک‌ترین ساعت‌های آزاد ۹۰ دقیقه‌ای روی ۴ زمین (امروز و فردا) برای رزرو سریع
+export function upcomingSlots(club, n = 10) {
+  const out = []
+  ;[todayKey(), addDays(todayKey(), 1)].forEach((d) => COURTS.forEach((c) => freeStarts(club, d, c.id, 1.5).forEach((h) => {
+    if (h % 1 === 0) out.push({ court: c.id, date: d, start: h, price: priceFor(d, h, 1.5, club.pricing), peak: isPeak(d, h, club.pricing) })
+  })))
+  out.sort((a, b) => fromKey(a.date) - fromKey(b.date) || a.start - b.start || a.court - b.court)
+  // از هر ساعت حداکثر دو زمین تا فهرست متنوع بماند
+  const seen = {}
+  return out.filter((x) => (seen[x.date + x.start] = (seen[x.date + x.start] || 0) + 1) <= 2).slice(0, n)
 }
 
 export function quests(s) {

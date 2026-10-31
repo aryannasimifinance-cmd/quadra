@@ -201,7 +201,7 @@ const FRIDAY = [
   { title: 'میکس دبل آدینه', format: 'تیم‌های مختلط · هر بازی با یار جدید' },
 ]
 const OFFICIAL = [
-  { title: 'جام ماهانه‌ی کوادرا', format: 'گروهی + حذفی · ۱۶ تیم', prize: 'جایزه‌ی نقدی + جام', in: 9 },
+  { title: 'تورنمنت ۵۰۰ امتیازی کشوری پدل', format: 'گروهی + حذفی · ۳۲ تیم · ۵۰۰ امتیاز رنکینگ کشوری', prize: 'جایزه‌ی نقدی + جام', in: 9 },
   { title: 'تور رنکینگ کوادرا — مرحله‌ی پاییز', format: 'گروهی + حذفی · ۱۶ تیم · امتیاز ۲ برابر', prize: 'جایزه‌ی نقدی + راکت', in: 23 },
 ]
 const EV_IMG = [img('four-women'), img('action'), img('reach'), img('action-wide'), img('sitting')]
@@ -209,7 +209,7 @@ export function events() {
   const fridays = nextDays(28, 1).filter((d) => d.getDay() === 5).slice(0, 4).map((d, i) => {
     const r = hash('ev' + dayKey(d))
     const lv = Math.floor(r * 5)
-    const f = FRIDAY[i % FRIDAY.length]
+    const f = i === 0 ? { ...FRIDAY[0], title: 'آدینه‌ی این هفته‌ی کوادرا' } : FRIDAY[i % FRIDAY.length]
     return {
       id: 'fr-' + dayKey(d), kind: 'friday', title: f.title, format: f.format, date: dayKey(d), start: 9, dur: 3,
       levels: LEVELS.slice(lv, lv + 3).map((l) => l.id), cap: 16, taken: Math.floor(16 * (0.4 + hash('tk' + i) * 0.5)),

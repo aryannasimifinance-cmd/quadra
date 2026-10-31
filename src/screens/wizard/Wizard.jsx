@@ -26,13 +26,13 @@ const INTENTS = [
 export default function Wizard({ preset = {}, onClose, onDone }) {
   const { user } = useStore()
   const [w, setW] = useState(() => ({
-    intent: preset.intent || null, date: dayKey(new Date()), daypart: 'any', dur: 1.5, court: preset.court || null, start: null,
+    intent: preset.intent || null, date: preset.date || dayKey(new Date()), daypart: 'any', dur: preset.dur || 1.5, court: preset.court || null, start: preset.start ?? null,
     players: [{ id: ME, name: user.name, level: user.level, me: true }, null, null, null],
     open: true, levels: nearLevels(user.level, 1), gameId: preset.gameId || null, coachId: preset.coachId || null, pack: 'one', eventId: preset.eventId || null,
   }))
   const set = (p) => setW((x) => ({ ...x, ...p }))
   const flow = FLOWS[w.intent || 'court']
-  const startAt = preset.gameId ? flow.indexOf('pay') : preset.intent === 'coach' && preset.coachId ? 1 : preset.intent ? 1 : 0
+  const startAt = preset.gameId ? flow.indexOf('pay') : preset.start != null ? flow.indexOf('people') : preset.intent === 'coach' && preset.coachId ? 1 : preset.intent ? 1 : 0
   const [i, setI] = useState(startAt)
   const [dir, setDir] = useState(1)
   const [done, setDone] = useState(null)

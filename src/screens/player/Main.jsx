@@ -25,7 +25,8 @@ export default function Main() {
   const { cart } = useStore()
   const [tab, setTab] = useState('home')
   const [page, setPage] = useState(null)
-  const [wizard, setWizard] = useState(null)
+  // اپ مستقیم از ساخت بازی / رزرو باز می‌شود؛ بستن ویزارد به خانه می‌رود
+  const [wizard, setWizard] = useState({})
   const scrollRef = useRef(null)
   const cartN = cart.reduce((s, x) => s + x.qty, 0)
   useMatchmaking(setTab)

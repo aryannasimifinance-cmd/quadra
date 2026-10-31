@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { COACHES, EVENT_KIND, MEMBERS, PACKAGES, PRODUCTS, courtById, dayLabel, dayMonth, events, fa, fromKey, hourLabel, levelById, range, rankOf, short, toman } from '../../data'
 import { celebrate, chime } from '../../fx'
 import { myPoints, useStore } from '../../store'
-import { courtsNow, myBookings, openGames, quests, streak } from '../../select'
+import { myBookings, openGames, quests, streak, upcomingSlots } from '../../select'
 import { Avatar, Icon, LevelPill, Photo, Ring, SectionHead, Tilt, rise, stagger } from '../../components/ui'
 import { Logo } from '../../components/Logo'
 import { ProductImage } from '../../components/Merch'
@@ -14,7 +14,7 @@ export default function Home({ nav }) {
   const unread = notifications.filter((n) => !n.read).length
   const mine = myBookings(club).filter((b) => fromKey(b.date).getTime() + (b.start + b.dur) * 36e5 > Date.now())
   const games = openGames(club, user.level).filter((g) => !g.mine).slice(0, 6)
-  const courts = courtsNow(club)
+  const slots = upcomingSlots(club, 10)
   const qs = quests(s)
   const st = streak(s)
   const evs = events()
@@ -26,7 +26,7 @@ export default function Home({ nav }) {
   return (
     <div className="home">
       <section className="hero">
-        <Photo src="./img/action.jpg" zoom pos="50% 20%" />
+        <Photo src="./img/welcome-courts.jpg" zoom pos="55% 50%" />
         <div className="hero-shade" />
         <div className="hero-top">
           <Logo tone="light" size={17} />
@@ -40,9 +40,6 @@ export default function Home({ nav }) {
         </div>
         <div className="hero-body">
           <motion.p className="hello" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 0.75, y: 0 }}>{hello}، {first}</motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, type: 'spring', stiffness: 200, damping: 20 }}>
-            امروز روی کدوم <em>زمین</em> می‌درخشید؟
-          </motion.h1>
           <motion.div className="hero-me" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} onClick={() => nav.open('ranking')}>
             <Ring value={rank.progress} size={58} stroke={5}><LevelPill id={user.level} /></Ring>
             <div className="grow">
@@ -68,21 +65,18 @@ export default function Home({ nav }) {
       </section>
 
       <div className="home-body">
-        <SectionHead title="زمین‌ها، همین حالا" sub="روی هر زمین بزنید تا رزروش کنید" />
-        <motion.div className="court-grid" variants={stagger} initial="hidden" animate="show">
-          {courts.map((c) => {
-            const st = c.off ? 'off' : c.busy ? 'busy' : 'free'
-            return (
-              <motion.button key={c.id} variants={rise} className={`court-tile ${st}`} whileTap={{ scale: 0.96 }} onClick={() => nav.start({ intent: 'court', court: c.id })}>
-                <CourtGlyph n={c.id} />
-                <div className="ct-txt">
-                  <b>زمین {fa(c.id)}</b>
-                  <span className="ct-st"><i />{c.off ? 'تعمیرات' : c.busy ? 'در حال بازی' : 'آزاد'}</span>
-                  <small>{c.off ? 'فعلاً غیرفعال' : c.nextFree != null ? `آزاد از ${hourLabel(c.nextFree)}` : 'امروز پر است'}</small>
-                </div>
-              </motion.button>
-            )
-          })}
+        <SectionHead title="رزرو سریع" sub="نزدیک‌ترین ساعت‌های آزاد · ۹۰ دقیقه" action="همه‌ی ساعت‌ها" onAction={() => nav.start({ intent: 'court' })} />
+        <motion.div className="slot-row-q" variants={stagger} initial="hidden" animate="show">
+          {slots.length === 0 && <div className="empty-card">تا فردا شب ساعت آزادی نمانده — روزهای دیگر را ببینید.</div>}
+          {slots.map((x) => (
+            <motion.button key={x.court + x.date + x.start} variants={rise} className="qslot" whileTap={{ scale: 0.95 }}
+              onClick={() => nav.start({ intent: 'court', court: x.court, date: x.date, start: x.start, dur: 1.5 })}>
+              <small className={x.peak ? 'peak' : ''}>{dayLabel(x.date)}{x.peak ? ' · پیک' : ''}</small>
+              <b>{hourLabel(x.start)}</b>
+              <span className="qs-court"><CourtGlyph n={x.court} />زمین {fa(x.court)}</span>
+              <em>{short(x.price / 4)} <small>هر نفر</small></em>
+            </motion.button>
+          ))}
         </motion.div>
 
         {mine.length > 0 && (
